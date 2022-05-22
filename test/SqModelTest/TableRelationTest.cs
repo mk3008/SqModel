@@ -18,15 +18,78 @@ public class TableRelationTest
         var dest = new Table() { TableName = "destination" };
         var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
 
-        var left = new ColumnRelation() { TableName = "source", ColumnName = "column" };
-        var right = new ColumnRelation() { TableName = "destination", ColumnName = "column" };
-        var rel = new ColumnRelationSet() { LeftColumn = left, RightColumn = right };
-
         var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias };
-        tr.ColumnRelationSets.Add(rel);
+        tr.AddColumnRelationSet("column");
 
         var text = tr.ToQuery().CommandText;
         var expect = @"inner join destination as d on s.column = d.column";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void ColumnName()
+    {
+        var src = new Table() { TableName = "source" };
+        var srcAlias = new TableAlias() { Table = src, AliasName = "s" };
+        var dest = new Table() { TableName = "destination" };
+        var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
+
+        var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias };
+        tr.AddColumnRelationSet("column_s", "column_d");
+
+        var text = tr.ToQuery().CommandText;
+        var expect = @"inner join destination as d on s.column_s = d.column_d";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void LeftJoin()
+    {
+        var src = new Table() { TableName = "source" };
+        var srcAlias = new TableAlias() { Table = src, AliasName = "s" };
+        var dest = new Table() { TableName = "destination" };
+        var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
+
+        var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias, RelationType =RelationTypes.Left };
+        tr.AddColumnRelationSet("column");
+
+        var text = tr.ToQuery().CommandText;
+        var expect = @"left join destination as d on s.column = d.column";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void RightJoin()
+    {
+        var src = new Table() { TableName = "source" };
+        var srcAlias = new TableAlias() { Table = src, AliasName = "s" };
+        var dest = new Table() { TableName = "destination" };
+        var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
+
+        var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias, RelationType = RelationTypes.Right };
+        tr.AddColumnRelationSet("column");
+
+        var text = tr.ToQuery().CommandText;
+        var expect = @"right join destination as d on s.column = d.column";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void CrossJoin()
+    {
+        var src = new Table() { TableName = "source" };
+        var srcAlias = new TableAlias() { Table = src, AliasName = "s" };
+        var dest = new Table() { TableName = "destination" };
+        var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
+
+        var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias, RelationType = RelationTypes.Cross };
+
+        var text = tr.ToQuery().CommandText;
+        var expect = @"cross join destination as d";
 
         Assert.Equal(expect, text);
     }

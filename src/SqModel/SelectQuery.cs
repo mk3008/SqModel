@@ -151,6 +151,24 @@ public class TableRelation
 
     public List<ColumnRelationSet> ColumnRelationSets { get; set; } = new();
 
+    public void AddColumnRelationSet(ColumnRelation source, ColumnRelation destination, string sign = "=")
+    {
+        ColumnRelationSets.Add(new ColumnRelationSet() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+    }
+
+    public void AddColumnRelationSet(string column)
+    {
+        AddColumnRelationSet(column, column);
+    }
+
+    public void AddColumnRelationSet(string leftColumn, string rightColumn, string sign = "=")
+    {
+        var source = new ColumnRelation() { TableName = SourceTable.GetName(), ColumnName = leftColumn };
+        var destination = new ColumnRelation() { TableName = DestinationTable.GetName(), ColumnName = rightColumn };
+
+        ColumnRelationSets.Add(new ColumnRelationSet() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+    }
+
     public Query ToQuery()
     {
         var stQ = SourceTable.ToQuery();
@@ -200,16 +218,16 @@ public enum RelationTypes
 
 public class ColumnRelationSet
 {
-    public ColumnRelation LeftColumn { get; set; } = new();
+    public ColumnRelation SourceColumn { get; set; } = new();
 
-    public ColumnRelation RightColumn { get; set; } = new();
+    public ColumnRelation DestinationColumn { get; set; } = new();
 
     public string Sign { get; set; } = "=";
 
     public Query ToQuery()
     {
-        var lcQ = LeftColumn.ToQuery();
-        var rcQ = RightColumn.ToQuery();
+        var lcQ = SourceColumn.ToQuery();
+        var rcQ = DestinationColumn.ToQuery();
 
         var text = $"{lcQ.CommandText} {Sign} {rcQ.CommandText}";
 

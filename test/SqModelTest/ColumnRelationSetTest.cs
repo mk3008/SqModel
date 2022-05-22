@@ -16,7 +16,7 @@ public class ColumnRelationSetTest
         var left = new ColumnRelation() {TableName = "left", ColumnName = "column" };
         var right = new ColumnRelation() { TableName = "right", ColumnName = "column" };
 
-        var rel = new ColumnRelationSet() { LeftColumn = left, RightColumn = right };
+        var rel = new ColumnRelationSet() { SourceColumn = left, DestinationColumn = right };
 
         var text = rel.ToQuery().CommandText;
         var expect = @"left.column = right.column";
@@ -30,7 +30,7 @@ public class ColumnRelationSetTest
         var left = new ColumnRelation() { TableName = "left", ColumnName = "column" };
         var right = new ColumnRelation() { TableName = "right", ColumnName = "column" };
 
-        var rel = new ColumnRelationSet() { LeftColumn = left, RightColumn = right , Sign = "<>"};
+        var rel = new ColumnRelationSet() { SourceColumn = left, DestinationColumn = right , Sign = "<>"};
 
         var text = rel.ToQuery().CommandText;
         var expect = @"left.column <> right.column";
