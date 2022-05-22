@@ -41,15 +41,31 @@ public class TableAlias
 
     public string AliasName { get; set; } = string.Empty;
 
+    public string GetName() => (AliasName != String.Empty) ? AliasName : Table.GetName();
+
     public Query ToQuery()
     {
         var tQ = Table.ToQuery();
-        var text = $"({tQ.CommandText}) as {AliasName}";
 
+        var names = Table.GetColumnNames();
+        if (names.Count == 1 && names[0] == "*")
+        {
+            var name = GetName();
+            if (Table.TableName == name)
+            {
+                return new Query() { CommandText = Table.TableName, Parameters = tQ.Parameters };
+            }
+            return new Query() { CommandText = $"{Table.TableName} as {name}", Parameters = tQ.Parameters };
+        }
+
+        var text = $"({tQ.CommandText}) as {AliasName}";
         return new Query() { CommandText = text, Parameters = tQ.Parameters };
     }
 
-    public List<Column> Columns => Table.Columns.Select(x => new Column() { TableName = AliasName, ColumnName = x.GetAliasName() }).ToList();
+    public List<Column> GetColumns()
+    {
+        return Table.GetColumnNames().Select(x => new Column() { TableName = AliasName, ColumnName = x }).ToList();
+    }
 }
 
 public class Table
@@ -60,33 +76,66 @@ public class Table
 
     public List<Column> Columns { get; set; } = new();
 
+    public List<VirtualColumn> VirtualColumns { get; set; } = new();
+
+    private Column GetSelectAllColumn() => new Column() { TableName = GetName(), ColumnName = "*" };
+
+    public List<string> GetColumnNames()
+    {
+        var lst = new List<string>();
+        Columns.ForEach(x => lst.Add(x.GetName()));
+        if (!lst.Any()) lst.Add(GetSelectAllColumn().ColumnName);
+        VirtualColumns.ForEach(x => lst.Add(x.AliasName));
+        return lst;
+    }
+
+    public List<Query> GetColumnQueries()
+    {
+        var Qs = Columns.Select(x => x.ToQuery()).ToList();
+        if (!Qs.Any())
+        {
+            Qs.Add(GetSelectAllColumn().ToQuery());
+        }
+        Qs.AddRange(VirtualColumns.Select(x => x.ToQuery()));
+        return Qs;
+    }
+
     public bool IsDistinct { get; set; } = false;
 
-    private string GetTableName() => (AliasName != string.Empty) ? AliasName : TableName;
+    public string GetName() => (AliasName != string.Empty) ? AliasName : TableName;
 
-    public void AddColumn(string columnName)
+    public Column AddColumn(string columnName)
     {
-        Columns.Add(new Column() { TableName = GetTableName(), ColumnName = columnName });
+        var c = new Column() { TableName = GetName(), ColumnName = columnName };
+        Columns.Add(c);
+        return c;
     }
 
-    public void AddColumn(string columnName, string aliasName)
+    public Column AddColumn(string columnName, string alias)
     {
-        Columns.Add(new Column() { TableName = GetTableName(), ColumnName = columnName, AliasName = aliasName });
+        var c = new Column() { TableName = GetName(), ColumnName = columnName, AliasName = alias };
+        Columns.Add(c);
+        return c;
     }
 
-    public void AddCommandColumn(string commandText, string aliasName)
+    public VirtualColumn AddVirtualColumn(string commandText, string aliasName)
     {
-        Columns.Add(new Column() { TableName = GetTableName(), CommandText = commandText, AliasName = aliasName });
+        var c = new VirtualColumn() { CommandText = commandText, AliasName = aliasName };
+        VirtualColumns.Add(c);
+        return c;
     }
 
     public Query ToQuery()
     {
-        var cQs = Columns.Select(x => x.ToQuery());
+        var name = GetName();
+        var tbl = (name == TableName) ? TableName : $"{TableName} as {name}";
 
-        var text = $"select {cQs.Select(x => x.CommandText).ToString(",")} from {TableName} as {GetTableName()}";
+        var Qs = GetColumnQueries();
+
+        var text = $"select {Qs.Select(x => x.CommandText).ToString(", ")} from {tbl}";
 
         var prms = new Dictionary<string, object>();
-        cQs.ToList().ForEach(x => prms.Merge(x.Parameters));
+        Qs.ForEach(x => prms.Merge(x.Parameters));
 
         return new Query() { CommandText = text, Parameters = prms };
     }
@@ -177,30 +226,54 @@ public class Column
 
     public string ColumnName { get; set; } = string.Empty;
 
+    public string AliasName { get; set; } = string.Empty;
+
+    private Dictionary<string, object> Parameters { get; set; } = new();
+
+    public string GetName()
+    {
+        if (ColumnName == "*") return String.Empty;
+        return (AliasName != String.Empty) ? AliasName : ColumnName;
+    }
+
+    public Query ToQuery()
+    {
+        var name = GetName();
+
+        string? text;
+        if (name == string.Empty || name == ColumnName)
+        {
+            text = $"{TableName}.{ColumnName}";
+        }
+        else
+        {
+            text = $"{TableName}.{ColumnName} as {name}";
+        }
+
+        return new Query() { CommandText = text, Parameters = Parameters };
+    }
+}
+
+public class VirtualColumn
+{
     public string CommandText { get; set; } = string.Empty;
 
     public string AliasName { get; set; } = string.Empty;
 
     public Dictionary<string, object> Parameters { get; set; } = new();
 
-    public string GetAliasName() => (AliasName != string.Empty) ? AliasName : ColumnName;
+    public VirtualColumn AddParameter(string key, object value)
+    {
+        Parameters[key] = value;
+        return this;
+    }
 
     public Query ToQuery()
     {
         if (CommandText != string.Empty && AliasName != string.Empty)
         {
             //ex. :val as value --:val = 1
-            return new Query() { CommandText = $"{CommandText} as {GetAliasName()}", Parameters = Parameters };
-        }
-        if (TableName != string.Empty && ColumnName == "*")
-        {
-            //ex. tableA.*
-            return new Query() { CommandText = $"{TableName}.{ColumnName}", Parameters = Parameters };
-        }
-        if (TableName != string.Empty && ColumnName != string.Empty)
-        {
-            //ex. tableA.ColumnX as X
-            return new Query() { CommandText = $"{TableName}.{ColumnName} as {GetAliasName()}", Parameters = Parameters };
+            return new Query() { CommandText = $"{CommandText} as {AliasName}", Parameters = Parameters };
         }
 
         throw new NotSupportedException("ToQuery method failed.");
@@ -213,17 +286,10 @@ public class ColumnRelation
 
     public string ColumnName { get; set; } = string.Empty;
 
-    public string CommandText { get; set; } = string.Empty;
-
-    public Dictionary<string, object> Parameters { get; set; } = new();
+    private Dictionary<string, object> Parameters { get; set; } = new();
 
     public Query ToQuery()
     {
-        if (CommandText != string.Empty)
-        {
-            //ex. :val --:val = 1
-            return new Query() { CommandText = $"{CommandText}", Parameters = Parameters };
-        }
         if (TableName != string.Empty && ColumnName != string.Empty)
         {
             //ex. tableA.ColumnX
