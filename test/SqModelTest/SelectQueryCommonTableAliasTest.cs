@@ -36,7 +36,7 @@ from a";
     }
 
     [Fact]
-    public void Mulit()
+    public void ManyCTE()
     {
         var sq = new SelectQuery();
 
