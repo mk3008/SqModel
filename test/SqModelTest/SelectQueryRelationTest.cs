@@ -54,7 +54,7 @@ inner join table_b as b on a.col1 = b.col1 and a.col2 = b.col2";
     }
 
     [Fact]
-    public void MultiTableRelation()
+    public void ManyTableRelation()
     {
         var sq = new SelectQuery();
 
@@ -69,7 +69,6 @@ inner join table_b as b on a.col1 = b.col1 and a.col2 = b.col2";
          var t3 = new TableAlias();
         t3.Table.TableName = "table_c";
         t3.Table.AliasName = "c";
-
 
         sq.Root = t1;
         sq.AddTableRelation(t1, t2).AddColumnRelation("col1").AddColumnRelation("col2");
