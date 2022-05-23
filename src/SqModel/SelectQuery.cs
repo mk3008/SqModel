@@ -10,6 +10,22 @@ public class SelectQuery
 {
     public TableAlias Root { get; set; } = new();
 
+    public List<CommonTableAlias> CommonTableAliases = new();
+
+    public CommonTableAlias AddCommonTableAliases(string commandText, string alias, Dictionary<string, object>? prms = null)
+    {
+        var cta = new CommonTableAlias() { CommandText = commandText, AliasName = alias, Parameters = prms ?? new() };
+        CommonTableAliases.Add(cta);
+        return cta;
+    }
+
+    public CommonTableAlias AddCommonTableAlias(string commandText, TableAlias alias, Dictionary<string, object>? prms = null)
+    {
+        var cta = new CommonTableAlias() { CommandText = commandText, AliasName = alias.Table.TableName, Parameters = prms ?? new() };
+        CommonTableAliases.Add(cta);
+        return cta;
+    }
+
     public List<TableRelation> TableRelations = new();
 
     public TableRelation AddTableRelation(TableAlias source, TableAlias destination, RelationTypes type = RelationTypes.Inner)
@@ -52,19 +68,56 @@ public class SelectQuery
         var cQs = GetColumnQueries();
         var trQs = TableRelations.Select(x => x.ToQuery());
 
-        //command text
-        var text = $"select {cQs.Select(x => x.CommandText).ToString(", ")}\r\nfrom {rtQ.CommandText}";
-
-        var relation = trQs.Select(x => x.CommandText).ToString("\r\n");
-        if (relation != String.Empty) text += $"\r\n{relation}";
-
         //parameter
         var prms = new Dictionary<string, object>();
         prms.Merge(rtQ.Parameters);
         cQs.ToList().ForEach(x => prms.Merge(x.Parameters));
         trQs.ToList().ForEach(x => prms.Merge(x.Parameters));
 
-        return new Query() { CommandText = text, Parameters = prms };
+
+        //command text
+        var sb = new StringBuilder();
+        if (CommonTableAliases.Any())
+        {
+            var ctaQs = CommonTableAliases.Select(x => x.ToQuery()).ToList();
+            ctaQs.ToList().ForEach(x => prms.Merge(x.Parameters));
+
+            sb.Append("with\r\n");
+            sb.Append(ctaQs.Select(x => x.CommandText).ToString(",\r\n"));
+            sb.Append("\r\n");
+        }
+        sb.Append($"select {cQs.Select(x => x.CommandText).ToString(", ")}\r\nfrom {rtQ.CommandText}");
+
+        var relation = trQs.Select(x => x.CommandText).ToString("\r\n");
+        if (relation != String.Empty) sb.Append($"\r\n{relation}");
+
+
+
+        return new Query() { CommandText = sb.ToString(), Parameters = prms };
+    }
+}
+
+public class CommonTableAlias
+{
+    public string CommandText { get; set; } = String.Empty;
+
+    public Dictionary<string, object> Parameters { get; set; } = new();
+
+    public string AliasName { get; set; } = string.Empty;
+
+    public Query ToQuery()
+    {
+        /*
+         * Alias as (
+         *     CommandText
+         * )
+         */
+        var sb = new StringBuilder();
+        sb.Append($"{AliasName} as (\r\n    ");
+        sb.Append(CommandText.Replace("\r\n", "\r\n    "));
+        sb.Append($"\r\n)");
+
+        return new Query() { CommandText = sb.ToString(), Parameters = Parameters };
     }
 }
 
