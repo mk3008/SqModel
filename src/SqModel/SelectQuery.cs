@@ -8,20 +8,53 @@ namespace SqModel;
 
 public class SelectQuery
 {
-    public TableAlias RootTable { get; set; } = new();
+    public TableAlias Root { get; set; } = new();
 
     public List<TableRelation> TableRelations = new();
 
+    public TableRelation AddTableRelation(TableAlias source, TableAlias destination, RelationTypes type = RelationTypes.Inner)
+    {
+        var tr = new TableRelation() { SourceTable = source, DestinationTable = destination, RelationType = type };
+        TableRelations.Add(tr);
+        return tr;
+    }
+
     public List<Column> Columns { get; set; } = new();
+
+    public Column AddColumn(TableAlias alias, string columnName, string? columnAlias)
+    {
+        var c = new Column() { TableName = alias.GetName(), ColumnName = columnName, AliasName = columnAlias ?? columnName };
+        Columns.Add(c);
+        return c;
+    }
+
+    private List<Column> GetSelectAllColumns()
+    {
+        var lst = new List<Column>();
+        lst.Add(new Column() { TableName = Root.GetName(), ColumnName = "*" });
+        TableRelations.ForEach(x => lst.Add(new Column() { TableName = x.DestinationTable.GetName(), ColumnName = "*" }));
+        return lst;
+    }
+
+    public List<Query> GetColumnQueries()
+    {
+        var Qs = Columns.Select(x => x.ToQuery()).ToList();
+        if (!Qs.Any())
+        {
+            GetSelectAllColumns().ForEach(x => Qs.Add(x.ToQuery()));
+        }
+        return Qs;
+    }
 
     public Query ToQuery()
     {
-        var rtQ = RootTable.ToQuery();
-        var cQs = Columns.Select(x => x.ToQuery());
+        var rtQ = Root.ToQuery();
+        var cQs = GetColumnQueries();
         var trQs = TableRelations.Select(x => x.ToQuery());
 
         //command text
-        var text = $"select {cQs.Select(x => x.CommandText).ToString(",")}\r\nfrom {rtQ.CommandText}";
+        var text = $"select {cQs.Select(x => x.CommandText).ToString(", ")}\r\nfrom {rtQ.CommandText}";
+
         var relation = trQs.Select(x => x.CommandText).ToString("\r\n");
         if (relation != String.Empty) text += $"\r\n{relation}";
 
@@ -43,6 +76,11 @@ public class TableAlias
 
     public string GetName() => (AliasName != String.Empty) ? AliasName : Table.GetName();
 
+    public List<Column> GetColumns()
+    {
+        return Table.GetColumnNames().Select(x => new Column() { TableName = AliasName, ColumnName = x }).ToList();
+    }
+
     public Query ToQuery()
     {
         var tQ = Table.ToQuery();
@@ -58,13 +96,8 @@ public class TableAlias
             return new Query() { CommandText = $"{Table.TableName} as {name}", Parameters = tQ.Parameters };
         }
 
-        var text = $"({tQ.CommandText}) as {AliasName}";
+        var text = $"({tQ.CommandText}) as {GetName()}";
         return new Query() { CommandText = text, Parameters = tQ.Parameters };
-    }
-
-    public List<Column> GetColumns()
-    {
-        return Table.GetColumnNames().Select(x => new Column() { TableName = AliasName, ColumnName = x }).ToList();
     }
 }
 
@@ -104,16 +137,9 @@ public class Table
 
     public string GetName() => (AliasName != string.Empty) ? AliasName : TableName;
 
-    public Column AddColumn(string columnName)
+    public Column AddColumn(string columnName, string? alias = null)
     {
-        var c = new Column() { TableName = GetName(), ColumnName = columnName };
-        Columns.Add(c);
-        return c;
-    }
-
-    public Column AddColumn(string columnName, string alias)
-    {
-        var c = new Column() { TableName = GetName(), ColumnName = columnName, AliasName = alias };
+        var c = new Column() { TableName = GetName(), ColumnName = columnName, AliasName = alias ?? columnName };
         Columns.Add(c);
         return c;
     }
@@ -149,31 +175,34 @@ public class TableRelation
 
     public TableAlias DestinationTable { get; set; } = new();
 
-    public List<ColumnRelationSet> ColumnRelationSets { get; set; } = new();
+    public List<ColumnRelation> ColumnRelations { get; set; } = new();
 
-    public void AddColumnRelationSet(ColumnRelation source, ColumnRelation destination, string sign = "=")
+    public TableRelation AddColumnRelation(RelatedColumn source, RelatedColumn destination, string sign = "=")
     {
-        ColumnRelationSets.Add(new ColumnRelationSet() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+        ColumnRelations.Add(new ColumnRelation() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+        return this;
     }
 
-    public void AddColumnRelationSet(string column)
+    public TableRelation AddColumnRelation(string column)
     {
-        AddColumnRelationSet(column, column);
+        AddColumnRelation(column, column);
+        return this;
     }
 
-    public void AddColumnRelationSet(string leftColumn, string rightColumn, string sign = "=")
+    public TableRelation AddColumnRelation(string leftColumn, string rightColumn, string sign = "=")
     {
-        var source = new ColumnRelation() { TableName = SourceTable.GetName(), ColumnName = leftColumn };
-        var destination = new ColumnRelation() { TableName = DestinationTable.GetName(), ColumnName = rightColumn };
+        var source = new RelatedColumn() { TableName = SourceTable.GetName(), ColumnName = leftColumn };
+        var destination = new RelatedColumn() { TableName = DestinationTable.GetName(), ColumnName = rightColumn };
 
-        ColumnRelationSets.Add(new ColumnRelationSet() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+        ColumnRelations.Add(new ColumnRelation() { SourceColumn = source, DestinationColumn = destination, Sign = sign });
+        return this;
     }
 
     public Query ToQuery()
     {
         var stQ = SourceTable.ToQuery();
         var dtQ = DestinationTable.ToQuery();
-        var crsQs = ColumnRelationSets.Select(x => x.ToQuery());
+        var crsQs = ColumnRelations.Select(x => x.ToQuery());
 
         //parameter
         var prms = new Dictionary<string, object>();
@@ -216,11 +245,11 @@ public enum RelationTypes
     Cross = 3,
 }
 
-public class ColumnRelationSet
+public class ColumnRelation
 {
-    public ColumnRelation SourceColumn { get; set; } = new();
+    public RelatedColumn SourceColumn { get; set; } = new();
 
-    public ColumnRelation DestinationColumn { get; set; } = new();
+    public RelatedColumn DestinationColumn { get; set; } = new();
 
     public string Sign { get; set; } = "=";
 
@@ -298,7 +327,7 @@ public class VirtualColumn
     }
 }
 
-public class ColumnRelation
+public class RelatedColumn
 {
     public string TableName { get; set; } = string.Empty;
 

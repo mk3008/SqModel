@@ -19,7 +19,7 @@ public class TableRelationTest
         var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
 
         var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias };
-        tr.AddColumnRelationSet("column");
+        tr.AddColumnRelation("column");
 
         var text = tr.ToQuery().CommandText;
         var expect = @"inner join destination as d on s.column = d.column";
@@ -36,7 +36,7 @@ public class TableRelationTest
         var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
 
         var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias };
-        tr.AddColumnRelationSet("column_s", "column_d");
+        tr.AddColumnRelation("column_s", "column_d");
 
         var text = tr.ToQuery().CommandText;
         var expect = @"inner join destination as d on s.column_s = d.column_d";
@@ -53,7 +53,7 @@ public class TableRelationTest
         var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
 
         var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias, RelationType =RelationTypes.Left };
-        tr.AddColumnRelationSet("column");
+        tr.AddColumnRelation("column");
 
         var text = tr.ToQuery().CommandText;
         var expect = @"left join destination as d on s.column = d.column";
@@ -70,7 +70,7 @@ public class TableRelationTest
         var destAlias = new TableAlias() { Table = dest, AliasName = "d" };
 
         var tr = new TableRelation() { SourceTable = srcAlias, DestinationTable = destAlias, RelationType = RelationTypes.Right };
-        tr.AddColumnRelationSet("column");
+        tr.AddColumnRelation("column");
 
         var text = tr.ToQuery().CommandText;
         var expect = @"right join destination as d on s.column = d.column";

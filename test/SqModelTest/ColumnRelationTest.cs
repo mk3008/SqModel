@@ -13,7 +13,7 @@ public class ColumnRelationTest
     [Fact]
     public void Default()
     {
-        var cr = new ColumnRelation() {TableName = "a", ColumnName = "b" };
+        var cr = new RelatedColumn() {TableName = "a", ColumnName = "b" };
 
         var text = cr.ToQuery().CommandText;
         var expect = @"a.b";

@@ -13,10 +13,10 @@ public class ColumnRelationSetTest
     [Fact]
     public void Default()
     {
-        var left = new ColumnRelation() {TableName = "left", ColumnName = "column" };
-        var right = new ColumnRelation() { TableName = "right", ColumnName = "column" };
+        var left = new RelatedColumn() {TableName = "left", ColumnName = "column" };
+        var right = new RelatedColumn() { TableName = "right", ColumnName = "column" };
 
-        var rel = new ColumnRelationSet() { SourceColumn = left, DestinationColumn = right };
+        var rel = new ColumnRelation() { SourceColumn = left, DestinationColumn = right };
 
         var text = rel.ToQuery().CommandText;
         var expect = @"left.column = right.column";
@@ -27,10 +27,10 @@ public class ColumnRelationSetTest
     [Fact]
     public void Sign()
     {
-        var left = new ColumnRelation() { TableName = "left", ColumnName = "column" };
-        var right = new ColumnRelation() { TableName = "right", ColumnName = "column" };
+        var left = new RelatedColumn() { TableName = "left", ColumnName = "column" };
+        var right = new RelatedColumn() { TableName = "right", ColumnName = "column" };
 
-        var rel = new ColumnRelationSet() { SourceColumn = left, DestinationColumn = right , Sign = "<>"};
+        var rel = new ColumnRelation() { SourceColumn = left, DestinationColumn = right , Sign = "<>"};
 
         var text = rel.ToQuery().CommandText;
         var expect = @"left.column <> right.column";
