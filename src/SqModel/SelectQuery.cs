@@ -37,7 +37,7 @@ public class SelectQuery
 
     public List<Column> Columns { get; set; } = new();
 
-    public Column AddColumn(TableAlias alias, string columnName, string? columnAlias)
+    public Column AddColumn(TableAlias alias, string columnName, string? columnAlias = null)
     {
         var c = new Column() { TableName = alias.GetName(), ColumnName = columnName, AliasName = columnAlias ?? columnName };
         Columns.Add(c);
@@ -74,7 +74,6 @@ public class SelectQuery
         cQs.ToList().ForEach(x => prms.Merge(x.Parameters));
         trQs.ToList().ForEach(x => prms.Merge(x.Parameters));
 
-
         //command text
         var sb = new StringBuilder();
         if (CommonTableAliases.Any())
@@ -90,8 +89,6 @@ public class SelectQuery
 
         var relation = trQs.Select(x => x.CommandText).ToString("\r\n");
         if (relation != String.Empty) sb.Append($"\r\n{relation}");
-
-
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }
@@ -156,6 +153,14 @@ public class TableAlias
 
 public class Table
 {
+    public Table() { }
+
+    public Table(string tableName, string? aliasName = null)
+    {
+        TableName = tableName;
+        AliasName = aliasName ?? tableName;
+    }
+
     public string TableName { get; set; } = string.Empty;
 
     public string AliasName { get; set; } = string.Empty;
@@ -217,6 +222,11 @@ public class Table
         Qs.ForEach(x => prms.Merge(x.Parameters));
 
         return new Query() { CommandText = text, Parameters = prms };
+    }
+
+    public TableAlias ToTableAlias(string? alias = null)
+    {
+        return new TableAlias() { Table = this, AliasName = alias ?? GetName() };
     }
 }
 
