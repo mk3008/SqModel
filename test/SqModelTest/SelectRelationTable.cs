@@ -7,6 +7,24 @@ namespace SqModelTest;
 public class SelectRelationTable
 {
     [Fact]
+    public void Default()
+    {
+        var q = new SelectQuery();
+        var table_a = q.From("table_a");
+        var table_b = table_a.InnerJoin("table_b", new() { "table_a_id" });
+
+        q.Select(table_a, "value_a");
+        q.Select(table_b, "value_b");
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select table_a.value_a, table_b.value_b
+from table_a
+inner join table_b on table_a.table_a_id = table_b.table_a_id";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void InnerJoin()
     {
         var q = new SelectQuery();

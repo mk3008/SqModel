@@ -64,6 +64,11 @@ public class TableClause
         return destination;
     }
 
+    public TableClause InnerJoin(string tableName, List<string> columns)
+    {
+        return Join(tableName, tableName, RelationTypes.Inner, columns.ToDictionary());
+    }
+
     public TableClause InnerJoin(string tableName, string aliasName, List<string> columns)
     {
         return Join(tableName, aliasName, RelationTypes.Inner, columns.ToDictionary());
@@ -77,6 +82,11 @@ public class TableClause
     public TableClause InnerJoin(TableClause destination, List<string> columns)
     {
         return Join(destination, RelationTypes.Inner, columns.ToDictionary());
+    }
+
+    public TableClause LeftJoin(string tableName, List<string> columns)
+    {
+        return Join(tableName, tableName, RelationTypes.Left, columns.ToDictionary());
     }
 
     public TableClause LeftJoin(string tableName, string aliasName, List<string> columns)
@@ -94,6 +104,11 @@ public class TableClause
         return Join(destination, RelationTypes.Left, columns.ToDictionary());
     }
 
+    public TableClause RightJoin(string tableName, List<string> columns)
+    {
+        return Join(tableName, tableName, RelationTypes.Right, columns.ToDictionary());
+
+    }
     public TableClause RightJoin(string tableName, string aliasName, List<string> columns)
     {
         return Join(tableName, aliasName, RelationTypes.Right, columns.ToDictionary());
@@ -107,6 +122,11 @@ public class TableClause
     public TableClause RightJoin(TableClause destination, List<string> columns)
     {
         return Join(destination, RelationTypes.Right, columns.ToDictionary());
+    }
+
+    public TableClause CrossJoin(string tableName)
+    {
+        return Join(tableName, tableName, RelationTypes.Cross, new());
     }
 
     public TableClause CrossJoin(string tableName, string aliasName)

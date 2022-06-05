@@ -45,7 +45,7 @@ from a";
         q.With.Add(sub2, "b");
 
         var a = q.From("a");
-        var b = a.InnerJoin("b", "b", new() { "table_a_id" });
+        var b = a.InnerJoin("b", new() { "table_a_id" });
         q.Select(a, "*");
         q.Select(b, "*");
 
@@ -84,7 +84,7 @@ inner join b on a.table_a_id = b.table_a_id";
         q.With.Add(sub2, "b");
 
         var a = q.From("a");
-        var b = a.InnerJoin("b", "b", new() { "table_a_id" });
+        var b = a.InnerJoin("b", new() { "table_a_id" });
         q.Select(a, "*");
         q.Select(b, "*");
 
