@@ -18,4 +18,47 @@ internal static class Extensions
         dic.Where(x => !source.ContainsKey(x.Key)).ToList().ForEach(x => source.Add(x.Key, x.Value));
         return source;
     }
+
+    public static Dictionary<string, string> ToDictionary(this List<string> source)
+    {
+        var dic = new Dictionary<string, string>();
+        source.ForEach(x => dic.Add(x, x));
+        return dic;
+    }
+
+    public static Query ToQuery(this List<Query> source, string separator)
+    {
+        var text = source.Select(x => x.CommandText).ToList().ToString(separator);
+        var prm = new Dictionary<string, object>();
+        source.ForEach(x => prm.Merge(x.Parameters));
+
+        return new Query() { CommandText = text, Parameters = prm };
+    }
+
+    public static Query Merge(this Query source, Query query, string separator)
+    {
+        var text = source.CommandText;
+        if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
+
+        var prm = new Dictionary<string, object>();
+        prm.Merge(source.Parameters);
+        prm.Merge(query.Parameters);
+
+        return new Query() { CommandText = text, Parameters = prm };
+    }
+
+    public static void ForEach(this int source, Action<int> act)
+    {
+        for (int i = 0; i < source; i++) act(i);
+    }
+
+    public static string Indent(this string source, string separator = "\r\n", int spaceCount = 4)
+    {
+        if (source == string.Empty) return source;
+
+        var space = string.Empty;
+        spaceCount.ForEach(x => space += " ");
+
+        return $"{space}{source.Replace(separator, $"{separator}{space}")}";
+    }
 }

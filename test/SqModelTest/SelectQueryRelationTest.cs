@@ -10,16 +10,16 @@ public class SelectQueryRelationTest
     {
         var sq = new SelectQuery();
 
-        var t1 = new TableAlias();
+        var t1 = new SelectQuery();
         t1.Table.TableName = "table_a";
         t1.Table.AliasName = "a";
 
-        var t2 = new TableAlias();
+        var t2 = new SelectQuery();
         t2.Table.TableName = "table_b";
         t2.Table.AliasName = "b";
 
-        sq.Root = t1;
-        sq.AddTableRelation(t1, t2).AddColumnRelation("column");
+        sq.FromClause = t1;
+        sq.JoinTableRelationClause.Add(t1, t2).AddCondition("column");
 
         var text = sq.ToQuery().CommandText;
         var expect = @"select a.*, b.*
@@ -34,16 +34,16 @@ inner join table_b as b on a.column = b.column";
     {
         var sq = new SelectQuery();
 
-        var t1 = new TableAlias();
+        var t1 = new SelectQuery();
         t1.Table.TableName = "table_a";
         t1.Table.AliasName = "a";
 
-        var t2 = new TableAlias();
+        var t2 = new SelectQuery();
         t2.Table.TableName = "table_b";
         t2.Table.AliasName = "b";
 
-        sq.Root = t1;
-        sq.AddTableRelation(t1, t2).AddColumnRelation("col1").AddColumnRelation("col2");
+        sq.FromClause = t1;
+        sq.JoinTableRelationClause.Add(t1, t2).AddCondition("col1").AddCondition("col2");
 
         var text = sq.ToQuery().CommandText;
         var expect = @"select a.*, b.*
@@ -58,21 +58,21 @@ inner join table_b as b on a.col1 = b.col1 and a.col2 = b.col2";
     {
         var sq = new SelectQuery();
 
-        var t1 = new TableAlias();
+        var t1 = new SelectQuery();
         t1.Table.TableName = "table_a";
         t1.Table.AliasName = "a";
 
-        var t2 = new TableAlias();
+        var t2 = new SelectQuery();
         t2.Table.TableName = "table_b";
         t2.Table.AliasName = "b";
 
-         var t3 = new TableAlias();
+         var t3 = new SelectQuery();
         t3.Table.TableName = "table_c";
         t3.Table.AliasName = "c";
 
-        sq.Root = t1;
-        sq.AddTableRelation(t1, t2).AddColumnRelation("col1").AddColumnRelation("col2");
-        sq.AddTableRelation(t2, t3).AddColumnRelation("colx").AddColumnRelation("coly");
+        sq.FromClause = t1;
+        sq.JoinTableRelationClause.Add(t1, t2).AddCondition("col1").AddCondition("col2");
+        sq.JoinTableRelationClause.Add(t2, t3).AddCondition("colx").AddCondition("coly");
 
         var text = sq.ToQuery().CommandText;
         var expect = @"select a.*, b.*, c.*
