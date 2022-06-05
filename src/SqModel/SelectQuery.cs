@@ -74,7 +74,7 @@ public class SelectQuery
         var prms = new Dictionary<string, object>();
         prms.Merge(fromQ.Parameters);
         prms.Merge(selectQ.Parameters);
-        //prms.Merge(withQ.Parameters);
+        prms.Merge(withQ.Parameters);
 
         //command text
         var sb = new StringBuilder();
