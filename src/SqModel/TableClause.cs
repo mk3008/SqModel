@@ -50,6 +50,12 @@ public class TableClause
         return Join(d, type, keyvalues);
     }
 
+    public TableClause Join(SelectQuery subSelectClause, string aliasName, RelationTypes type, Dictionary<string, string> keyvalues)
+    {
+        var d = new TableClause(subSelectClause, aliasName);
+        return Join(d, type, keyvalues);
+    }
+
     public TableClause Join(TableClause destination, RelationTypes type, Dictionary<string, string> keyvalues)
     {
         destination.TableRelationClause = new TableRelationClause() { SourceName = AliasName, RelationType = type };
@@ -63,6 +69,11 @@ public class TableClause
         return Join(tableName, aliasName, RelationTypes.Inner, columns.ToDictionary());
     }
 
+    public TableClause InnerJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
+    {
+        return Join(subSelectClause, aliasName, RelationTypes.Inner, columns.ToDictionary());
+    }
+
     public TableClause InnerJoin(TableClause destination, List<string> columns)
     {
         return Join(destination, RelationTypes.Inner, columns.ToDictionary());
@@ -71,6 +82,11 @@ public class TableClause
     public TableClause LeftJoin(string tableName, string aliasName, List<string> columns)
     {
         return Join(tableName, aliasName, RelationTypes.Left, columns.ToDictionary());
+    }
+
+    public TableClause LeftJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
+    {
+        return Join(subSelectClause, aliasName, RelationTypes.Left, columns.ToDictionary());
     }
 
     public TableClause LeftJoin(TableClause destination, List<string> columns)
@@ -83,6 +99,11 @@ public class TableClause
         return Join(tableName, aliasName, RelationTypes.Right, columns.ToDictionary());
     }
 
+    public TableClause RightJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
+    {
+        return Join(subSelectClause, aliasName, RelationTypes.Right, columns.ToDictionary());
+    }
+
     public TableClause RightJoin(TableClause destination, List<string> columns)
     {
         return Join(destination, RelationTypes.Right, columns.ToDictionary());
@@ -91,6 +112,11 @@ public class TableClause
     public TableClause CrossJoin(string tableName, string aliasName)
     {
         return Join(tableName, aliasName, RelationTypes.Cross, new());
+    }
+
+    public TableClause CrossJoin(SelectQuery subSelectClause, string aliasName)
+    {
+        return Join(subSelectClause, aliasName, RelationTypes.Cross, new());
     }
 
     public TableClause CrossJoin(TableClause destination)
