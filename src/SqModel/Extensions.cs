@@ -13,9 +13,14 @@ internal static class Extensions
         return string.Join(separator, source);
     }
 
+    public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair< T1, T2>> action) where T1 : notnull
+    {
+        foreach (var x in source) action(x);
+    }
+
     public static Dictionary<T1, T2> Merge<T1, T2>(this Dictionary<T1, T2> source, Dictionary<T1, T2> dic) where T1 : notnull
     {
-        dic.Where(x => !source.ContainsKey(x.Key)).ToList().ForEach(x => source.Add(x.Key, x.Value));
+        dic.ForEach(x => source[x.Key] = x.Value);       
         return source;
     }
 
@@ -47,9 +52,9 @@ internal static class Extensions
         return new Query() { CommandText = text, Parameters = prm };
     }
 
-    public static void ForEach(this int source, Action<int> act)
+    public static void ForEach(this int source, Action<int> action)
     {
-        for (int i = 0; i < source; i++) act(i);
+        for (int i = 0; i < source; i++) action(i);
     }
 
     public static string Indent(this string source, string separator = "\r\n", int spaceCount = 4)
