@@ -50,6 +50,19 @@ public class SelectQuery
 
     public WithClause With { get; set; } = new();
 
+    protected IEnumerable<CommonTableClause> GetCommonTableClauses()
+    {
+        foreach (var item in FromClause.GetCommonTableClauses()) yield return item;
+        foreach (var item in With.CommonTableAliases) yield return item;
+    }
+
+    private WithClause GetAllWith()
+    {
+        var w = new WithClause();
+        GetCommonTableClauses().ToList().ForEach(x => w.CommonTableAliases.Add(x));
+        return w;
+    }
+
     //public List<Condition> Conditions = new();
 
 
@@ -66,10 +79,10 @@ public class SelectQuery
 
     public Query ToQuery()
     {
-        var withQ = With.ToQuery();
+        var withQ = GetAllWith().ToQuery();
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
-                
+
         //parameter
         var prms = new Dictionary<string, object>();
         prms.Merge(fromQ.Parameters);
@@ -78,10 +91,37 @@ public class SelectQuery
 
         //command text
         var sb = new StringBuilder();
-        if (withQ.CommandText != String.Empty){
+        if (withQ.CommandText != String.Empty)
+        {
             sb.Append(withQ.CommandText);
             sb.Append("\r\n");
         }
+
+        sb.Append($"{selectQ.CommandText}");
+        sb.Append("\r\n");
+        sb.Append($"{fromQ.CommandText}");
+
+        //if (!string.IsNullOrEmpty(joinQ.CommandText))
+        //{
+        //    sb.Append("\r\n");
+        //    sb.Append(joinQ.CommandText);
+        //}
+
+        return new Query() { CommandText = sb.ToString(), Parameters = prms };
+    }
+
+    public Query ToQuery(object sender)
+    {
+        var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
+        var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
+
+        //parameter
+        var prms = new Dictionary<string, object>();
+        prms.Merge(fromQ.Parameters);
+        prms.Merge(selectQ.Parameters);
+
+        //command text
+        var sb = new StringBuilder();
 
         sb.Append($"{selectQ.CommandText}");
         sb.Append("\r\n");
