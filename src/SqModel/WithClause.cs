@@ -10,6 +10,16 @@ public class WithClause
 {
     public List<CommonTableClause> CommonTableAliases = new();
 
+    public IEnumerable<CommonTableClause> GetCommonTableClauses()
+    {
+        foreach (var y in CommonTableAliases)
+        {
+            if (y.SelectQuery == null) continue;
+            foreach (var item in y.SelectQuery.GetAllWith().CommonTableAliases) yield return item;
+        }
+        foreach (var item in CommonTableAliases) yield return item;
+    }
+
     public CommonTableClause Add(string commandText, string alias, Dictionary<string, object>? prms = null)
     {
         var c = new CommonTableClause() { CommandText = commandText, AliasName = alias, Parameters = prms ?? new() };
@@ -17,9 +27,9 @@ public class WithClause
         return c;
     }
 
-    public CommonTableClause Add( SelectQuery selectQuery, string alias)
+    public CommonTableClause Add(SelectQuery selectQuery, string alias)
     {
-        var c = new CommonTableClause() { SelectQuery= selectQuery, AliasName = alias};
+        var c = new CommonTableClause() { SelectQuery = selectQuery, AliasName = alias };
         CommonTableAliases.Add(c);
         return c;
     }

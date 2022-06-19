@@ -53,21 +53,21 @@ inner join article as a on sd.article_id = a.article_id";
     {
         var q = new SelectQuery();
 
-        q.With.Add(CreateSelectQuery(), "a");
-        var a = q.From("a");
+        q.With.Add(CreateSelectQuery(), "x");
+        var a = q.From("x");
         q.Select(a, "*");
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
         var expect = @"with
-a as (
+x as (
     select s.sales_id, s.sales_date, sd.sales_detail_id, a.article_id, a.article_name, sd.amount, current_timestamp as select_timestamp, :v1 + :v2 as value
     from sales_detail as sd
     inner join sales as s on sd.sales_id = s.sales_id
     inner join article as a on sd.article_id = a.article_id
 )
-select a.*
-from a";
+select x.*
+from x";
 
         Assert.Equal(expect, text);
     }

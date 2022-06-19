@@ -18,8 +18,8 @@ public class CommonTableClause
 
     public Query ToQuery()
     {
-        var q = (SelectQuery != null) ? SelectQuery.ToQuery(this) : new Query() { CommandText = CommandText, Parameters = Parameters };
-        q.CommandText = $"{AliasName} as (\r\n{q.CommandText.Indent()}\r\n)";
+        var q = (SelectQuery != null) ? SelectQuery.ToCommonQuery() : new Query() { CommandText = CommandText, Parameters = Parameters };
+        q.CommandText = $"{AliasName} as {q.CommandText}";
 
         return q;
     }

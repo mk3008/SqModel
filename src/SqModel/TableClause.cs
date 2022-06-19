@@ -46,7 +46,9 @@ public class TableClause
     public IEnumerable<CommonTableClause> GetCommonTableClauses()
     {
         foreach (var x in TableClauses) foreach (var item in x.GetCommonTableClauses()) yield return item;
-        if (SubSelectClause != null) foreach (var item in SubSelectClause.With.CommonTableAliases) yield return item;
+
+        var lst = SubSelectClause?.GetAllWith().CommonTableAliases.ToList();
+        if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().CommonTableAliases) yield return item;
     }
 
     #region "AddJoin method"
@@ -194,8 +196,9 @@ public class TableClause
         if (AliasName == string.Empty) throw new InvalidOperationException("AliasName is required");
         if (SubSelectClause == null) throw new InvalidOperationException("SubSelectClause is required");
 
-        var q = SubSelectClause.ToQuery(this);
-        var text = $"(\r\n{q.CommandText.Indent()}\r\n) as {AliasName}";
+        var q = SubSelectClause.ToSubQuery();
+
+        var text = (q.CommandText == AliasName) ? AliasName : $"{q.CommandText} as {AliasName}";
         return new Query() { CommandText = text, Parameters = q.Parameters };
     }
 }
