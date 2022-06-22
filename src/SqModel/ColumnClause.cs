@@ -10,7 +10,7 @@ namespace SqModel;
 /// Column clause.
 /// Define the column to get.
 /// </summary>
-public class ColumnClause
+public class ColumnClause : IParameterCollection
 {
     /// <summary>
     /// Table name.
@@ -39,12 +39,6 @@ public class ColumnClause
     /// Specify the parameter name and value used in the command.
     /// </summary>
     public Dictionary<string, object> Parameters { get; set; } = new();
-
-    public ColumnClause AddParameter(string key, object value)
-    {
-        Parameters[key] = value;
-        return this;
-    }
 
     /// <summary>
     /// Get the column name.
