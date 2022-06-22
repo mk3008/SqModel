@@ -8,45 +8,9 @@ namespace SqModel;
 
 public class SelectQuery
 {
-    #region "From"
     public TableClause FromClause { get; set; } = new();
 
-    public TableClause From(string tableName)
-    {
-        FromClause = new TableClause() { TableName = tableName, AliasName = tableName };
-        return FromClause;
-    }
-
-    public TableClause From(string tableName, string aliasName)
-    {
-        FromClause = new TableClause() { TableName = tableName, AliasName = aliasName };
-        return FromClause;
-    }
-
-    public TableClause From(SelectQuery subquery, string alias)
-    {
-        FromClause = new TableClause() { SubSelectClause = subquery, AliasName = alias };
-        return FromClause;
-    }
-    #endregion
-
-    #region "Select"
     public SelectClause SelectClause { get; set; } = new();
-
-    public ColumnClause Select(TableClause table, string columnName, string? aliasName = null)
-    {
-        var c = new ColumnClause() { TableName = table.AliasName, ColumnName = columnName, AliasName = aliasName ?? columnName };
-        SelectClause.ColumnClauses.Add(c);
-        return c;
-    }
-
-    public ColumnClause Select(string commandText, string aliasName)
-    {
-        var c = new ColumnClause() { CommandText = commandText, AliasName = aliasName };
-        SelectClause.ColumnClauses.Add(c);
-        return c;
-    }
-    #endregion
 
     public WithClause With { get; set; } = new();
 
