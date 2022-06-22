@@ -10,7 +10,7 @@ namespace SqModel;
 /// Column clause.
 /// Define the column to get.
 /// </summary>
-public class ColumnClause : IQuery
+public class ColumnClause
 {
     /// <summary>
     /// Table name.
