@@ -41,146 +41,46 @@ public class TableClause
 
     public TableRelationClause? TableRelationClause { get; set; }
 
-    public List<TableClause> TableClauses { get; set; } = new();
+    public List<TableClause> SubTableClauses { get; set; } = new();
 
     public IEnumerable<CommonTableClause> GetCommonTableClauses()
     {
-        foreach (var x in TableClauses) foreach (var item in x.GetCommonTableClauses()) yield return item;
+        foreach (var x in SubTableClauses) foreach (var item in x.GetCommonTableClauses()) yield return item;
 
         var lst = SubSelectClause?.GetAllWith().CommonTableAliases.ToList();
         if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().CommonTableAliases) yield return item;
     }
 
-    #region "AddJoin method"
-    public TableClause Join(string tableName, string aliasName, RelationTypes type, Dictionary<string, string> keyvalues)
+    public Query ToQuery(bool isRoot = true)
     {
-        var d = new TableClause(tableName, aliasName);
-        return Join(d, type, keyvalues);
-    }
+        var q = (isRoot) ? ToFromQuery() : ToJoinQuery();
 
-    public TableClause Join(SelectQuery subSelectClause, string aliasName, RelationTypes type, Dictionary<string, string> keyvalues)
-    {
-        var d = new TableClause(subSelectClause, aliasName);
-        return Join(d, type, keyvalues);
-    }
-
-    public TableClause Join(TableClause destination, RelationTypes type, Dictionary<string, string> keyvalues)
-    {
-        destination.TableRelationClause = new TableRelationClause() { SourceName = AliasName, RelationType = type };
-        keyvalues.ToList().ForEach(x => destination.TableRelationClause.Add(x.Key, x.Value));
-        TableClauses.Add(destination);
-        return destination;
-    }
-
-    public TableClause InnerJoin(string tableName, List<string> columns)
-    {
-        return Join(tableName, tableName, RelationTypes.Inner, columns.ToDictionary());
-    }
-
-    public TableClause InnerJoin(string tableName, string aliasName, List<string> columns)
-    {
-        return Join(tableName, aliasName, RelationTypes.Inner, columns.ToDictionary());
-    }
-
-    public TableClause InnerJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
-    {
-        return Join(subSelectClause, aliasName, RelationTypes.Inner, columns.ToDictionary());
-    }
-
-    public TableClause InnerJoin(TableClause destination, List<string> columns)
-    {
-        return Join(destination, RelationTypes.Inner, columns.ToDictionary());
-    }
-
-    public TableClause LeftJoin(string tableName, List<string> columns)
-    {
-        return Join(tableName, tableName, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public TableClause LeftJoin(string tableName, string aliasName, List<string> columns)
-    {
-        return Join(tableName, aliasName, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public TableClause LeftJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
-    {
-        return Join(subSelectClause, aliasName, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public TableClause LeftJoin(TableClause destination, List<string> columns)
-    {
-        return Join(destination, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public TableClause RightJoin(string tableName, List<string> columns)
-    {
-        return Join(tableName, tableName, RelationTypes.Right, columns.ToDictionary());
-
-    }
-    public TableClause RightJoin(string tableName, string aliasName, List<string> columns)
-    {
-        return Join(tableName, aliasName, RelationTypes.Right, columns.ToDictionary());
-    }
-
-    public TableClause RightJoin(SelectQuery subSelectClause, string aliasName, List<string> columns)
-    {
-        return Join(subSelectClause, aliasName, RelationTypes.Right, columns.ToDictionary());
-    }
-
-    public TableClause RightJoin(TableClause destination, List<string> columns)
-    {
-        return Join(destination, RelationTypes.Right, columns.ToDictionary());
-    }
-
-    public TableClause CrossJoin(string tableName)
-    {
-        return Join(tableName, tableName, RelationTypes.Cross, new());
-    }
-
-    public TableClause CrossJoin(string tableName, string aliasName)
-    {
-        return Join(tableName, aliasName, RelationTypes.Cross, new());
-    }
-
-    public TableClause CrossJoin(SelectQuery subSelectClause, string aliasName)
-    {
-        return Join(subSelectClause, aliasName, RelationTypes.Cross, new());
-    }
-
-    public TableClause CrossJoin(TableClause destination)
-    {
-        return Join(destination, RelationTypes.Cross, new());
-    }
-    #endregion
-
-    public Query ToQuery()
-    {
-        var q = ToMyQuery();
-        var nestQ = TableClauses.Select(x => x.ToQuery()).ToList();
+        var nestQ = SubTableClauses.Select(x => x.ToQuery(false)).ToList();
         nestQ.ForEach(x => q = q.Merge(x, "\r\n"));
+
         return q;
     }
-
-    private Query ToMyQuery()
+    private Query ToFromQuery()
     {
-        var tableQ = ToFromQuery();
+        var tableQ = ToTableQuery();
+        tableQ.CommandText = $"from {tableQ.CommandText}";
+        return tableQ;
+    }
 
-        if (TableRelationClause == null)
-        {
-            tableQ.CommandText = $"from {tableQ.CommandText}";
-            return tableQ;
-        }
-
+    private Query ToJoinQuery()
+    {
+        var tableQ = ToTableQuery();
+        if (TableRelationClause == null) throw new InvalidOperationException();
         return TableRelationClause.ToQuery(AliasName, tableQ);
     }
 
-    private Query ToFromQuery()
+    private Query ToTableQuery()
     {
-        if (TableName != string.Empty) return ToTableQuery();
-        return ToSubQuery();
+        if (TableName != string.Empty) return ToTableQueryByTable();
+        return ToTableQueryBySubSelectClause();
     }
 
-    private Query ToTableQuery()
+    private Query ToTableQueryByTable()
     {
         if (TableName == string.Empty) throw new InvalidOperationException("TableName is required");
         if (AliasName == string.Empty) throw new InvalidOperationException("AliasName is required");
@@ -191,7 +91,7 @@ public class TableClause
         return new Query() { CommandText = text, Parameters = new() };
     }
 
-    private Query ToSubQuery()
+    private Query ToTableQueryBySubSelectClause()
     {
         if (AliasName == string.Empty) throw new InvalidOperationException("AliasName is required");
         if (SubSelectClause == null) throw new InvalidOperationException("SubSelectClause is required");
