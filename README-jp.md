@@ -20,11 +20,11 @@ Assert.Equal(1, acutal.Parameters[":id"]);
 ````
 
 ## 特徴
-SQL構文に寄せたメソッド名（From、Select、Join、Where etc）。
-パラメータクエリに対応。
-テーブル別名、列別名に対応。
-CTE（Common Table Expression）に対応。
-控えめなSQL整形。
+- SQL構文に寄せたメソッド名（From、Select、Join、Where etc）。
+- パラメータクエリに対応。
+- テーブル別名、列別名に対応。
+- CTE（Common Table Expression）に対応。
+- 控えめなSQL整形。
 
 ## 制約
 SQL構文チェック機能はありません。
