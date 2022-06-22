@@ -2,7 +2,7 @@
 SqModel は Selectクエリをモデル化し、簡易に組み上げることができる軽量ライブラリです。
 
 ## デモ
-```
+```cs
 var q = new SelectQuery();
 var table_a = q.From("table_a");
 q.Select(table_a, "*");
@@ -34,7 +34,7 @@ SQL構文チェック機能はありません。
 
 ## サンプル
 ### 単一テーブル選択
-```
+```cs
     [Fact]
     public void TableNameAlias()
     {
@@ -51,7 +51,7 @@ from table_a as a";
 ````
 
 ### 列の取得
-```
+```cs
     [Fact]
     public void SelectColumnWithAlias()
     {
@@ -69,7 +69,7 @@ from table_a as a";
 
 ### 変数を使用したパラメータクエリ
 
-```
+```cs
     [Fact]
     public void SelectVariable()
     {
@@ -88,7 +88,7 @@ from table_a as a";
 ```
 
 ### 結合
-```
+```cs
     [Fact]
     public void JoinConditions()
     {
@@ -109,7 +109,7 @@ inner join table_b as b on a.table_a_id = b.table_a_id and a.table_a_sub_id = b.
 ```
 
 ### 抽出条件
-```
+```cs
     [Fact]
     public void Default()
     {
@@ -131,7 +131,7 @@ where
 ```
 
 ### CTE
-```
+```cs
     [Fact]
     public void Default()
     {
