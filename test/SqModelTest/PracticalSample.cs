@@ -53,7 +53,7 @@ inner join article as a on sd.article_id = a.article_id";
     {
         var q = new SelectQuery();
 
-        q.With.Add(CreateSelectQuery(), "x");
+        q.With(CreateSelectQuery(), "x");
         var a = q.From("x");
         q.Select(a, "*");
 

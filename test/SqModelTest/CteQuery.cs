@@ -8,12 +8,13 @@ public class CteQuery
     [Fact]
     public void Default()
     {
-        var sub = new SelectQuery();
-        var table_a = sub.From("table_a");
-        sub.Select(table_a, "*");
-
         var q = new SelectQuery();
-        q.With.Add(sub, "a");
+        q.With(x =>
+        {
+            var t = x.From("table_a");
+            x.Select(t, "*");
+        }, "a");
+
         var a = q.From("a");
         q.Select(a, "*");
 
@@ -32,17 +33,17 @@ from a";
     [Fact]
     public void Many()
     {
-        var sub1 = new SelectQuery();
-        var table_a = sub1.From("table_a");
-        sub1.Select(table_a, "*");
-
-        var sub2 = new SelectQuery();
-        var table_b = sub2.From("table_b");
-        sub2.Select(table_b, "*");
-
         var q = new SelectQuery();
-        q.With.Add(sub1, "a");
-        q.With.Add(sub2, "b");
+        q.With(x =>
+        {
+            var t = x.From("table_a");
+            x.Select(t, "*");
+        }, "a");
+        q.With(x =>
+        {
+            var t = x.From("table_b");
+            x.Select(t, "*");
+        }, "b");
 
         var a = q.From("a");
         var b = a.InnerJoin("b", new() { "table_a_id" });
@@ -69,19 +70,19 @@ inner join b on a.table_a_id = b.table_a_id";
     [Fact]
     public void Valiable()
     {
-        var sub1 = new SelectQuery();
-        var table_a = sub1.From("table_a");
-        sub1.Select(table_a, "*");
-        sub1.Select(":val1", "val1").AddParameter(":val1", 1);
-
-        var sub2 = new SelectQuery();
-        var table_b = sub2.From("table_b");
-        sub2.Select(table_b, "*");
-        sub2.Select(":val2", "val2").AddParameter(":val2", 2);
-
         var q = new SelectQuery();
-        q.With.Add(sub1, "a");
-        q.With.Add(sub2, "b");
+        q.With(x =>
+        {
+            var t = x.From("table_a");
+            x.Select(t, "*");
+            x.Select(":val1", "val1").AddParameter(":val1", 1);
+        }, "a");
+        q.With(x =>
+        {
+            var t = x.From("table_b");
+            x.Select(t, "*");
+            x.Select(":val2", "val2").AddParameter(":val2", 2);
+        }, "b");
 
         var a = q.From("a");
         var b = a.InnerJoin("b", new() { "table_a_id" });
