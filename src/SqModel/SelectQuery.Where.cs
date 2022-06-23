@@ -24,10 +24,10 @@ public static class SelectQueryWhere
         return g.Where(commandText);
     }
 
-    public static ConditionGroupClause WhereGroup(this SelectQuery source)
+    public static void Where(this SelectQuery source, Action<ConditionGroupClause> action)
     {
         var g = new ConditionGroupClause();
         source.WhereClause.ConditionGroupClauses.Add(g);
-        return g;
+        action(g);
     }
 }

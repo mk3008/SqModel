@@ -12,6 +12,8 @@ namespace SqModel;
 /// </summary>
 public class SelectClause
 {
+    public bool IsDistinct { get; set; } = false;
+
     public List<ColumnClause> ColumnClauses { get; set; } = new();
 
     public List<string> GetColumnNames()
@@ -35,7 +37,8 @@ public class SelectClause
     public Query ToQuery()
     {
         var q = GetColumnQueries().ToList().ToQuery(", ");
-        q.CommandText = $"select {q.CommandText}";
+        var distinct = (IsDistinct) ? "distinct " : "";
+        q.CommandText = $"select {distinct}{q.CommandText}";
  
         return q;
     }

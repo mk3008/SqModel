@@ -7,12 +7,13 @@ public class CteSubquery
 {
     private SelectQuery CreateCommonQuery(string tableName, string aliasName)
     {
-        var commonQuery = new SelectQuery();
-        var table_a = commonQuery.From(tableName);
-        commonQuery.Select(table_a, "*");
-
         var q = new SelectQuery();
-        q.With.Add(commonQuery, aliasName);
+        q.With(x =>
+        {
+            var t = x.From(tableName);
+            x.Select(t, "*");
+        }, aliasName);
+
         var table = q.From(aliasName);
         q.Select(table, "*");
 
