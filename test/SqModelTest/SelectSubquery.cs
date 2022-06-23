@@ -51,19 +51,22 @@ inner join table_b as b on a.table_a_id = b.table_a_id";
     [Fact]
     public void Valiable()
     {
-        var sub1 = new SelectQuery();
-        var table_a = sub1.From("table_a");
-        sub1.Select(table_a, "*");
-        sub1.Select(":val1", "val1").AddParameter(":val1", 1);
-
-        var sub2 = new SelectQuery();
-        var table_b = sub2.From("table_b");
-        sub2.Select(table_b, "*");
-        sub2.Select(":val2", "val2").AddParameter(":val2", 2);
-
         var q = new SelectQuery();
-        var a = q.From(sub1, "a");
-        var b = a.InnerJoin(sub2, "b", new() { "table_a_id" });
+        var a = q.From(sq =>
+        {
+            var t = sq.From("table_a");
+            sq.Select(t, "*");
+            sq.Select(":val1", "val1").AddParameter(":val1", 1);
+        }
+        , "a");
+
+        var b = a.InnerJoin(sq =>
+        {
+            var t = sq.From("table_b");
+            sq.Select(t, "*");
+            sq.Select(":val2", "val2").AddParameter(":val2", 2);
+        }, "b", new() { "table_a_id" });
+
         q.Select(a, "*");
         q.Select(b, "*");
 

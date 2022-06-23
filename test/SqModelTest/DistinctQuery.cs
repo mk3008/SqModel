@@ -40,13 +40,13 @@ from table_a as a";
     [Fact]
     public void SubQuery()
     {
-        var subQuery = new SelectQuery();
-        var a = subQuery.From("table_a", "a");
-        subQuery.Select(a, "name");
-        subQuery.Distinct();
-
         var q = new SelectQuery();
-        var x = q.From(subQuery, "x");
+        var x = q.From(sq =>
+        {
+            var a = sq.From("table_a", "a");
+            sq.Select(a, "name");
+            sq.Distinct();
+        }, "x");
         q.Select(x, "*");
 
         var text = q.ToQuery().CommandText;
