@@ -71,10 +71,11 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        var g = q.WhereGroup();
-
-        g.Where("table_a.id = :id1").AddParameter(":id1", 1);
-        g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+        q.Where(g =>
+        {
+            g.Where("table_a.id = :id1").AddParameter(":id1", 1);
+            g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+        });
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -95,10 +96,11 @@ where
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
 
-        var g = q.WhereGroup();
-        g.Where("table_a.id = :id1").AddParameter(":id1", 1);
-        g.Where("table_a.id = :id2").AddParameter(":id2", 2);
-
+        q.Where(g =>
+        {
+            g.Where("table_a.id = :id1").AddParameter(":id1", 1);
+            g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+        });
         q.Where("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
