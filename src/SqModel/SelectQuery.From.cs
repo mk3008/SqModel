@@ -25,5 +25,13 @@ public static class SelectQueryFrom
         source.FromClause = new TableClause() { SubSelectClause = subquery, AliasName = alias };
         return source.FromClause;
     }
+
+    public static TableClause From(this SelectQuery source, Action<SelectQuery> action, string alias)
+    {
+        var q = new SelectQuery();
+        action(q);
+        source.FromClause = new TableClause() { SubSelectClause = q, AliasName = alias };
+        return source.FromClause;
+    }
 }
 
