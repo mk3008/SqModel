@@ -116,4 +116,27 @@ where
         Assert.Equal(2, acutal.Parameters[":id2"]);
         Assert.Equal(2, acutal.Parameters[":sub_id"]);
     }
+
+    [Fact]
+    public void WhereOnly()
+    {
+        var q = new SelectQuery();
+        q.Where(g =>
+        {
+            g.Where("table_a.id = :id1").AddParameter(":id1", 1);
+            g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+        });
+        q.Where("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
+
+        var acutal = q.WhereClause.ToQuery();
+        var expect = @"where
+    (table_a.id = :id1 or table_a.id = :id2)
+    and table_a.sub_id = :sub_id";
+
+        Assert.Equal(expect, acutal.CommandText);
+        Assert.Equal(3, acutal.Parameters.Count);
+        Assert.Equal(1, acutal.Parameters[":id1"]);
+        Assert.Equal(2, acutal.Parameters[":id2"]);
+        Assert.Equal(2, acutal.Parameters[":sub_id"]);
+    }
 }
