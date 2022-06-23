@@ -4,6 +4,17 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Copyright>mk3008</Copyright>
+    <PackageProjectUrl>https://github.com/mk3008/SqModel</PackageProjectUrl>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <Version>0.1.0</Version>
+    <PackageTags>Sql;Query;Builder;</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Select query builder.</Description>
+    <RepositoryUrl>https://github.com/mk3008/SqModel.git</RepositoryUrl>
+    <Authors>mk3008net</Authors>
+    <Company />
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +22,13 @@
     <Compile Remove="Table.cs" />
     <Compile Remove="VirtualColumn.cs" />
     <Compile Remove="VirtualTable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
