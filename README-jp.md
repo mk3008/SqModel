@@ -1,5 +1,5 @@
-# 概要
-SqModel は Selectクエリをモデル化し、簡易に組み上げることができる軽量ライブラリです。
+# SqModel
+Selectクエリを簡易に組み上げることができる軽量ライブラリです。
 
 ## デモ
 ```cs
@@ -24,6 +24,7 @@ Assert.Equal(1, acutal.Parameters[":id"]);
 - テーブル別名、列別名に対応。
 - パラメータクエリに対応。
 - サブクエリに対応。
+- DISTINCTキーワードに対応。
 - CTE（Common Table Expression）に対応。
 - テーブル作成クエリに対応。
 - ビュー作成クエリに対応。
@@ -34,6 +35,8 @@ SQL構文チェック機能はありません。
 
 ## 実行環境
 .NET6
+
+https://www.nuget.org/packages/SqModel/
 
 ## サンプル
 ### 単一テーブル選択
