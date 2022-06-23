@@ -35,6 +35,7 @@ SQL構文チェック機能はありません。
 
 ## 実行環境
 .NET6
+
 https://www.nuget.org/packages/SqModel/
 
 ## サンプル
