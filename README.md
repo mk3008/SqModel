@@ -28,6 +28,7 @@ Assert.Equal(1, acutal.Parameters[":id"]);
 - Supports CTE (Common Table Expression).
 - Supports table creation queries.
 - Supports view creation queries.
+- Supports insert queries.
 - Modest SQL formatting.
 
 ## Constraints
@@ -299,3 +300,24 @@ from table_a";
         Assert.Equal(expect, text);
     }
 ```
+
+### Insert query
+```cs
+    [Fact]
+    public void ColumnNameAlias()
+    {
+        var q = new SelectQuery();
+        var table_a = q.From("table_a", "a");
+        q.Select(table_a, "id", "index_value");
+
+        var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };
+
+        var text = tq.ToQuery().CommandText;
+        var expect = @"insert into table_b(index_value)
+select a.id as index_value
+from table_a as a";
+
+        Assert.Equal(expect, text);
+    }
+````
+
