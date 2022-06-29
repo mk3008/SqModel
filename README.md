@@ -32,7 +32,12 @@ Assert.Equal(1, acutal.Parameters[":id"]);
 - Modest SQL formatting.
 
 ## Constraints
-There is no SQL syntax check function.
+- There is no SQL syntax check function.
+- Does not support SQL execution. Use the library of extension methods.
+
+https://github.com/mk3008/SqModel.Dapper
+
+https://www.nuget.org/packages/SqModel.Dapper
 
 ## Execution environment
 .NET6
