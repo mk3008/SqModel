@@ -1,4 +1,4 @@
-﻿using SqModel;
+﻿using SqModel.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;

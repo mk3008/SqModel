@@ -13,14 +13,14 @@ internal static class Extensions
         return string.Join(separator, source);
     }
 
-    public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair< T1, T2>> action) where T1 : notnull
+    public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair<T1, T2>> action) where T1 : notnull
     {
         foreach (var x in source) action(x);
     }
 
     public static Dictionary<T1, T2> Merge<T1, T2>(this Dictionary<T1, T2> source, Dictionary<T1, T2> dic) where T1 : notnull
     {
-        dic.ForEach(x => source[x.Key] = x.Value);       
+        dic.ForEach(x => source[x.Key] = x.Value);
         return source;
     }
 
@@ -57,13 +57,19 @@ internal static class Extensions
         for (int i = 0; i < source; i++) action(i);
     }
 
+    public static string Space(this int source)
+    {
+        var space = string.Empty;
+        source.ForEach(x => space += " ");
+        return space;
+    }
+
     public static string Indent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
         if (source == string.Empty) return source;
 
-        var space = string.Empty;
-        spaceCount.ForEach(x => space += " ");
+        var indent = spaceCount.Space();
 
-        return $"{space}{source.Replace(separator, $"{separator}{space}")}";
+        return $"{indent}{source.Replace(separator, $"{separator}{indent}")}";
     }
 }

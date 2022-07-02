@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SqModel;
+namespace SqModel.Serialization;
 
 public class SqlSerializer
 {
@@ -22,6 +22,7 @@ public class SqlSerializer
         lst.Add(MULTIPLE_LINE_COMMENT_END_COMMAND.Replace("*", @"\*"));
         lst.AddRange(NEWL_LINE_COMMANDS);
         var pattern = $"({lst.ToString("|")})";
+
         var mc = Regex.Matches(sql, pattern, RegexOptions.Multiline);
 
         var sb = new StringBuilder();
@@ -38,11 +39,11 @@ public class SqlSerializer
                 }
             }
 
-            if (m.Value == MULTIPLE_LINE_COMMENT_START_COMMAND && !isMultiple  && !isSingle )
+            if (m.Value == MULTIPLE_LINE_COMMENT_START_COMMAND && !isMultiple && !isSingle)
             {
                 isMultiple = true;
             }
-            else if (m.Value == SINGLE_LINE_COMMENT_COMMAND && !isMultiple  && !isSingle)
+            else if (m.Value == SINGLE_LINE_COMMENT_COMMAND && !isMultiple && !isSingle)
             {
                 isSingle = true;
             }
@@ -63,7 +64,4 @@ public class SqlSerializer
         return sb.ToString();
     }
 
-    public static string RemoveMultipleLineComment(string sql) => Regex.Replace(sql, @"^(?!\-\-)/\*[\s\S]*?\*/", "", RegexOptions.Multiline);
-
-    public static string RemoveSingleLineComment(string sql) => Regex.Replace(sql, @"\-\-.*", "");
 }
