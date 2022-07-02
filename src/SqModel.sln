@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqModel", "SqModel\SqModel.csproj", "{D2A5C7E3-6F77-4966-A506-BC1A80819369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqModelTest", "..\test\SqModelTest\SqModelTest.csproj", "{9CDC708B-012B-4C5A-999B-EF3524ECBF23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqModelTest", "..\test\SqModelTest\SqModelTest.csproj", "{9CDC708B-012B-4C5A-999B-EF3524ECBF23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
