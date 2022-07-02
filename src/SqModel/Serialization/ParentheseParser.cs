@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace SqModel.Serialization;
 
 
-public static class ParrentheseParser
+public static class ParentheseParser
 {
-    private static char START_COMMAND = '(';
+    private static string START_COMMAND = "(";
 
-    private static char END_COMMAND = ')';
+    private static string END_COMMAND = ")";
 
     private static string PATTERN = $@"(\{START_COMMAND}|\{END_COMMAND})";
 
-    public static IText Parse(string text)
+    public static ICommandText Parse(string text)
     {
 
-        var texts = new TextCollection();
+        var texts = new CommandTextCollection();
 
         var index = 0;
         var node = 0;
@@ -29,7 +29,7 @@ public static class ParrentheseParser
 
         foreach (Match m in ms)
         {
-            if (m.Success && m.Value == START_COMMAND.ToString() && !isCatched)
+            if (m.Success && m.Value == START_COMMAND && !isCatched)
             {
                 if (m.Index != index)
                 {
@@ -44,23 +44,23 @@ public static class ParrentheseParser
                 continue;
             }
 
-            if (m.Success && m.Value == START_COMMAND.ToString() && isCatched)
+            if (m.Success && m.Value == START_COMMAND && isCatched)
             {
                 node++;
                 continue;
             };
 
-            if (m.Success && m.Value == END_COMMAND.ToString() && !isCatched) continue;
+            if (m.Success && m.Value == END_COMMAND && !isCatched) continue;
 
 
 
-            if (m.Success && m.Value == END_COMMAND.ToString() && isCatched)
+            if (m.Success && m.Value == END_COMMAND && isCatched)
             {
                 node--;
                 if (node != 0) continue;
 
                 var s = text.Substring(index, m.Index - index);
-                var g = new GroupText() { Prefix = "(", Suffix = ")", Index = m.Index };
+                var g = new ParentheseCommandText();
                 g.Value = Parse(s);
                 texts.Add(g);
 

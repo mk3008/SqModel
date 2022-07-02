@@ -8,13 +8,13 @@ using Xunit;
 
 namespace SqModelTest.SqlSerializerTest;
 
-public class Parentheses
+public class SingleQuote
 {
     [Fact]
     public void Default()
     {
-        var text = @"(text)";
-        var result = ParentheseParser.Parse(text);
+        var text = @"'text'";
+        var result = SingleQuoteParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
@@ -25,8 +25,8 @@ public class Parentheses
     [Fact]
     public void PrefixSufix()
     {
-        var text = @"start(text)end";
-        var result = ParentheseParser.Parse(text);
+        var text = @"start'text'end";
+        var result = SingleQuoteParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
@@ -39,8 +39,8 @@ public class Parentheses
     [Fact]
     public void Multiple()
     {
-        var text = @"start(text1),(text2)end";
-        var result = ParentheseParser.Parse(text);
+        var text = @"start'text1','text2'end";
+        var result = SingleQuoteParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
@@ -55,36 +55,18 @@ public class Parentheses
     }
 
     [Fact]
-    public void Nest()
+    public void ResultLock()
     {
-        var text = @"start(text1(text2))end";
-        var result = ParentheseParser.Parse(text);
+        var text = @"start'text1(text2)'end";
+        var result = SingleQuoteParser.Parse(text).Segmentation(ParentheseParser.Parse);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
 
         Assert.Equal(text, result.FullText());
-        Assert.Equal(4, actual.Count);
+        Assert.Equal(3, actual.Count);
         Assert.Equal("start", actual[0]);
-        Assert.Equal("text1", actual[1]);
-        Assert.Equal("text2", actual[2]);
-        Assert.Equal("end", actual[3]);
-    }
-
-    [Fact]
-    public void Segmentation()
-    {
-        var text = new PlainCommandText() { Value = "start(text1(text2))end"};
-        var result = text.Segmentation(ParentheseParser.Parse);
-        var actual = result.GetValues().ToList();
-
-        Assert.Equal(text.FullText(), result.FullText());
-
-        Assert.Equal(text.FullText(), result.FullText());
-        Assert.Equal(4, actual.Count);
-        Assert.Equal("start", actual[0]);
-        Assert.Equal("text1", actual[1]);
-        Assert.Equal("text2", actual[2]);
-        Assert.Equal("end", actual[3]);
+        Assert.Equal("text1(text2)", actual[1]);
+        Assert.Equal("end", actual[2]);
     }
 }
