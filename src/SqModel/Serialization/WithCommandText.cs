@@ -10,7 +10,7 @@ public class WithCommandText : ICommandText
 {
     public static string COMMAND { get; } = "with";
 
-    public string Separator { get; set; } = " ";
+    public string Separator { get; set; } = String.Empty;
 
     public ICommandText Value { get; set; } = new PlainCommandText();
     

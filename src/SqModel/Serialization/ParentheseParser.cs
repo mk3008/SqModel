@@ -35,7 +35,7 @@ public static class ParentheseParser
                 {
                     //plan text
                     var value = text.Substring(index, m.Index - index);
-                    texts.Add(value, index);
+                    texts.Add(value);
                 }
 
                 isCatched = true;
@@ -69,7 +69,7 @@ public static class ParentheseParser
             }
         }
 
-        if (index != text.Length) texts.Add(text.Substring(index, text.Length - index), index);
+        if (index != text.Length) texts.Add(text.Substring(index, text.Length - index));
 
         return texts;
     }

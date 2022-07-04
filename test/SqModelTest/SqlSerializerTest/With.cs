@@ -13,45 +13,49 @@ public class With
     [Fact]
     public void Default()
     {
-        var text = @"with end";
+        var text = @"with q as query() select";
         var result = WithParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
-        Assert.Single(actual);
-        Assert.Equal("end", actual[0]);
+        Assert.Equal(2, actual.Count);
+        Assert.Equal(@"q as query() ", actual[0]);
+        Assert.Equal("select", actual[1]);
     }
 
     [Fact]
-    public void CrLfSeparator()
+    public void CrLf()
     {
-        var text = @"with
-end";
+        var text = @"with q as query() 
+select";
         var result = WithParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
-        Assert.Single(actual);
-        Assert.Equal("end", actual[0]);
+        Assert.Equal(2, actual.Count);
+        Assert.Equal(@"q as query() 
+", actual[0]);
+        Assert.Equal("select", actual[1]);
     }
 
     [Fact]
-    public void PrefixSeparator()
+    public void Prefix()
     {
-        var text = @"    with
-end";
+        var text = @"    with q as query() select";
         var result = WithParser.Parse(text);
         var actual = result.GetValues().ToList();
 
         Assert.Equal(text, result.FullText());
-        Assert.Single(actual);
-        Assert.Equal("end", actual[0]);
+        Assert.Equal(3, actual.Count);
+        Assert.Equal(@"    ", actual[0]);
+        Assert.Equal(@"q as query() ", actual[1]);
+        Assert.Equal("select", actual[2]);
     }
 
     [Fact]
     public void NotUse()
     {
-        var text = @"    end";
+        var text = @"select";
         var result = WithParser.Parse(text);
         var actual = result.GetValues().ToList();
 

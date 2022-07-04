@@ -9,54 +9,32 @@ namespace SqModel.Serialization;
 
 public class WithParser
 {
-    private static string PATTERN = $@"(\s|^)with\s*";
+    private static string PATTERN = $@"(?<prefix>\s.*|^)(?<keyword>with)(?<separator>\s*)(?<value>.*)(?<sufix>select.*)";
 
     public static ICommandText Parse(string text)
     {
 
         var texts = new CommandTextCollection();
+        var m = Regex.Match(text, PATTERN, RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        var index = 0;
-
-        var ms = Regex.Matches(text, PATTERN, RegexOptions.IgnoreCase);
-
-        foreach (Match m in ms)
+        if (!m.Success)
         {
-            //var mIndex = m.Index;
-            //var mLenght = m.Length;
-
-            if (m.Success)
-            {
-                if (m.Index != index)
-                {
-                    //plan text
-                    //if (!m.Value.StartsWith("w"))
-                    //{
-                    //    mIndex++;
-                    //    mLenght--;
-                    //}
-
-                    var value = text.Substring(index, m.Index - index);
-                    texts.Add(value, index);
-                }
-
-                var ct = new WithCommandText();
-                texts.Add(ct);
-                index = m.Index + m.Length;
-
-                //if (index >= text.Length + 1)
-                //{
-                var s = m.Value.Trim();
-                ct.Separator = m.Value.Substring(4, m.Length - 4);
-                ct.Value = new PlainCommandText() { Value = text.Substring(index, text.Length - index) };
-                //};         
-
-                index = text.Length;
-                break;
-            }
+            texts.Add(text);
+            return texts;
         }
 
-        if (index != text.Length) texts.Add(text.Substring(index, text.Length - index), index);
+        if (m.Groups["prefix"].Value.Length != 0)
+        {
+            texts.Add(m.Groups["prefix"].Value);
+        }
+
+        texts.Add(new WithCommandText()
+        {
+            Value = new PlainCommandText() { Value = m.Groups["value"].Value },
+            Separator = m.Groups["separator"].Value
+        });
+
+        texts.Add(m.Groups["sufix"].Value);
 
         return texts;
     }

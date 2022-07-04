@@ -10,7 +10,7 @@ public class CommandTextCollection : ICommandText
 {
     public List<ICommandText> Values { get; set; } = new();
 
-    public void Add(string text, int index) => Values.Add(new PlainCommandText() { Value = text });
+    public void Add(string text) => Values.Add(new PlainCommandText() { Value = text });
 
     public void Add(ICommandText text) => Values.Add(text);
 
