@@ -111,8 +111,9 @@ public class Parser : IDisposable
             else if (s == string.Empty && c == 'a') 
             {
                 //start with 'a'
-                var tmp = ReadKeywordOrDefault("as");
-                if (tmp.keyword == "as")
+                var keyword = "as";
+                var tmp = ReadKeywordOrDefault(keyword);
+                if (tmp.keyword == keyword)
                 {
                     ReadSkipSpaces();
                     col.AliasName = ReadUntilSpace();
@@ -124,14 +125,15 @@ public class Parser : IDisposable
             else if (s == string.Empty && c == 'f')
             {
                 //start with 'f'
-                var tmp = ReadKeywordOrDefault("from");
-                if (tmp.keyword == "from") return;
+                var keyword = "from";
+                var tmp = ReadKeywordOrDefault(keyword);
+                if (tmp.keyword == keyword) return;
 
                 sb.Append(tmp.value);
             }
 
             sb.Append(ReadUntilSpace());
-            col.ColumnName = sb.ToString();
+            col.AliasName = sb.ToString();
         };
         fn();
         if (col.AliasName == String.Empty) col.AliasName = col.ColumnName;
