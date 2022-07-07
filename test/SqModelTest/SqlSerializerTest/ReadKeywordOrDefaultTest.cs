@@ -20,8 +20,8 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "select" };
         using var p = new Parser("select * from table");
         var s = p.ReadKeywordOrDefault(lst);
-        Assert.Equal("select", s);
-        Assert.Equal("select", p.GetKeywordOrDefault(lst, s));
+        Assert.Equal("select", s.value);
+        Assert.Equal("select", s.keyword);
     }
 
     [Fact]
@@ -30,8 +30,8 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "from" };
         using var p = new Parser("select * from table");
         var s = p.ReadKeywordOrDefault(lst);
-        Assert.Equal("", s);
-        Assert.Equal("", p.GetKeywordOrDefault(lst, s));
+        Assert.Equal("", s.value);
+        Assert.Equal("", s.keyword);
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "selection" };
         using var p = new Parser("select * from table");
         var s = p.ReadKeywordOrDefault(lst);
-        Assert.Equal("select", s);
-        Assert.Equal("", p.GetKeywordOrDefault(lst, s));
+        Assert.Equal("select", s.value);
+        Assert.Equal("", s.keyword);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "select" };
         using var p = new Parser("selection * from table");
         var s = p.ReadKeywordOrDefault(lst);
-        Assert.Equal("select", s);
-        Assert.Equal("", p.GetKeywordOrDefault(lst, s));
+        Assert.Equal("select", s.value);
+        Assert.Equal("", s.keyword);
     }
 
     [Fact]
@@ -60,8 +60,8 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "select" };
         using var p = new Parser("Select * from table");
         var s = p.ReadKeywordOrDefault(lst);
-        Assert.Equal("Select", s);
-        Assert.Equal("select", p.GetKeywordOrDefault(lst, s));
+        Assert.Equal("Select", s.value);
+        Assert.Equal("select", s.keyword);
     }
 
     [Fact]
@@ -71,10 +71,12 @@ public class ReadKeywordOrDefaultTest
 
         using var p1 = new Parser("from table");
         var s = p1.ReadKeywordOrDefault(lst);
-        Assert.Equal("from", s);
+        Assert.Equal("from", s.value);
+        Assert.Equal("FROM", s.keyword);
 
         using var p2 = new Parser("select table");
         s = p2.ReadKeywordOrDefault(lst);
-        Assert.Equal("select", s);
+        Assert.Equal("select", s.value);
+        Assert.Equal("SELECT", s.keyword);
     }
 }

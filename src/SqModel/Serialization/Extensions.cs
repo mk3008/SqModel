@@ -29,4 +29,6 @@ public static class Extensions
     public static char ToChar(this int source) => (char)source;
 
     public static bool IsSpace(this char source) => " \r\n\t".IndexOf(source) >= 0;
+
+    public static bool IsSpace(this char? source) => (source == null) ? true : source.Value.IsSpace();
 }

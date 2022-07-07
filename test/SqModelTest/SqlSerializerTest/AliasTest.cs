@@ -52,6 +52,36 @@ public class AliasTest
     }
 
     [Fact]
+    public void prefixas_from()
+    {
+        using var p = new Parser(" ascolumn1 from");
+        var q = new SelectQuery();
+        var col = new SelectColumn();
+        p.ParseAlias(q, col);
+        Assert.Equal("ascolumn1", col.AliasName);
+    }
+
+    [Fact]
+    public void prefixfrom_from()
+    {
+        using var p = new Parser(" fromcolumn1 from");
+        var q = new SelectQuery();
+        var col = new SelectColumn();
+        p.ParseAlias(q, col);
+        Assert.Equal("fromcolumn1", col.AliasName);
+    }
+
+    [Fact]
+    public void as_from_partmatch()
+    {
+        using var p = new Parser(" sacolumn1 from");
+        var q = new SelectQuery();
+        var col = new SelectColumn();
+        p.ParseAlias(q, col);
+        Assert.Equal("sacolumn1", col.AliasName);
+    }
+
+    [Fact]
     public void omit_comma()
     {
         using var p = new Parser(" column1,");

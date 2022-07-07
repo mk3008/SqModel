@@ -102,48 +102,55 @@ public class Parser : IDisposable
         {
             var s = ReadUntil(", af\r\n\t");
             sb.Append(s);
-            var c = Peek();
-            if (c == ',' || c == ' ')
+            var c = PeekOrDefault();
+            if (c == null || c == ',' || c.IsSpace())
             {
                 if (sb.Length != 0) col.AliasName = sb.ToString();
-                return false;
+                return;
             }
-            else if (s == string.Empty && c == 'a')
+            else if (s == string.Empty && c == 'a') 
             {
-                var key = ReadKeywordOrDefault(new() { "as" });
-                if (key.ToLower() == "as" && Peek().IsSpace())
+                //start with 'a'
+                var tmp = ReadKeywordOrDefault("as");
+                if (tmp.keyword == "as")
                 {
                     ReadSkipSpaces();
                     col.AliasName = ReadUntilSpace();
-                    return false;
+                    return;
                 }
-                sb.Append(key);
-                sb.Append(ReadUntilSpace());
-                return false;
+
+                sb.Append(tmp.value);
             }
-            else if (s.ToLower() == "from" && Peek().IsSpace())
+            else if (s == string.Empty && c == 'f')
             {
-                ReadSkipSpaces();
-                //TODO : from parse
+                //start with 'f'
+                var tmp = ReadKeywordOrDefault("from");
+                if (tmp.keyword == "from") return;
+
+                sb.Append(tmp.value);
             }
-            sb.Append(s);
-            return true;
+
+            sb.Append(ReadUntilSpace());
+            col.ColumnName = sb.ToString();
         };
         fn();
         if (col.AliasName == String.Empty) col.AliasName = col.ColumnName;
     }
 
+    public string GetKeywordOrDefault(string keyword, string text) => GetKeywordOrDefault(new[] { keyword }, text);
 
-    public string GetKeywordOrDefault(List<string> keywords, string text)
+    public string GetKeywordOrDefault(IEnumerable<string> keywords, string text)
     {
-        if (!Peek().IsSpace()) return string.Empty;
+        if (!PeekOrDefault().IsSpace()) return string.Empty;
         var lst = new List<string>();
-        keywords.ForEach(keyword => lst.Add(keyword.ToLower()));
+        keywords.ToList().ForEach(keyword => lst.Add(keyword.ToLower()));
 
         return keywords.Where(x => x.ToLower() == text.ToLower()).FirstOrDefault() ?? string.Empty;
     }
 
-    public string ReadKeywordOrDefault(List<string> keywords)
+    public (string value, string keyword) ReadKeywordOrDefault(string keyword) => ReadKeywordOrDefault(new[] { keyword });
+
+    public (string value, string keyword) ReadKeywordOrDefault(IEnumerable<string> keywords)
     {
         var sb = new StringBuilder();
         var lst = new List<string>();
@@ -151,18 +158,23 @@ public class Parser : IDisposable
 
         var fn = () =>
         {
-            var c = Peek();
+            var cn = PeekOrDefault();
+            if (cn == null) return false;
+
+            var c = cn.Value;
             lst = lst.Where(x => x.IsFirstChar(c)).Select(x => x.Substring(1, x.Length - 1)).ToList();
             if (!lst.Any()) return false;
 
             sb.Append(Read());
-            if (Peek().IsSpace()) return false;
+            if (PeekOrDefault().IsSpace()) return false;
 
             return true;
         };
 
         while (fn()) { }
-        return sb.ToString();
+        var s = sb.ToString();
+        var key = GetKeywordOrDefault(keywords.ToList(), s);
+        return (s, key);
     }
 
     public char Read()
@@ -176,6 +188,13 @@ public class Parser : IDisposable
     {
         var i = Reader.Peek();
         if (i.IsEof()) throw new EndOfStreamException();
+        return (char)i;
+    }
+
+    public char? PeekOrDefault()
+    {
+        var i = Reader.Peek();
+        if (i.IsEof()) return null;
         return (char)i;
     }
 
