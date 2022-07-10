@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SqModelTest.SqlSerializerTest;
 
-public class AliasTest
+public class ColumnAliasTest
 {
     [Fact]
     public void Nothing_comma()
@@ -39,9 +39,9 @@ public class AliasTest
     }
 
     [Fact]
-    public void as_alias_commna()
+    public void as_alias_space()
     {
-        using var p = new Parser(" as column1 ,");
+        using var p = new Parser(" as column1 ");
 
         var alias = string.Empty;
         Action<string> setter = (x) => alias = x;
@@ -51,9 +51,9 @@ public class AliasTest
     }
 
     [Fact]
-    public void as_alias_from()
+    public void as_alias_comma()
     {
-        using var p = new Parser(" as column1 from");
+        using var p = new Parser(" as column1,");
 
         var alias = string.Empty;
         Action<string> setter = (x) => alias = x;
@@ -65,18 +65,6 @@ public class AliasTest
     [Fact]
     public void alias_comma()
     {
-        using var p = new Parser(" column1 ,");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
-
-        Assert.Equal("column1", alias);
-    }
-
-    [Fact]
-    public void omit_comma_nospace()
-    {
         using var p = new Parser(" column1,");
 
         var alias = string.Empty;
@@ -87,9 +75,9 @@ public class AliasTest
     }
 
     [Fact]
-    public void alias_from()
+    public void alias_space()
     {
-        using var p = new Parser(" column1 from");
+        using var p = new Parser(" column1 ");
 
         var alias = string.Empty;
         Action<string> setter = (x) => alias = x;
@@ -101,7 +89,7 @@ public class AliasTest
     [Fact]
     public void prefix_match_as()
     {
-        using var p = new Parser(" ascolumn1 from");
+        using var p = new Parser(" ascolumn1 ");
 
         var alias = string.Empty;
         Action<string> setter = (x) => alias = x;
@@ -113,7 +101,7 @@ public class AliasTest
     [Fact]
     public void prefix_match_from()
     {
-        using var p = new Parser(" fromcolumn1 from");
+        using var p = new Parser(" fromcolumn1 ");
 
         var alias = string.Empty;
         Action<string> setter = (x) => alias = x;

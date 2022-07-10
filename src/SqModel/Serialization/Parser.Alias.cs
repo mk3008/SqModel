@@ -8,25 +8,32 @@ namespace SqModel.Serialization;
 
 partial class Parser
 {
+	public void ParseTableAlias(Action<string> setter)
+	{
+		//(table_name) as A 
+		//(table_name) A
+		//(table_name) (inner|left|right|cross|where|group|order)
 
+		Parse(setter, "as", new[] { "inner", "left", "right", "cross", "where", "grouo", "order" });
+	}
 
 	public void ParseColumnAlias(Action<string> setter)
 	{
-		//(column_name or table_name) as A 
-		//(column_name or table_name) A
-		//(column_name or table_name),
-		//(column_name)\s
+		//(column_name) as A 
+		//(column_name) A
+		//(column_name) (,|from)
 
-		Parse(setter, "as", "from");
+		Parse(setter, "as", new[] { "from" });
 	}
 
-	public void Parse(Action<string> setter, string command, string nextcommand, string splitters = " ,\r\n\t;")
+	public void Parse(Action<string> setter, string command, IEnumerable<string> nextcommands, string splitters = " ,\r\n\t;")
 	{
 		ReadSkipSpaces();
 
 		//select <column> [as] [<text>], ..., <column> [as] [<text>] from <table>
 
-		var untilChars = $"{splitters}{command.ToCharArray()[0]}{nextcommand.ToCharArray()[0]}";
+		var untilChars = $"{splitters}{command.ToCharArray()[0]}";
+		nextcommands.Select(x => x.ToCharArray()[0]).ToList().ForEach(x => untilChars += x);
 
 		var sb = new StringBuilder();
 		var fn = () =>
@@ -43,7 +50,7 @@ partial class Parser
 			else if (s == string.Empty)
 			{
 				BeginTransaction();
-				var tmp = ReadKeywordOrDefault(new[] { command, nextcommand });
+				var tmp = ReadKeywordOrDefault(command, nextcommands);
 				if (tmp == command)
 				{
 					Commit();
@@ -51,7 +58,7 @@ partial class Parser
 					setter(ReadUntil(splitters));
 					return;
 				}
-				else if (tmp == nextcommand)
+				else if (nextcommands.Contains(tmp))
 				{
 					RollBack();
 					return;

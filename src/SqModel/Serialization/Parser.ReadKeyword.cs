@@ -28,13 +28,18 @@ public partial class Parser
         "order by"
     };
 
-    public string ReadKeywordOrDefault(string keyword) => ReadKeywordOrDefault(new[] { keyword });
+    public string ReadKeywordOrDefault(string command, IEnumerable<string> nextcommands)
+    {
+        var lst = nextcommands.ToList();
+        lst.Add(command);
+        return ReadKeywordOrDefault(lst);
+    }
 
-    public string ReadKeywordOrDefault(IEnumerable<string> keywords)
+    public string ReadKeywordOrDefault(IEnumerable<string> commands)
     {
         var sb = new StringBuilder();
         var lst = new List<string>();
-        lst.AddRange(keywords);
+        lst.AddRange(commands);
 
         var fn = () =>
         {
@@ -54,7 +59,7 @@ public partial class Parser
         while (fn()) { }
 
         var s = sb.ToString().ToLower();
-        if (!PeekOrDefault().IsSpace() || !keywords.Contains(s, x => x.ToLower()))
+        if (!PeekOrDefault().IsSpace() || !commands.Contains(s, x => x.ToLower()))
         {
             return String.Empty;
         }
