@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public class Parser : IDisposable
+public partial class Parser
 {
-    private bool disposedValue;
+
 
 
     //空白が出てくるまで読む、
@@ -23,166 +23,49 @@ public class Parser : IDisposable
 
     public Parser(string text)
     {
-        Reader = new StringReader(text);
+        Text = text;
+        Reader = new StringReader(Text);
     }
 
-    public StringReader Reader { get; init; }
+    public string Text { get; init; }
+    public StringReader Reader { get; private set; }
 
-    //public SelectQuery Parse()
-    //{
-    //    var q = new SelectQuery();
+    private int Index { get; set; }
 
-    //    // read to keyword 'select'
-    //    var keyword = ReadToKeywordOrDefault(new() { "select" });
-    //    if (keyword.ToLower() != "select") throw new Exception();
+    private bool IsTransaction { get; set; } = false;
 
-    //    //columns part
+    private int TransactionIndex { get; set; } = 0;
 
-
-    //    while (fn()) { }
-
-    //    //alias part
-
-
-    //    return q;
-    //}
-
-    public void ParseColumn(SelectQuery q)
+    public void BeginTransaction()
     {
-        var col = new SelectColumn();
-        var fn = () =>
-        {
-            var s = ReadUntil("., \r\n");
-            var c = Peek();
-            if (c == '.')
-            {
-                col.TableName = s;
-                return true;
-            }
-            else if (c == ',')
-            {
-                col.ColumnName = s;
-                Read();
-                ParseColumn(q);
-                return false;
-            }
-            else
-            {
-                col.ColumnName = s;
-                ParseAlias(q, col);
-                return false;
-            }
-        };
-
-        while (fn()) { };
-
-        if (col.TableName != String.Empty)
-        {
-            q.Select($"{col.TableName}.{col.ColumnName}", col.AliasName);
-        }
-        else
-        {
-            q.Select($"{col.ColumnName}", col.AliasName);
-        }
+        if (IsTransaction) throw new InvalidOperationException();
+        IsTransaction = true;
     }
 
-    public void ParseAlias(SelectQuery q, SelectColumn col)
+    public void Commit()
     {
-        ReadSkipSpaces();
-
-        //, ...
-        //from ...
-        //alias_name, ...
-        //alias_name from... 
-        //as alias_name,
-        //as alias_name from... 
-
-        var sb = new StringBuilder();
-        var fn = () =>
-        {
-            var s = ReadUntil(", af\r\n\t");
-            sb.Append(s);
-            var c = PeekOrDefault();
-            if (c == null || c == ',' || c.IsSpace())
-            {
-                if (sb.Length != 0) col.AliasName = sb.ToString();
-                return;
-            }
-            else if (s == string.Empty && c == 'a') 
-            {
-                //start with 'a'
-                var keyword = "as";
-                var tmp = ReadKeywordOrDefault(keyword);
-                if (tmp.keyword == keyword)
-                {
-                    ReadSkipSpaces();
-                    col.AliasName = ReadUntilSpace();
-                    return;
-                }
-
-                sb.Append(tmp.value);
-            }
-            else if (s == string.Empty && c == 'f')
-            {
-                //start with 'f'
-                var keyword = "from";
-                var tmp = ReadKeywordOrDefault(keyword);
-                if (tmp.keyword == keyword) return;
-
-                sb.Append(tmp.value);
-            }
-
-            sb.Append(ReadUntilSpace());
-            col.AliasName = sb.ToString();
-        };
-        fn();
-        if (col.AliasName == String.Empty) col.AliasName = col.ColumnName;
+        if (!IsTransaction) throw new InvalidOperationException();
+        IsTransaction = false;
+        Index = TransactionIndex;
     }
 
-    public string GetKeywordOrDefault(string keyword, string text) => GetKeywordOrDefault(new[] { keyword }, text);
-
-    public string GetKeywordOrDefault(IEnumerable<string> keywords, string text)
+    public void RollBack()
     {
-        if (!PeekOrDefault().IsSpace()) return string.Empty;
-        var lst = new List<string>();
-        keywords.ToList().ForEach(keyword => lst.Add(keyword.ToLower()));
-
-        return keywords.Where(x => x.ToLower() == text.ToLower()).FirstOrDefault() ?? string.Empty;
-    }
-
-    public (string value, string keyword) ReadKeywordOrDefault(string keyword) => ReadKeywordOrDefault(new[] { keyword });
-
-    public (string value, string keyword) ReadKeywordOrDefault(IEnumerable<string> keywords)
-    {
-        var sb = new StringBuilder();
-        var lst = new List<string>();
-        lst.AddRange(keywords);
-
-        var fn = () =>
-        {
-            var cn = PeekOrDefault();
-            if (cn == null) return false;
-
-            var c = cn.Value;
-            lst = lst.Where(x => x.IsFirstChar(c)).Select(x => x.Substring(1, x.Length - 1)).ToList();
-            if (!lst.Any()) return false;
-
-            sb.Append(Read());
-            if (PeekOrDefault().IsSpace()) return false;
-
-            return true;
-        };
-
-        while (fn()) { }
-        var s = sb.ToString();
-        var key = GetKeywordOrDefault(keywords.ToList(), s);
-        return (s, key);
+        if (!IsTransaction) throw new InvalidOperationException();
+        IsTransaction = false;
+        Reader.Dispose();
+        Reader = new StringReader(Text);
+        for (int i = 0; i < Index; i++) Reader.Read();
     }
 
     public char Read()
     {
         var i = Reader.Read();
         if (i.IsEof()) throw new EndOfStreamException();
+
+        TransactionIndex++;
+        if (!IsTransaction) Index = TransactionIndex;
+
         return (char)i;
     }
 
@@ -227,20 +110,20 @@ public class Parser : IDisposable
     //}
 
 
-    public bool IsOneOf(string s)
-    {
-        var i = Reader.Peek();
-        if (i.IsNotEof() || s.IndexOf(i.ToChar()) < 0) return false;
-        Reader.Read();
-        return true;
-    }
+    //public bool IsOneOf(string s)
+    //{
+    //    var i = Reader.Peek();
+    //    if (i.IsNotEof() || s.IndexOf(i.ToChar()) < 0) return false;
+    //    Reader.Read();
+    //    return true;
+    //}
 
-    public char OneOf(string s)
-    {
-        var i = Reader.Peek();
-        if (IsOneOf(s)) return i.ToChar();
-        throw new Exception($"OneOf: '{(char)i}' is not in {s}");
-    }
+    //public char OneOf(string s)
+    //{
+    //    var i = Reader.Peek();
+    //    if (IsOneOf(s)) return i.ToChar();
+    //    throw new Exception($"OneOf: '{(char)i}' is not in {s}");
+    //}
 
     public string ReadUntilSpace()
     {
@@ -259,16 +142,18 @@ public class Parser : IDisposable
         var i = Reader.Peek();
         if (i.IsNotEof() && digit(i.ToChar()))
         {
-            Reader.Read();
+            Read();
             return (char)i;
         }
         return null;
     }
 
-    public string ReadUntil(string chars)
+    public string ReadUntil(string splitters, char keychar) => ReadUntil($"{splitters}{keychar}");
+
+    public string ReadUntil(string splitters)
     {
         var sb = new StringBuilder();
-        chars.ToList().ForEach(x =>
+        splitters.ToList().ForEach(x =>
         {
             var lower = x.ToLower();
             var upper = x.ToUpper();
@@ -292,7 +177,7 @@ public class Parser : IDisposable
             if (i.IsNotEof() && digit(i.ToChar()))
             {
                 sb.Append(i.ToChar());
-                Reader.Read();
+                Read();
                 return true;
             }
             return false;
@@ -313,39 +198,10 @@ public class Parser : IDisposable
         var i = Reader.Peek();
         if (i.IsNotEof() && digit(i.ToChar()))
         {
-            Reader.Read();
+            Read();
             return ReadSkipWhile(digit);
         }
         return i;
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                // TODO: マネージド状態を破棄します (マネージド オブジェクト)
-                Reader.Dispose();
-            }
-
-            // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、ファイナライザーをオーバーライドします
-            // TODO: 大きなフィールドを null に設定します
-            disposedValue = true;
-        }
-    }
-
-    // // TODO: 'Dispose(bool disposing)' にアンマネージド リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします
-    // ~Parser()
-    // {
-    //     // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
-    //     Dispose(disposing: false);
-    // }
-
-    public void Dispose()
-    {
-        // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
 }
