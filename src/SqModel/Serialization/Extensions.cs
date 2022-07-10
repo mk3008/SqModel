@@ -33,4 +33,6 @@ public static class Extensions
     public static bool IsSpace(this char? source) => (source == null) ? true : source.Value.IsSpace();
 
     public static bool Contains(this IEnumerable<string> source,string value, Func<string, string> converter) => source.Select(x => converter(x)).Contains(value);
+
+
 }

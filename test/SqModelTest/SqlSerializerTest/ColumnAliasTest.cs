@@ -14,11 +14,8 @@ public class ColumnAliasTest
     [Fact]
     public void Nothing_comma()
     {
-        using var p = new Parser(" ,");
-        
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        using var p = new Parser(" ,");       
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("", alias);
     }
@@ -27,12 +24,9 @@ public class ColumnAliasTest
     public void Nothing_from()
     {
         using var p = new Parser(" from");
+        var alias = p.ParseColumnAliasOrDefault();
 
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
-
-        Assert.Equal("", alias);
+        Assert.Null(alias);
 
         var c = p.Peek();
         Assert.Equal('f', c); //roll back
@@ -42,10 +36,7 @@ public class ColumnAliasTest
     public void as_alias_space()
     {
         using var p = new Parser(" as column1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("column1", alias);
     }
@@ -54,10 +45,7 @@ public class ColumnAliasTest
     public void as_alias_comma()
     {
         using var p = new Parser(" as column1,");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("column1", alias);
     }
@@ -66,10 +54,7 @@ public class ColumnAliasTest
     public void alias_comma()
     {
         using var p = new Parser(" column1,");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("column1", alias);
     }
@@ -78,10 +63,7 @@ public class ColumnAliasTest
     public void alias_space()
     {
         using var p = new Parser(" column1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("column1", alias);
     }
@@ -90,10 +72,7 @@ public class ColumnAliasTest
     public void prefix_match_as()
     {
         using var p = new Parser(" ascolumn1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("ascolumn1", alias);
     }
@@ -102,10 +81,7 @@ public class ColumnAliasTest
     public void prefix_match_from()
     {
         using var p = new Parser(" fromcolumn1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseColumnAlias(setter);
+        var alias = p.ParseColumnAliasOrDefault();
 
         Assert.Equal("fromcolumn1", alias);
     }

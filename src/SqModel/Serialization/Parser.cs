@@ -58,15 +58,23 @@ public partial class Parser
         for (int i = 0; i < Index; i++) Reader.Read();
     }
 
+    public char? PrevChar { get; private set; } = null;
+
+    public char? CurrentChar { get; private set; } = null;
+
+
     public char Read()
     {
         var i = Reader.Read();
+        
         if (i.IsEof()) throw new EndOfStreamException();
 
         TransactionIndex++;
         if (!IsTransaction) Index = TransactionIndex;
 
-        return (char)i;
+        PrevChar = CurrentChar;
+        CurrentChar = (char)i;
+        return CurrentChar.Value;
     }
 
     public char Peek()

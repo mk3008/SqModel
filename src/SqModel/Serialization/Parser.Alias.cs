@@ -8,71 +8,99 @@ namespace SqModel.Serialization;
 
 partial class Parser
 {
-	public void ParseTableAlias(Action<string> setter)
-	{
-		//(table_name) as A 
-		//(table_name) A
-		//(table_name) (inner|left|right|cross|where|group|order)
+    public SelectColumn ParseSelectColumn()
+    {
+        //(,)table_name.column_name(\s|,)
 
-		Parse(setter, "as", new[] { "inner", "left", "right", "cross", "where", "grouo", "order" });
-	}
+        var col = new SelectColumn();
 
-	public void ParseColumnAlias(Action<string> setter)
-	{
-		//(column_name) as A 
-		//(column_name) A
-		//(column_name) (,|from)
+        ReadSkipSpaces();
+        var s = ReadUntil(" \t\r\n.,");
+     
+        var cn = PeekOrDefault();
+        if (cn == '.')
+        {
+            col.TableName = s;
+            Read();
+            col.ColumnName = ReadUntil(" \t\r\n,");
+            if (PeekOrDefault() != ',') col.AliasName = ParseColumnAliasOrDefault() ?? col.ColumnName;
+        }
+        else if (cn == ',')
+        {
+            col.ColumnName = s;
+        }
+        else
+        {
+            col.ColumnName = s;
+            if (PeekOrDefault() != ',') col.AliasName = ParseColumnAliasOrDefault() ?? col.ColumnName;
+        }
 
-		Parse(setter, "as", new[] { "from" });
-	}
+        return col;
+    }
 
-	public void Parse(Action<string> setter, string command, IEnumerable<string> nextcommands, string splitters = " ,\r\n\t;")
-	{
-		ReadSkipSpaces();
+    public string? ParseTableAliasOrDefault()
+    {
+        //(table_name) as A 
+        //(table_name) A
+        //(table_name) (inner|left|right|cross|where|group|order)
 
-		//select <column> [as] [<text>], ..., <column> [as] [<text>] from <table>
+        return Parse("as", new[] { "inner", "left", "right", "cross", "where", "grouo", "order" });
+    }
 
-		var untilChars = $"{splitters}{command.ToCharArray()[0]}";
-		nextcommands.Select(x => x.ToCharArray()[0]).ToList().ForEach(x => untilChars += x);
+    public string? ParseColumnAliasOrDefault()
+    {
+        //(column_name) as A 
+        //(column_name) A
+        //(column_name) (,|from)
 
-		var sb = new StringBuilder();
-		var fn = () =>
-		{
-			var s = ReadUntil(untilChars);
-			sb.Append(s);
+        return Parse("as", new[] { ",", "from" });
+    }
 
-			var c = PeekOrDefault();
-			if (c == null || splitters.Contains(c.Value))
-			{
-				setter(sb.ToString());
-				return;
-			}
-			else if (s == string.Empty)
-			{
-				BeginTransaction();
-				var tmp = ReadKeywordOrDefault(command, nextcommands);
-				if (tmp == command)
-				{
-					Commit();
-					ReadSkipSpaces();
-					setter(ReadUntil(splitters));
-					return;
-				}
-				else if (nextcommands.Contains(tmp))
-				{
-					RollBack();
-					return;
-				}
-				else
-				{
-					RollBack();
-				}
-			}
+    public string? Parse(string command, IEnumerable<string> nextcommands, string splitters = " ,\r\n\t;")
+    {
+        ReadSkipSpaces();
 
-			sb.Append(ReadUntilSpace());
-			setter(sb.ToString());
-		};
+        //select <column> [as] [<text>], ..., <column> [as] [<text>] from <table>
 
-		fn();
-	}
+        var untilChars = (command == String.Empty) ? splitters : $"{splitters}{command.ToCharArray()[0]}";
+        nextcommands.Select(x => x.ToCharArray()[0]).ToList().ForEach(x => untilChars += x);
+
+        var sb = new StringBuilder();
+        var fn = () =>
+        {
+            var s = ReadUntil(untilChars);
+            sb.Append(s);
+
+            var c = PeekOrDefault();
+            if (c == null || splitters.Contains(c.Value))
+            {
+                return sb.ToString();
+            }
+            else if (s == string.Empty)
+            {
+                BeginTransaction();
+                var tmp = ReadKeywordOrDefault(command, nextcommands);
+                if (tmp == command)
+                {
+                    Commit();
+                    ReadSkipSpaces();
+                    return ReadUntil(splitters);
+                }
+                else if (nextcommands.Contains(tmp))
+                {
+                    RollBack();
+                    return null;
+                }
+                else
+                {
+                    RollBack();
+                }
+            }
+
+            sb.Append(ReadUntilSpace());
+            return sb.ToString();
+        };
+
+        return fn();
+    }
 }

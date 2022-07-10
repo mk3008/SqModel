@@ -15,12 +15,9 @@ public class TableAliasTest
     public void Nothing_where()
     {
         using var p = new Parser(" where");
-        
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseTableAlias(setter);
+        var alias = p.ParseTableAliasOrDefault();
 
-        Assert.Equal("", alias);
+        Assert.Null(alias);
 
         var c = p.Peek();
         Assert.Equal('w', c); //roll back
@@ -30,12 +27,9 @@ public class TableAliasTest
     public void Nothing_orderby()
     {
         using var p = new Parser(" order by");
+        var alias = p.ParseTableAliasOrDefault();
 
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseTableAlias(setter);
-
-        Assert.Equal("", alias);
+        Assert.Null(alias);
 
         var c = p.Peek();
         Assert.Equal('o', c); //roll back
@@ -45,10 +39,7 @@ public class TableAliasTest
     public void as_alias_space()
     {
         using var p = new Parser(" as table1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseTableAlias(setter);
+        var alias = p.ParseTableAliasOrDefault();
 
         Assert.Equal("table1", alias);
     }
@@ -57,10 +48,7 @@ public class TableAliasTest
     public void alias_space()
     {
         using var p = new Parser(" table1 ");
-
-        var alias = string.Empty;
-        Action<string> setter = (x) => alias = x;
-        p.ParseTableAlias(setter);
+        var alias = p.ParseTableAliasOrDefault();
 
         Assert.Equal("table1", alias);
     }
