@@ -8,35 +8,7 @@ namespace SqModel.Serialization;
 
 partial class Parser
 {
-    public SelectColumn ParseSelectColumn()
-    {
-        //(,)table_name.column_name(\s|,)
-
-        var col = new SelectColumn();
-
-        ReadSkipSpaces();
-        var s = ReadUntil(" \t\r\n.,");
-     
-        var cn = PeekOrDefault();
-        if (cn == '.')
-        {
-            col.TableName = s;
-            Read();
-            col.ColumnName = ReadUntil(" \t\r\n,");
-            if (PeekOrDefault() != ',') col.AliasName = ParseColumnAliasOrDefault() ?? col.ColumnName;
-        }
-        else if (cn == ',')
-        {
-            col.ColumnName = s;
-        }
-        else
-        {
-            col.ColumnName = s;
-            if (PeekOrDefault() != ',') col.AliasName = ParseColumnAliasOrDefault() ?? col.ColumnName;
-        }
-
-        return col;
-    }
+ 
 
     public string? ParseTableAliasOrDefault()
     {
@@ -44,7 +16,7 @@ partial class Parser
         //(table_name) A
         //(table_name) (inner|left|right|cross|where|group|order)
 
-        return Parse("as", new[] { "inner", "left", "right", "cross", "where", "grouo", "order" });
+        return Parse("as", new[] { "inner", "left", "right", "cross", "where", "group", "order" });
     }
 
     public string? ParseColumnAliasOrDefault()
