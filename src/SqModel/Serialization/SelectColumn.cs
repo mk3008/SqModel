@@ -13,4 +13,8 @@ public class SelectColumn
     public string ColumnName { get; set; } = string.Empty;
 
     public string AliasName { get; set; } = string.Empty;
+
+    public string FullName => $"{TableName}.{ColumnName}";
+
+    public string Name => (AliasName == string.Empty) ? ColumnName : AliasName;
 }

@@ -13,4 +13,9 @@ public class SelectTable
     public string TableName { get; set; } = string.Empty;
 
     public string AliasName { get; set; } = string.Empty;
+
+    public string FullName => (Schema == string.Empty) ? TableName : $"{Schema}.{TableName}";
+
+    public string Name => (AliasName == string.Empty) ? TableName : AliasName;
+
 }
