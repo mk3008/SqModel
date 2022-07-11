@@ -10,14 +10,14 @@ using Xunit;
 
 namespace SqModelTest.SqlSerializerTest;
 
-public class ReadKeywordOrDefaultTest
+public class ReadCommandOrDefaultTest
 {
     [Fact]
     public void Success()
     {
         var lst = new List<string>() { "select" };
         using var p = new Parser("select * from table");
-        var s = p.ReadKeywordOrDefault(lst);
+        var s = p.ReadCommandOrDefault(lst);
 
         Assert.Equal("select", s);
     }
@@ -27,7 +27,7 @@ public class ReadKeywordOrDefaultTest
     {
         var lst = new List<string>() { "from" };
         using var p = new Parser("select * from table");
-        var s = p.ReadKeywordOrDefault(lst);
+        var s = p.ReadCommandOrDefault(lst);
 
         Assert.Equal("", s);
     }
@@ -38,7 +38,7 @@ public class ReadKeywordOrDefaultTest
         var lst = new List<string>() { "selection" };
         using var p = new Parser("select * from table");
 
-        var s = p.ReadKeywordOrDefault(lst);
+        var s = p.ReadCommandOrDefault(lst);
 
         Assert.Equal("", s);
     }
@@ -48,7 +48,7 @@ public class ReadKeywordOrDefaultTest
     {
         var lst = new List<string>() { "select" };
         using var p = new Parser("selection * from table");
-        var s = p.ReadKeywordOrDefault(lst);
+        var s = p.ReadCommandOrDefault(lst);
 
         Assert.Equal("", s);
     }
@@ -58,22 +58,22 @@ public class ReadKeywordOrDefaultTest
     {
         var lst = new List<string>() { "select" };
         using var p = new Parser("Select * from table");
-        var s = p.ReadKeywordOrDefault(lst);
+        var s = p.ReadCommandOrDefault(lst);
 
         Assert.Equal("select", s);
     }
 
     [Fact]
-    public void MultipleKeyword()
+    public void MultipleCommand()
     {
         var lst = new List<string>() { "select", "from" };
 
         using var p1 = new Parser("from table");
-        var s = p1.ReadKeywordOrDefault(lst);
+        var s = p1.ReadCommandOrDefault(lst);
         Assert.Equal("from", s);
 
         using var p2 = new Parser("select table");
-        s = p2.ReadKeywordOrDefault(lst);
+        s = p2.ReadCommandOrDefault(lst);
         Assert.Equal("select", s);
     }
 }

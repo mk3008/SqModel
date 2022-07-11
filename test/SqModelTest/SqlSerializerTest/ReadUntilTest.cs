@@ -64,7 +64,7 @@ public class ReadUntilTest
     }
 
     [Fact]
-    public void MulitpleKeyword()
+    public void MulitpleCommand()
     {
         var chars = "cd"; //c or d
         using var p1 = new Parser("abc");

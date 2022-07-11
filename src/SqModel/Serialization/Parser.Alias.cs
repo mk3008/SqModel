@@ -51,7 +51,7 @@ partial class Parser
             else if (s == string.Empty)
             {
                 BeginTransaction();
-                var tmp = ReadKeywordOrDefault(command, nextcommands);
+                var tmp = ReadCommandOrDefault(command, nextcommands);
                 if (tmp == command)
                 {
                     Commit();

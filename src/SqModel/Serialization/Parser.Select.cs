@@ -12,12 +12,12 @@ public partial class Parser
     {
         ReadSkipSpaces();
 
-        var s = ReadKeywordOrDefault(new[] { "select" });
+        var s = ReadCommandOrDefault(new[] { "select" });
         if (s == null) throw new Exception();
 
         var cols = ParseSelectColumns();
 
-        s = ReadKeywordOrDefault(new[] { "from" });
+        s = ReadCommandOrDefault(new[] { "from" });
         if (s == null) throw new Exception();
 
         var tbl = ParseSelectTable();

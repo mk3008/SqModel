@@ -28,14 +28,14 @@ public partial class Parser
         "order by"
     };
 
-    public string ReadKeywordOrDefault(string command, IEnumerable<string> nextcommands)
+    public string ReadCommandOrDefault(string command, IEnumerable<string> nextcommands)
     {
         var lst = nextcommands.ToList();
         lst.Add(command);
-        return ReadKeywordOrDefault(lst);
+        return ReadCommandOrDefault(lst);
     }
 
-    public string ReadKeywordOrDefault(IEnumerable<string> commands)
+    public string ReadCommandOrDefault(IEnumerable<string> commands)
     {
         var sb = new StringBuilder();
         var lst = new List<string>();
