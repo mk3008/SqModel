@@ -20,6 +20,16 @@
 
   <ItemGroup>
     <Compile Remove="Column.cs" />
+    <Compile Remove="Serialization\ParentheseParser.cs" />
+    <Compile Remove="Serialization\Parser.Alias.cs" />
+    <Compile Remove="Serialization\Parser.Column.cs" />
+    <Compile Remove="Serialization\Parser.Parentheses.cs" />
+    <Compile Remove="Serialization\Parser.Select.cs" />
+    <Compile Remove="Serialization\Parser.Table.cs" />
+    <Compile Remove="Serialization\SingleQuoteCommandText.cs" />
+    <Compile Remove="Serialization\SingleQuoteParser.cs" />
+    <Compile Remove="Serialization\SqlSerializer.cs" />
+    <Compile Remove="Serialization\WithParser.cs" />
     <Compile Remove="Table.cs" />
     <Compile Remove="VirtualColumn.cs" />
     <Compile Remove="VirtualTable.cs" />

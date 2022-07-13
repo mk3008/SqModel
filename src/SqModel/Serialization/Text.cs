@@ -11,36 +11,36 @@ public interface IText
     IEnumerable<string> GetValues();
 }
 
-public class ParenthesesText: IText
-{
-    public string OpenSymbol { get; set; } = string.Empty;
+//public class ParenthesesText: IText
+//{
+//    public string OpenSymbol { get; set; } = string.Empty;
 
-    public string CloseSymbol { get; set; } = string.Empty;
+//    public string CloseSymbol { get; set; } = string.Empty;
 
-    public List<IText> InnerTexts { get; set; } = new();
+//    public List<IText> InnerTexts { get; set; } = new();
 
-    public IEnumerable<string> GetValues()
-    {
-        yield return OpenSymbol;
+//    public IEnumerable<string> GetValues()
+//    {
+//        yield return OpenSymbol;
 
-        foreach (var item in InnerTexts)
-        {
-            foreach (var x in item.GetValues())
-            {
-                yield return x;
-            }     
-        }
+//        foreach (var item in InnerTexts)
+//        {
+//            foreach (var x in item.GetValues())
+//            {
+//                yield return x;
+//            }     
+//        }
 
-        yield return CloseSymbol;   
-    }
-}
+//        yield return CloseSymbol;   
+//    }
+//}
 
-public class PlainText : IText
-{
-    public string Value { get; set; } = string.Empty;
+//public class PlainText : IText
+//{
+//    public string Value { get; set; } = string.Empty;
 
-    public IEnumerable<string> GetValues()
-    {
-        yield return Value; 
-    }
-}
+//    public IEnumerable<string> GetValues()
+//    {
+//        yield return Value; 
+//    }
+//}

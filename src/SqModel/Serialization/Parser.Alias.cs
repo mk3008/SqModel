@@ -10,69 +10,72 @@ partial class Parser
 {
  
 
-    public string? ParseTableAliasOrDefault()
-    {
-        //(table_name) as A 
-        //(table_name) A
-        //(table_name) (inner|left|right|cross|where|group|order)
+    //public string? ParseTableAliasOrDefault()
+    //{
+    //    //(table_name) as A 
+    //    //(table_name) A
+    //    //(table_name) (inner|left|right|cross|where|group|order)
 
-        return Parse("as", new[] { "inner", "left", "right", "cross", "where", "group", "order" });
-    }
 
-    public string? ParseColumnAliasOrDefault()
-    {
-        //(column_name) as A 
-        //(column_name) A
-        //(column_name) (,|from)
+    //    var q = Commands.Where(x => x.Command );
 
-        return Parse("as", new[] { ",", "from" });
-    }
+    //    return Parse("as", new[] { "inner", "left", "right", "cross", "where", "group", "order" });
+    //}
 
-    public string? Parse(string command, IEnumerable<string> nextcommands, string splitters = " ,\r\n\t;")
-    {
-        ReadSkipSpaces();
+    //public string? ParseColumnAliasOrDefault()
+    //{
+    //    //(column_name) as A 
+    //    //(column_name) A
+    //    //(column_name) (,|from)
 
-        //select <column> [as] [<text>], ..., <column> [as] [<text>] from <table>
+    //    return Parse("as", new[] { ",", "from" });
+    //}
 
-        var untilChars = (command == String.Empty) ? splitters : $"{splitters}{command.ToCharArray()[0]}";
-        nextcommands.Select(x => x.ToCharArray()[0]).ToList().ForEach(x => untilChars += x);
+    //public string? Parse(string command, IEnumerable<string> nextcommands)
+    //{
+    //    ReadSkipSpaces();
 
-        var sb = new StringBuilder();
-        var fn = () =>
-        {
-            var s = ReadUntil(untilChars);
-            sb.Append(s);
+    //    //select <column> [as] [<text>], ..., <column> [as] [<text>] from <table>
 
-            var c = PeekOrDefault();
-            if (c == null || splitters.Contains(c.Value))
-            {
-                return sb.ToString();
-            }
-            else if (s == string.Empty)
-            {
-                BeginTransaction();
-                var tmp = ReadCommandOrDefault(command, nextcommands);
-                if (tmp == command)
-                {
-                    Commit();
-                    ReadSkipSpaces();
-                    return ReadUntil(splitters);
-                }
-                else if (nextcommands.Contains(tmp))
-                {
-                    RollBack();
-                    return null;
-                }
-                else
-                {
-                    RollBack();
-                }
-            }
+    //    var untilChars = (command == String.Empty) ? splitters : $"{splitters}{command.ToCharArray()[0]}";
+    //    nextcommands.Select(x => x.ToCharArray()[0]).ToList().ForEach(x => untilChars += x);
 
-            sb.Append(ReadUntilSpace());
-            return sb.ToString();
-        };
+    //    var sb = new StringBuilder();
+    //    var fn = () =>
+    //    {
+    //        var s = ReadUntil(untilChars);
+    //        sb.Append(s);
 
-        return fn();
-    }
+    //        var c = PeekOrDefault();
+    //        if (c == null || splitters.Contains(c.Value))
+    //        {
+    //            return sb.ToString();
+    //        }
+    //        else if (s == string.Empty)
+    //        {
+    //            BeginTransaction();
+    //            var tmp = ReadCommandOrDefault(command, nextcommands);
+    //            if (tmp == command)
+    //            {
+    //                Commit();
+    //                ReadSkipSpaces();
+    //                return ReadUntil(splitters);
+    //            }
+    //            else if (nextcommands.Contains(tmp))
+    //            {
+    //                RollBack();
+    //                return null;
+    //            }
+    //            else
+    //            {
+    //                RollBack();
+    //            }
+    //        }
+
+    //        sb.Append(ReadUntilSpace());
+    //        return sb.ToString();
+    //    };
+
+    //    return fn();
+    //}
 }
