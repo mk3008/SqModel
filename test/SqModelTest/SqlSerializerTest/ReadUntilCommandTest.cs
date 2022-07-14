@@ -24,22 +24,22 @@ public class ReadUntilCommandTest
         using var p = new Parser("select * from table");
         p.Logger = (x) => Output.WriteLine(x);
 
+        p.ReadSkipSpaces();
         var res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("select", res.Command);
+        Assert.Equal("select", res.Command.CommandText);
         Assert.Equal("", res.Value);
 
+        p.ReadSkipSpaces();
         res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("from", res.Command);
+        Assert.Equal("from", res.Command.CommandText);
         Assert.Equal("*", res.Value);
 
+        p.ReadSkipSpaces();
         res = p.ReadUntilCommand();
 
-        Assert.False(res.IsSuccess);
-        Assert.Equal("", res.Command);
+        Assert.Equal("", res.Command.CommandText);
         Assert.Equal("table", res.Value);
     }
 
@@ -51,8 +51,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.False(res.IsSuccess);
-        Assert.Equal(String.Empty, res.Command);
+        Assert.Equal("", res.Command.CommandText);
         Assert.Equal("selection", res.Value);
     }
 
@@ -64,8 +63,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("select", res.Command);
+        Assert.Equal("select", res.Command.CommandText);
         Assert.Equal("", res.Value);
     }
 
@@ -77,8 +75,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("--", res.Command);
+        Assert.Equal("--", res.Command.CommandText);
         Assert.Equal("", res.Value);
     }
 
@@ -90,8 +87,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("select", res.Command);
+        Assert.Equal("select", res.Command.CommandText);
         Assert.Equal("", res.Value);
     }
 
@@ -103,8 +99,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.False(res.IsSuccess);
-        Assert.Equal("", res.Command);
+        Assert.Equal("", res.Command.CommandText);
         Assert.Equal("testselect", res.Value);
     }
 
@@ -116,8 +111,7 @@ public class ReadUntilCommandTest
 
         var res = p.ReadUntilCommand();
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("--", res.Command);
+        Assert.Equal("--", res.Command.CommandText);
         Assert.Equal("test", res.Value);
     }
 
@@ -127,10 +121,9 @@ public class ReadUntilCommandTest
         using var p = new Parser("test");
         p.Logger = (x) => Output.WriteLine(x);
 
-        var res = p.ReadUntilCommand(new[] { new CommandString("test") });
+        var res = p.ReadUntilCommand(new[] { new Command("test") });
 
-        Assert.True(res.IsSuccess);
-        Assert.Equal("test", res.Command);
+        Assert.Equal("test", res.Command.CommandText);
         Assert.Equal("", res.Value);
     }
 
@@ -140,10 +133,9 @@ public class ReadUntilCommandTest
         using var p = new Parser("tets");
         p.Logger = (x) => Output.WriteLine(x);
 
-        var res = p.ReadUntilCommand(new[] { new CommandString("test") });
+        var res = p.ReadUntilCommand(new[] { new Command("test") });
 
-        Assert.False(res.IsSuccess);
-        Assert.Equal("", res.Command);
+        Assert.Equal("", res.Command.CommandText);
         Assert.Equal("tets", res.Value);
     }
 }

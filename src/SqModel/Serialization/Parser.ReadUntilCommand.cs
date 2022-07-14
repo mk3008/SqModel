@@ -10,53 +10,52 @@ public partial class Parser
 {
     public Action<string>? Logger { get; set; }
 
-    private List<CommandString> Commands = new()
+    private List<Command> Commands = new()
     {
-        new CommandString("with" ),
-        new CommandString("select"),
-        new CommandString("distinct"),
-        new CommandString("limit"),
-        new CommandString("as"),
-        new CommandString("from"),
-        new CommandString("inner join"),
-        new CommandString("left outer join"),
-        new CommandString("left join"),
-        new CommandString("right outer join"),
-        new CommandString("right join"),
-        new CommandString("cross join"),
-        new CommandString("where"),
-        new CommandString("group by"),
-        new CommandString("having"),
-        new CommandString("order by"),
-        new CommandString("and"),
-        new CommandString("or"),
-        new CommandString("(", true),
-        new CommandString("--", true),
-        new CommandString("/*", true),
-        new CommandString("'", true),
-        new CommandString("\r", true),
-        new CommandString("\n", true),
-        new CommandString(",", true),
+        new Command("with" ),
+        new Command("select"),
+        new Command("distinct"),
+        new Command("limit"),
+        new Command("as"),
+        new Command("from"),
+        new Command("inner join"),
+        new Command("left outer join"),
+        new Command("left join"),
+        new Command("right outer join"),
+        new Command("right join"),
+        new Command("cross join"),
+        new Command("where"),
+        new Command("group by"),
+        new Command("having"),
+        new Command("order by"),
+        new Command("and"),
+        new Command("or"),
+        new Command("(", true),
+        new Command("--", true, false),
+        new Command("/*", true, false),
+        new Command("'", true, false),
+        new Command("\r", true),
+        new Command("\n", true),
+        new Command(",", true),
     };
     public ReadCommandResult ReadUntilCommand()
     {
         return ReadUntilCommand(Commands);
     }
 
-    public ReadCommandResult ReadUntilCommand(IEnumerable<CommandString> commands)
+    public ReadCommandResult ReadUntilCommand(IEnumerable<Command> commands)
     {
         Logger?.Invoke("start ReadUntilCommand");
 
         var value = new StringBuilder();
         var command = new StringBuilder();
+        var sufix = new StringBuilder();
 
-        var initdic = () => commands.ToList().ToDictionary(x => x, y => y.Command);
+        var initdic = () => commands.ToList().ToDictionary(x => x, y => y.CommandText);
 
         var dic = initdic();
         var isPrevMatch = false;
         var isPrevSpace = true;
-
-        ReadSkipSpaces();
 
         var fn = () =>
         {
@@ -119,9 +118,11 @@ public partial class Parser
 
             if (dic.Any() && dic.Count == 1)
             {
-                if (commands.ToList().Where(x => x.IsSymbol && x.Command.ToLower() == command.ToString()).Any()) return false;
-                if (PeekOrDefault().IsSpace()) return false;
-                if (PeekOrDefault == null) return false;
+                var isHit = false;
+                if (commands.ToList().Where(x => x.IsSymbol && x.CommandText.ToLower() == command.ToString()).Any()) isHit = true;
+                else if (PeekOrDefault().IsSpace()) isHit = true;
+                else if (PeekOrDefault() == null) isHit = true;
+                if (isHit) return false;
             }
 
             isPrevSpace = c.IsSpace();
@@ -130,16 +131,14 @@ public partial class Parser
 
         while (fn()) { }
 
-        var result = new ReadCommandResult()
-        {
-            Command = command.ToString().ToLower(),
-            IsSuccess = (command.Length == 0) ? false : true,
-            Value = value.ToString().TrimEnd(" \t\r\n".ToCharArray()),
-        };
-
+        var c = commands.Where(x => x.CommandText == command.ToString().ToLower()).FirstOrDefault();
+        var result = new ReadCommandResult();
+        if (c != null) result.Command = c;
+        result.Value = (result.Command.AllowTrim) ? value.ToString().TrimEnd(" \t\r\n".ToCharArray()) : value.ToString();
+        
         if (Logger != null)
         {
-            var msg = $"result.IsSuccess:{result.IsSuccess}, result.value:{result.Value}, result.Command:{result.Command}";
+            var msg = $"result.value:{result.Value}, result.Command:{result.Command?.CommandText}";
             Logger.Invoke(msg);
         }
 
@@ -151,9 +150,9 @@ public partial class Parser
 
 public class ReadCommandResult
 {
-    public bool IsSuccess { get; set; } = false;
-
     public string Value { get; set; } = string.Empty;
 
-    public string Command { get; set; } = string.Empty;
+    public Command Command { get; set; } = new Command("", false, true);
+
+    public string SufixSymbol { get; set; } = string.Empty;
 }
