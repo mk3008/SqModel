@@ -9,35 +9,31 @@ namespace SqModel.Serialization;
 
 public static class Extensions
 {
-    //public static bool IsLowerMatch(this char source, char lowerChar)
-    //{
-    //    return char.ToLower(source) == lowerChar;
-    //}
-
-    public static bool IsFirstChar(this string source, char c)
-    {
-        return (source.IndexOf(c.ToLower()) == 0 || source.IndexOf(c.ToUpper()) == 0);
-    }
-
-    public static char ToLower(this char source) => char.ToLower(source);
-    public static char ToUpper(this char source) => char.ToUpper(source);
-
     public static bool IsEof(this int source) => source < 0;
 
-    public static bool IsNotEof(this int source) => !source.IsEof();
+    public static bool IsSpace(this char source) => Parser.SpaceTokens.Where(x => x == source).Any();
 
-    public static char ToChar(this int source) => (char)source;
+    public static bool IsSymbol(this char source) => Parser.SymbolTokens.Where(x => x == source).Any();
 
-    public static bool IsSpace(this char source) => " \r\n\t;".IndexOf(source) >= 0;
+    public static string TrimEndSpace(this string source) => source.TrimEnd(Parser.SpaceTokens.ToArray());
 
-    public static bool IsSpace(this char? source) => (source == null) ? true : source.Value.IsSpace();
-
-    public static bool Contains(this IEnumerable<string> source, string value, Func<string, string> converter) => source.Select(x => converter(x)).Contains(value);
-
-    public static bool ContainsKey(this Dictionary<string, string> source, char? c)
+    public static ReadTokenResult Trim(this ReadTokenResult source)
     {
-        return source.Where(x => x.Key == c.ToString()).Any();
+        source.Value = source.Value.TrimEndSpace();
+        return source;
     }
 
+    public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
 
+    public static bool IsToken(this StringBuilder source, IEnumerable<string> tokens)
+    {
+        var s = source.ToString().ToLower();
+        return tokens.Where(x => x == s).Any();
+    }
+
+    public static bool IsMaybeToken(this StringBuilder source, IEnumerable<string> tokens)
+    {
+        var s = source.ToString().ToLower();
+        return tokens.Where(x => x.IndexOf(s) == 0).Any();
+    }
 }

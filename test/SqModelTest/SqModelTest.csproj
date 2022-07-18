@@ -26,6 +26,7 @@
     <Compile Remove="SqlSerializerTest\ReadSkip.cs" />
     <Compile Remove="SqlSerializerTest\ReadTest.cs" />
     <Compile Remove="SqlSerializerTest\ReadUntilTest.cs" />
+    <Compile Remove="SqlSerializerTest\ReadWhileCommandTest.cs" />
     <Compile Remove="SqlSerializerTest\SingleQuote.cs" />
     <Compile Remove="SqlSerializerTest\TableAliasTest.cs" />
     <Compile Remove="SqlSerializerTest\TableTest.cs" />

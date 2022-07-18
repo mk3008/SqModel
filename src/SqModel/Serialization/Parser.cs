@@ -19,6 +19,38 @@ public partial class Parser
 
     public StringReader Reader { get; private set; }
 
+    public Action<string>? Logger { get; set; }
+
+    private string[] CommandTokens = new[]
+    {
+        "with" ,
+        "select",
+        "distinct",
+        "limit",
+        "as",
+        "from",
+        "inner join",
+        "left outer join",
+        "left join",
+        "right outer join",
+        "right join",
+        "cross join",
+        "where",
+        "group by",
+        "having",
+        "order by",
+        "and",
+        "or",
+    };
+
+    private string LineCommentToken = "--";
+
+    private string BlockCommentToken = "/*";
+
+    public static char[] SpaceTokens = " \t\r\n;".ToCharArray();
+
+    public static char[] SymbolTokens = "+-*/,(".ToCharArray();
+
     //private int Index { get; set; }
 
     //private bool IsTransaction { get; set; } = false;
@@ -137,22 +169,21 @@ public partial class Parser
 
     //public bool IsSpace(char c) => " \r\n\t".IndexOf(c) >= 0;
 
-    public int ReadSkipSpaces()
-    {
-        return ReadSkipWhile(x => x.IsSpace());
-    }
+    //public int ReadSkipSpaces()
+    //{
+    //    return ReadSkipWhile(x => x.IsSpace());
+    //}
 
-    public int ReadSkipWhile(Func<char, bool> digit)
-    {
-        var i = Reader.Peek();
-        if (i.IsNotEof() && digit(i.ToChar()))
-        {
-            Read();
-            return ReadSkipWhile(digit);
-        }
-        return i;
-    }
-
+    //public int ReadSkipWhile(Func<char, bool> digit)
+    //{
+    //    var i = Reader.Peek();
+    //    if (i.IsNotEof() && digit(i.ToChar()))
+    //    {
+    //        Read();
+    //        return ReadSkipWhile(digit);
+    //    }
+    //    return i;
+    //}
 
     //public SelectQuery? Parse()
     //{
@@ -161,7 +192,7 @@ public partial class Parser
     //    var res = ReadUntilCommand();
 
     //    if (res.IsSuccess == false) throw new Exception();
-     
+
     //    return null;
     //}
 }
