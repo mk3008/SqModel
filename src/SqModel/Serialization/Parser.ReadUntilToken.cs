@@ -27,12 +27,12 @@ public partial class Parser
             if (isFind)
             {
                 result.NextToken = cache.ToString().ToLower();
-                result.Value = text.ToString();
+                result.Token = text.ToString();
             }
             else
             {
                 text.Append(cache);
-                result.Value = text.ToString();
+                result.Token = text.ToString();
             }
             cache.Clear();
             text.Clear();
@@ -64,25 +64,26 @@ public partial class Parser
             var cn = PeekOrDefault();
             if (cn == null) return finish(false);
 
+            if (cn.IsSymbol())
+            {
+                //find symbol token
+                startOver();
+                cache.Append(Read());
+
+                if ((cn.Value == '-' && isPeekChar('-')) || (cn.Value == '/' && isPeekChar('*')))
+                {           
+                    cache.Append(Read());
+                    return finish(true);
+                }
+                return finish(true);
+            }
+
             cache.Append(Read());
             Logger!.Invoke($"cache:{cache}");
 
-
             if (cache.IsToken(tokens))
             {
-                //Check symbol token
-                if (cache.Length == 1)
-                {
-                    //Check comment symbol token
-                    if ((cn.Value == '-' && isPeekChar('-')) || (cn.Value == '/' && isPeekChar('*')))
-                    {
-                        cache.Append(Read());
-                        return finish(true);
-                    }
-                    return finish(true);
-                }
-
-                //Check word token 
+                //check word token
                 var p = PeekOrDefault();
                 if (p == null || p.Value.IsSpace() || p.Value.IsSymbol())
                 {
@@ -101,7 +102,7 @@ public partial class Parser
 
         while (fn()) { }
 
-        Logger!.Invoke($"result Text:{result.Value}, Token:{result.NextToken}");
+        Logger!.Invoke($"result Text:{result.Token}, Token:{result.NextToken}");
         Logger?.Invoke(">end   ReadUntilToken");
 
         return result;

@@ -19,11 +19,13 @@ public static class Extensions
 
     public static ReadTokenResult Trim(this ReadTokenResult source)
     {
-        source.Value = source.Value.TrimEndSpace();
+        source.Token = source.Token.TrimEndSpace();
         return source;
     }
 
     public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
+
+    public static bool IsSymbol(this char? source) => (source == null) ? false : source.Value.IsSymbol();
 
     public static bool IsToken(this StringBuilder source, IEnumerable<string> tokens)
     {

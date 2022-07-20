@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public class SelectColumn
+public class SelectColumnTokenSet
 {
     public string TableName { get; set; } = string.Empty;
 

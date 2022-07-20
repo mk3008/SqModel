@@ -28,25 +28,25 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
 
         p.ReadWhileSpace();
         res = p.ReadUntilToken();
 
         Assert.Equal("*", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
 
         p.ReadWhileSpace();
         res = p.ReadUntilToken();
 
         Assert.Equal("from", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
 
         p.ReadWhileSpace();
         res = p.ReadUntilToken();
 
         Assert.Equal("", res.NextToken);
-        Assert.Equal("table_a", res.Value);
+        Assert.Equal("table_a", res.Token);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken().Trim();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("selection", res.Value);
+        Assert.Equal("selection", res.Token);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken().Trim();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("selection a", res.Value);
+        Assert.Equal("selection a", res.Token);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("-", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("--", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("/", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken();
 
         Assert.Equal("/*", res.NextToken);
-        Assert.Equal("", res.Value);
+        Assert.Equal("", res.Token);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken().Trim();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("testselect", res.Value);
+        Assert.Equal("testselect", res.Token);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken().Trim();
 
         Assert.Equal("select", res.NextToken);
-        Assert.Equal("testselect", res.Value);
+        Assert.Equal("testselect", res.Token);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class ReadUntilTokenTest
         var res = p.ReadUntilToken().Trim();
 
         Assert.Equal("--", res.NextToken);
-        Assert.Equal("test", res.Value);
+        Assert.Equal("test", res.Token);
     }
 
     //[Fact]
