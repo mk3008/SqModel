@@ -8,29 +8,58 @@ namespace SqModel.Serialization;
 
 public partial class SelectQueryParser
 {
-	//public ReadTokenResult ParseSelectTable()
-	//{
-	//	// (schema_name.)table_name( as alias)
+    public ReadTokenResult ParseSelectTable(SelectTokenSet s)
+    {
+        ReadWhileSpace();
 
-	//	var tbl = new SelectTable();
+        var t = new SelectTableTokenSet();
+        var tokens = new[] { ".", "as", "where", ";" }.ToList();
 
-	//	ReadSkipSpaces();
-	//	var s = ReadUntil(" .");
+        var r = ReadUntilToken(tokens);
 
-	//	var cn = PeekOrDefault();
-	//	if (cn == '.')
-	//	{
-	//		tbl.Schema = s;
-	//		Read();
-	//		tbl.TableName = ReadUntilSpace();
-	//		tbl.AliasName = ParseTableAliasOrDefault() ?? string.Empty;
-	//	}
-	//	else
-	//	{
-	//		tbl.TableName = s;
-	//		tbl.AliasName = ParseTableAliasOrDefault() ?? string.Empty;
-	//	}
+        var gettokens = (string token) =>
+        {
+            return tokens.Where(x => tokens.IndexOf(x) > tokens.IndexOf(token));
+        };
 
-	//	return tbl;
-	//}
+        var read = (string? ts) =>
+        {
+            ReadWhileSpace();
+            r = ReadUntilToken((ts == null) ? tokens : gettokens(ts));
+            return true;
+        };
+
+        var fn = () =>
+        {
+            if (r.NextToken == ".")
+            {
+                t.Schema = r.Token.TrimEndSpace();
+                return read(r.NextToken);
+            }
+
+            if (r.NextToken == "as")
+            {
+                t.TableName = r.Token.TrimEndSpace();
+                return read(r.NextToken);
+            }
+
+            if (t.TableName == String.Empty)
+            {
+                var sp = r.Token.TrimEndSpace().Split(Parser.SpaceTokens);
+                t.TableName = sp[0];
+                t.AliasName = sp[sp.Length - 1];
+            }
+            else
+            {
+                t.AliasName = r.Token.TrimEndSpace();
+            }
+
+            s.Table = t;
+            return false;
+        };
+
+        while (fn()) { };
+
+        return r;
+    }
 }

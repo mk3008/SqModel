@@ -118,4 +118,19 @@ public class ParseSelectColumnTest
         Assert.Equal("column_1", s.Columns[0].ColumnName);
         Assert.Equal("column_1", s.Columns[0].AliasName);
     }
+
+    [Fact]
+    public void SemiColon()
+    {
+        using var p = new SelectQueryParser("column_1;");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var s = new SelectTokenSet();
+        var r = p.ParseSelectColumn(s);
+
+        Assert.Single(s.Columns);
+        Assert.Equal("", s.Columns[0].TableName);
+        Assert.Equal("column_1", s.Columns[0].ColumnName);
+        Assert.Equal("column_1", s.Columns[0].AliasName);
+    }
 }
