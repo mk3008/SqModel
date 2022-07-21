@@ -13,7 +13,7 @@ public partial class SelectQueryParser
         ReadWhileSpace();
 
         var c = new SelectColumnTokenSet();
-        var tokens = new[] { ".", "as", ",", "from"}.ToList();
+        var tokens = new[] { ".", "as", ",", "from", ";"}.ToList();
 
         var r = ReadUntilToken(tokens);
 
@@ -43,27 +43,22 @@ public partial class SelectQueryParser
                 return read(r.NextToken);
             }
 
-            if (r.NextToken == "," || r.NextToken == "from" || r.NextToken == "")
+            if (c.ColumnName == String.Empty)
             {
-                if (c.ColumnName == String.Empty)
-                {
-                    var sp = r.Token.TrimEndSpace().Split(Parser.SpaceTokens);
-                    c.ColumnName = sp[0];
-                    c.AliasName = sp[sp.Length - 1];
-                }
-                else
-                {
-                    c.AliasName = r.Token.TrimEndSpace();
-                }
-                s.Columns.Add(c);
-
-                if (r.NextToken != ",") return false;
-
-                c = new SelectColumnTokenSet();
-                return read(null);
+                var sp = r.Token.TrimEndSpace().Split(Parser.SpaceTokens);
+                c.ColumnName = sp[0];
+                c.AliasName = sp[sp.Length - 1];
             }
+            else
+            {
+                c.AliasName = r.Token.TrimEndSpace();
+            }
+            s.Columns.Add(c);
 
-            return false;
+            if (r.NextToken != ",") return false;
+
+            c = new SelectColumnTokenSet();
+            return read(null);
         };
 
         while (fn()) { };
