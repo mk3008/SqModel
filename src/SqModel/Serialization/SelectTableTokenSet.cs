@@ -18,4 +18,5 @@ public class SelectTableTokenSet
 
     public string Name => (AliasName == string.Empty) ? TableName : AliasName;
 
+    //public List<JoinTableTokenSet> JoinTables { get; set; } = new();
 }

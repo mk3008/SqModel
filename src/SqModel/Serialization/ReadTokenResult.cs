@@ -11,4 +11,6 @@ public class ReadTokenResult
     public string Token { get; set; } = string.Empty;
 
     public string NextToken { get; set; } = string.Empty;
+
+    public char? NextChar { get; set; } = null;
 }

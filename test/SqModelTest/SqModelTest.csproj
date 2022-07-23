@@ -20,12 +20,17 @@
     <Compile Remove="SqlSerializerTest\Comment.cs" />
     <Compile Remove="SqlSerializerTest\Parentheses.cs" />
     <Compile Remove="SqlSerializerTest\ParenthesesTest.cs" />
+    <Compile Remove="SqlSerializerTest\ParseClosureConditionTest.cs" />
+    <Compile Remove="SqlSerializerTest\ParseSelectColumnTest.cs" />
     <Compile Remove="SqlSerializerTest\ParseSelectQueryTest.cs" />
+    <Compile Remove="SqlSerializerTest\ParseSelectTableTest.cs" />
+    <Compile Remove="SqlSerializerTest\ParseSignConditionTest.cs" />
     <Compile Remove="SqlSerializerTest\PeekTest.cs" />
     <Compile Remove="SqlSerializerTest\ReadCommandOrDefaultTest.cs" />
     <Compile Remove="SqlSerializerTest\ReadSkip.cs" />
     <Compile Remove="SqlSerializerTest\ReadTest.cs" />
     <Compile Remove="SqlSerializerTest\ReadUntilTest.cs" />
+    <Compile Remove="SqlSerializerTest\ReadUntilTokenTest.cs" />
     <Compile Remove="SqlSerializerTest\ReadWhileCommandTest.cs" />
     <Compile Remove="SqlSerializerTest\SingleQuote.cs" />
     <Compile Remove="SqlSerializerTest\TableAliasTest.cs" />

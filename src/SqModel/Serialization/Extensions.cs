@@ -17,11 +17,11 @@ public static class Extensions
 
     public static string TrimEndSpace(this string source) => source.TrimEnd(Parser.SpaceTokens.ToArray());
 
-    public static ReadTokenResult Trim(this ReadTokenResult source)
-    {
-        source.Token = source.Token.TrimEndSpace();
-        return source;
-    }
+    //public static ReadTokenResult Trim(this ReadTokenResult source)
+    //{
+    //    source.Token = source.Token.TrimEndSpace();
+    //    return source;
+    //}
 
     public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
 

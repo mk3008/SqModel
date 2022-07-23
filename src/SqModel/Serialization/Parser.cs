@@ -29,16 +29,14 @@ public partial class Parser
         "limit",
         "as",
         "from",
-        "inner join",
-        "left outer join",
-        "left join",
-        "right outer join",
-        "right join",
-        "cross join",
+        "inner",
+        "left",
+        "right",
+        "cross",
         "where",
-        "group by",
+        "group",
         "having",
-        "order by",
+        "order",
         "and",
         "or",
     };
@@ -49,7 +47,7 @@ public partial class Parser
 
     public static char[] SpaceTokens = " \t\r\n;".ToCharArray();
 
-    public static char[] SymbolTokens = "+-*/.,(".ToCharArray();
+    public static char[] SymbolTokens = "+-*/.,()".ToCharArray();
 
     //private int Index { get; set; }
 

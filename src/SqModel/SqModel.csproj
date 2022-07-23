@@ -20,12 +20,22 @@
 
   <ItemGroup>
     <Compile Remove="Column.cs" />
+    <Compile Remove="Serialization\ColumnTokenSet.cs" />
+    <Compile Remove="Serialization\ConditionCollectionTokenSet.cs" />
+    <Compile Remove="Serialization\ICommandText.cs" />
+    <Compile Remove="Serialization\JoinTableTokenSet.cs" />
     <Compile Remove="Serialization\ParentheseCommandText.cs" />
     <Compile Remove="Serialization\ParentheseParser.cs" />
     <Compile Remove="Serialization\Parser.Alias.cs" />
     <Compile Remove="Serialization\Parser.Column.cs" />
     <Compile Remove="Serialization\Parser.Parentheses.cs" />
     <Compile Remove="Serialization\PlainCommandText.cs" />
+    <Compile Remove="Serialization\ReadTokenResult.cs" />
+    <Compile Remove="Serialization\SelectQueryParser.SelectColumn.cs" />
+    <Compile Remove="Serialization\SelectQueryParser.SelectTable.cs" />
+    <Compile Remove="Serialization\SelectQueryParser.Where.cs" />
+    <Compile Remove="Serialization\SelectTableTokenSet.cs" />
+    <Compile Remove="Serialization\SelectTokenSet.cs" />
     <Compile Remove="Serialization\SingleQuoteCommandText.cs" />
     <Compile Remove="Serialization\SingleQuoteParser.cs" />
     <Compile Remove="Serialization\SqlSerializer.cs" />
