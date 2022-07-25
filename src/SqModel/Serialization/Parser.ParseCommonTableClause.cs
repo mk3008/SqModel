@@ -22,7 +22,7 @@ public partial class Parser
                 c.AliasName = token;
                 continue;
             }
-            if (token == "as") continue;
+            if (token == "as" || token == ")") continue;
             if (token == "(")
             {
                 isSelect = true;
@@ -30,7 +30,9 @@ public partial class Parser
             }
             if (isSelect)
             {
+                //token is select query string.
                 using var p = new Parser(token);
+                p.Logger = Logger;
                 c.SelectQuery = p.ParseSelectQuery();
                 isSelect = false;
                 continue;
@@ -38,7 +40,7 @@ public partial class Parser
             if (token == "select" || token == ",") break;
         }
 
-        Logger?.Invoke($"ParseCommonTableClause end");
+        Logger?.Invoke($"ParseCommonTableClause end : {c.ToQuery().CommandText}");
         return c;
     }
 }

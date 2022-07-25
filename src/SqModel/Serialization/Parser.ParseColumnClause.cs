@@ -10,10 +10,10 @@ public partial class Parser
 {
     public ColumnClause ParseColumnClause()
     {
+        Logger?.Invoke($"ParseColumnClause start");
+        
         var c = new ColumnClause();
         var cache = string.Empty;
-
-        Logger?.Invoke($"ParseColumnClause start");
 
         foreach (var token in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
@@ -55,7 +55,7 @@ public partial class Parser
             }
         }
 
-        Logger?.Invoke($"ParseColumnClause end");
+        Logger?.Invoke($"ParseColumnClause end : {c.ToQuery().CommandText}");
         return c;
     }
 }

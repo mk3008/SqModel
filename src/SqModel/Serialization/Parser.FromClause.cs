@@ -10,11 +10,15 @@ public partial class Parser
 {
     public TableClause ParseTableClause()
     {
+        Logger?.Invoke($"ParseTableClause start");
+
         var t = new TableClause();
         var level = 1;
 
         foreach (var token in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
+            Logger?.Invoke($"token : {token}");
+
             if (token == "(")
             {
                 level++;
@@ -40,6 +44,8 @@ public partial class Parser
         }
 
         if (t.AliasName == String.Empty) t.AliasName = t.TableName;
+
+        Logger?.Invoke($"ParseTableClause end : {t.ToQuery().CommandText}");
         return t;
     }
 }

@@ -10,12 +10,12 @@ public partial class Parser
 {
     public SelectQuery ParseSelectQuery()
     {
+        Logger?.Invoke($"ParseSelectQuery start");
+        
         var q = new SelectQuery();
         //var isWith = false;
         //var isSelect = false;
         var level = 1;
-
-        Logger?.Invoke($"ParseSelectQuery start");
 
         foreach (var item in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
@@ -75,7 +75,7 @@ public partial class Parser
             }
         }
 
-        Logger?.Invoke($"ParseSelectQuery end");
+        Logger?.Invoke($"ParseSelectQuery end : {q.ToQuery().CommandText}");
 
         return q;
     }
