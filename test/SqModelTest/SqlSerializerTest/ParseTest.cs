@@ -1,4 +1,5 @@
-﻿using SqModel.Serialization;
+﻿using SqModel;
+using SqModel.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,19 @@ public class ParseTest
     [Fact]
     public void Full()
     {
-        using var p = new SelectQueryParser(@"
+        using var p = new Parser(@"
+with 
+a as (
+    select * from table_a
+), 
+b as (
+    select * from table_b
+)
 select
     a.column_1 as col1
     , a.column_2 as col2
     , ((1+2) * 3) as col3
-    , (select b.value from table_b b) as b_value
+    , (select b.value from b) as b_value
     , ' comment('')comment ' as comment /* prefix /* nest */ sufix */
 from
     table_a as a
@@ -39,6 +47,52 @@ order by
     a.column_1");
         p.Logger = (x) => Output.WriteLine(x);
 
-        var lst = p.ReadAllTokens().ToList();
+        //var lst = p.ReadAllTokens().ToList();
+
+        var q = p.ParseSelectQuery();
+    }
+
+    [Fact]
+    public void Simple()
+    {
+        using var p = new Parser(@"select
+    a.column_1 as col1
+    , a.column_2 col2 
+    , a.column_3 
+    , column_11 as col11
+    , column_12 col12 
+    , column_13  
+from 
+    table_a as a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+    }
+
+    [Fact]
+    public void SimpleWith()
+    {
+        using var p = new Parser(@"
+with
+a as (
+    select
+        a.column_1 as col1
+        , a.column_2 col2 
+        , a.column_3 
+    from 
+        table_a
+), 
+b as (
+    select
+        column_11 as col11
+        , column_12 col12 
+        , column_13  
+    from 
+        table_b
+)
+select * from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
     }
 }

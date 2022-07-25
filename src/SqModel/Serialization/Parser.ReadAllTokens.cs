@@ -8,6 +8,8 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
+    public string CurrentToken { get; private set; } = string.Empty;
+
     public IEnumerable<string> ReadAllTokens()
     {
         while (true)
@@ -23,6 +25,7 @@ public partial class Parser
             }
             else if (token == "(")
             {
+                CurrentToken = token;
                 yield return token;
                 token = ReadUntilCloseBracket();
             }
@@ -61,6 +64,8 @@ public partial class Parser
                 if (next.ToLower() != "by") throw new SyntaxException(token.ToLower());
                 token += " " + next;
             }
+
+            CurrentToken = token;
             yield return token;
         }
     }
@@ -69,7 +74,7 @@ public partial class Parser
     {
         var tokens = CommandTokens.Union(SymbolTokens.Select(x => x.ToString())).Union(SpaceTokens.Select(x => x.ToString())).Union(new[] { LineCommentToken, BlockCommentToken });
 
-        Logger?.Invoke(">start ReadToken");
+        //Logger?.Invoke(">start ReadToken");
 
         var cache = new StringBuilder();
 
@@ -99,13 +104,13 @@ public partial class Parser
             if (cn.IsSpace()) break;
 
             cache.Append(Read());
-            Logger!.Invoke($"cache:{cache}");
+            //Logger!.Invoke($"cache:{cache}");
 
             continue;
         }
 
-        Logger!.Invoke($"result Token:{cache}");
-        Logger?.Invoke(">end   ReadToken");
+        //Logger!.Invoke($"result Token:{cache}");
+        //Logger?.Invoke(">end   ReadToken");
 
         return cache.ToString();
     }
