@@ -72,7 +72,7 @@ public partial class Parser
 
     public string ReadToken()
     {
-        var tokens = CommandTokens.Union(SymbolTokens.Select(x => x.ToString())).Union(SpaceTokens.Select(x => x.ToString())).Union(new[] { LineCommentToken, BlockCommentToken });
+        //var tokens = CommandTokens.Union(SymbolTokens.Select(x => x.ToString())).Union(SpaceTokens.Select(x => x.ToString())).Union(new[] { LineCommentToken, BlockCommentToken });
 
         //Logger?.Invoke(">start ReadToken");
 

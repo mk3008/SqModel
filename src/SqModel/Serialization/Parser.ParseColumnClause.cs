@@ -11,48 +11,75 @@ public partial class Parser
     public ColumnClause ParseColumnClause()
     {
         Logger?.Invoke($"ParseColumnClause start");
-        
-        var c = new ColumnClause();
-        var cache = string.Empty;
 
+        var c = new ColumnClause();
+        var cache = new List<string>();
+        var isAlias = false;
+        var isColumn = false;
         foreach (var token in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
             Logger?.Invoke($"token : {token}");
 
-            if (token == "(" || token == ")" || token == "as") continue;
-            if (string.IsNullOrEmpty(cache))
-            {
-                cache = token;
-                continue;
-            }
-            if (token == ".")
-            {
-                c.TableName = cache;
-                continue;
-            }
             if (token == "," || token.ToLower() == "from")
             {
+                if (cache.Count == 0 || c.ColumnName != String.Empty) break;
+
                 // column name only pattern
-                if (c.ColumnName == String.Empty) c.ColumnName = cache;
+                if (cache.Count == 1)
+                {
+                    c.ColumnName = cache.First();
+                    cache.Clear();
+                    break;
+                }
+
+                // get alias
+                if (cache.Last().IsLetter())
+                {
+                    c.AliasName = cache.Last();
+                    cache.RemoveAt(cache.Count - 1);
+                }
+
+                c.ColumnName = cache.ToString(" ");
+                cache.Clear();
                 break;
             }
-            if (c.TableName == String.Empty && cache != String.Empty && c.ColumnName == String.Empty)
+
+            if (token.ToLower() == "as")
             {
-                // omit table name and has alias name pattern
-                c.ColumnName = cache;
-                c.AliasName = token;
+                // omit table name pattern
+                if (c.ColumnName == string.Empty && cache.Count > 0)
+                {
+                    c.ColumnName = cache.ToString(" ");
+                    cache.Clear();
+                }
+                isAlias = true;
                 continue;
             }
-            if (string.IsNullOrEmpty(c.ColumnName))
+
+            if (isAlias)
+            {
+                c.AliasName = token;
+                isAlias = false;
+                continue;
+            }
+
+            if (token == "." && cache.Count == 1)
+            {
+                c.TableName = cache.First();
+                cache.Clear();
+                isColumn = true;
+                continue;
+            }
+
+            if (isColumn)
             {
                 c.ColumnName = token;
+                isColumn = false;
+                isAlias = true;
                 continue;
             }
-            if (string.IsNullOrEmpty(c.AliasName))
-            {
-                c.AliasName = token;
-                continue;
-            }
+
+            cache.Add(token);
         }
 
         Logger?.Invoke($"ParseColumnClause end : {c.ToQuery().CommandText}");

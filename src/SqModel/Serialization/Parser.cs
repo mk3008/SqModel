@@ -21,33 +21,35 @@ public partial class Parser
 
     public Action<string>? Logger { get; set; }
 
-    private string[] CommandTokens = new[]
-    {
-        "with" ,
-        "select",
-        "distinct",
-        "limit",
-        "as",
-        "from",
-        "inner",
-        "left",
-        "right",
-        "cross",
-        "where",
-        "group",
-        "having",
-        "order",
-        "and",
-        "or",
-    };
+    //private string[] CommandTokens = new[]
+    //{
+    //    "with" ,
+    //    "select",
+    //    "distinct",
+    //    "limit",
+    //    "as",
+    //    "from",
+    //    "inner",
+    //    "left",
+    //    "right",
+    //    "cross",
+    //    "where",
+    //    "group",
+    //    "having",
+    //    "order",
+    //    "and",
+    //    "or",
+    //};
 
-    private string LineCommentToken = "--";
+    //private static string LineCommentToken = "--";
 
-    private string BlockCommentToken = "/*";
+    //private static string BlockCommentToken = "/*";
 
     public static char[] SpaceTokens = " \t\r\n;".ToCharArray();
 
     public static char[] SymbolTokens = "+-*/.,()".ToCharArray();
+
+    public static char[] LetterChars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
     //private int Index { get; set; }
 

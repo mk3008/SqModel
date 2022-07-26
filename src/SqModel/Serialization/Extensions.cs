@@ -23,6 +23,13 @@ public static class Extensions
     //    return source;
     //}
 
+    public static bool IsLetter(this string source)
+    {
+        if (source.Length == 0) return false;
+        var c = source.ToCharArray().First();
+        return Parser.LetterChars.Where(x => x == c).Any();
+    }
+
     public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
 
     public static bool IsSymbol(this char? source) => (source == null) ? false : source.Value.IsSymbol();

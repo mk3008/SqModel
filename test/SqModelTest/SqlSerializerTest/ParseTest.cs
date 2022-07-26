@@ -56,12 +56,16 @@ order by
     public void Simple()
     {
         using var p = new Parser(@"select
-    a.column_1 as col1
+    a.*
+    , *
+    , a.column_1 as col1
     , a.column_2 col2 
     , a.column_3 
     , column_11 as col11
     , column_12 col12 
-    , column_13  
+    , column_13 
+    , (1*2) * 3 as calc1
+    , (1*2) * 3 calc2
 from 
     table_a as a");
         p.Logger = (x) => Output.WriteLine(x);

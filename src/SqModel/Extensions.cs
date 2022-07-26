@@ -10,7 +10,16 @@ internal static class Extensions
 {
     public static string ToString<T>(this IEnumerable<T> source, string separator)
     {
-        return string.Join(separator, source);
+        var sb = new StringBuilder();
+        var prev = string.Empty;
+        foreach (var item in source)
+        {
+            if (item == null || item.ToString() == string.Empty) throw new Exception();
+            if (prev != string.Empty && prev != "(" && item.ToString() != ")") sb.Append(separator);
+            prev = item.ToString();
+            sb.Append(prev);
+        }
+        return sb.ToString();
     }
 
     public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair<T1, T2>> action) where T1 : notnull
