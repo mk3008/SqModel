@@ -5,7 +5,9 @@ public class TableRelationClause
 {
     public RelationTypes RelationType { get; set; } = RelationTypes.Inner;
 
-    public string SourceName { get; set; } = string.Empty;
+    public string SourceAlias { get; set; } = string.Empty;
+
+    public string DestinationAlias { get; set; } = string.Empty;
 
     public JoinColumnRelationClause JoinColumnRelationClause { get; set; } = new();
 
@@ -13,8 +15,8 @@ public class TableRelationClause
     {
         JoinColumnRelationClause.ColumnRelationClauses.Add(new ColumnRelationClause()
         {
-            SourceColumn = sourceColumn,
-            DestinationColumn = destinationColumn,
+            Source =  new ValueClause() { TableName = SourceAlias, Value = sourceColumn },
+            Destination = new ValueClause() { TableName = DestinationAlias, Value = destinationColumn },
             Sign = sign
         });
         return this;
@@ -49,7 +51,7 @@ public class TableRelationClause
 
         if (RelationType == RelationTypes.Cross) return q;
 
-        return q.Merge(JoinColumnRelationClause.ToQuery(SourceName, alias), " on ");
+        return q.Merge(JoinColumnRelationClause.ToQuery(), " on ");
     }
 
     public enum RelationTypes

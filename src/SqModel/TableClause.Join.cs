@@ -23,7 +23,7 @@ public static class TableClauseJoin
 
     public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type, Dictionary<string, string> keyvalues)
     {
-        destination.TableRelationClause = new TableRelationClause() { SourceName = source.AliasName, RelationType = type };
+        destination.TableRelationClause = new TableRelationClause() { SourceAlias = source.AliasName, DestinationAlias = destination.AliasName, RelationType = type };
         keyvalues.ToList().ForEach(x => destination.TableRelationClause.Add(x.Key, x.Value));
         source.SubTableClauses.Add(destination);
         return destination;

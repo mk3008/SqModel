@@ -10,8 +10,8 @@ public class JoinColumnRelationClause
 {
     public List<ColumnRelationClause> ColumnRelationClauses { get; set; } = new();
 
-    public Query ToQuery(string sourceTable, string destinationTable)
+    public Query ToQuery()
     {
-        return ColumnRelationClauses.Select(x => x.ToQuery(sourceTable, destinationTable)).ToList().ToQuery(" and ");
+        return ColumnRelationClauses.Select(x => x.ToQuery()).ToList().ToQuery(" and ");
     }
 }

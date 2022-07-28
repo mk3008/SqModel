@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ColumnRelationClause 
+public class ColumnRelationClause
 {
-    public string SourceColumn { get; set; } = String.Empty;
+    public ValueClause Source { get; set; } = new();
 
-    public string DestinationColumn { get; set; } = String.Empty;
+    public ValueClause Destination { get; set; } = new();
 
     public string Sign { get; set; } = "=";
 
-    public Query ToQuery(string sourceTable, string destinationTable)
+    public Query ToQuery()
     {
-        return new Query() { CommandText = $"{sourceTable}.{SourceColumn} {Sign} {destinationTable}.{DestinationColumn}", Parameters = new() };
+        var sq = Source.ToQuery();
+        var ds = Destination.ToQuery();
+        return sq.Merge(ds, $" {Sign} ");
     }
 }
