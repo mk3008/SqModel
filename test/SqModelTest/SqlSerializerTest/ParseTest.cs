@@ -66,6 +66,7 @@ order by
     , column_13 
     , (1*2) * 3 as calc1
     , (1*2) * 3 calc2
+    , (select 1 from table_b) as val1
 from 
     table_a as a");
         p.Logger = (x) => Output.WriteLine(x);
