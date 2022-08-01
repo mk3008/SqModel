@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static SqModel.TableRelationClause;
 
 namespace SqModel;
 
@@ -23,8 +22,9 @@ public static class TableClauseJoin
 
     public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type, Dictionary<string, string> keyvalues)
     {
-        destination.TableRelationClause = new TableRelationClause() { SourceAlias = source.AliasName, DestinationAlias = destination.AliasName, RelationType = type };
-        keyvalues.ToList().ForEach(x => destination.TableRelationClause.Add(x.Key, x.Value));
+        destination.SourceAlias = source.AliasName;
+        destination.RelationType = type;
+        keyvalues.ToList().ForEach(x => destination.Add(x.Key, x.Value));
         source.SubTableClauses.Add(destination);
         return destination;
     }

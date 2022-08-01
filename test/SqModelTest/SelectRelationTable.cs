@@ -68,7 +68,7 @@ inner join table_b as b on a.table_a_id = b.table_a_id and a.table_a_sub_id = b.
 
         var dic = new Dictionary<string, string>();
         dic.Add("table_a_id", "table_b_id");
-        var table_b = table_a.Join("table_b","b", TableRelationClause.RelationTypes.Inner, dic);
+        var table_b = table_a.Join("table_b","b", RelationTypes.Inner, dic);
 
         q.Select(table_a, "value_a");
         q.Select(table_b, "value_b");

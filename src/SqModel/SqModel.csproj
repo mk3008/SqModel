@@ -46,6 +46,7 @@
     <Compile Remove="Serialization\WithCommandText.cs" />
     <Compile Remove="Serialization\WithParser.cs" />
     <Compile Remove="Table.cs" />
+    <Compile Remove="TableClause.old.cs" />
     <Compile Remove="VirtualColumn.cs" />
     <Compile Remove="VirtualTable.cs" />
   </ItemGroup>
