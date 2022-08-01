@@ -59,7 +59,9 @@ public class SelectQuery
 
     public Query ToSubQuery() => ToQueryCore(false);
 
-    private Query ToQueryCore(bool includeCte)
+    public Query ToInlineQuery() => ToQueryCore(false, " ");
+
+    private Query ToQueryCore(bool includeCte, string splitter = "\r\n")
     {
         var withQ = (includeCte) ? GetAllWith().ToQuery() : null;
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
@@ -78,12 +80,12 @@ public class SelectQuery
         if (withQ != null && withQ.CommandText != String.Empty)
         {
             sb.Append(withQ.CommandText);
-            sb.Append("\r\n");
+            sb.Append(splitter);
         }
 
         sb.Append($"{selectQ.CommandText}");
-        sb.Append($"\r\n{fromQ.CommandText}");
-        if (whereQ.CommandText != String.Empty) sb.Append($"\r\n{whereQ.CommandText}");
+        sb.Append($"{splitter}{fromQ.CommandText}");
+        if (whereQ.CommandText != String.Empty) sb.Append($"{splitter}{whereQ.CommandText}");
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }

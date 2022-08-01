@@ -8,7 +8,7 @@ namespace SqModel;
 
 public class JoinColumnRelationClause
 {
-    public List<ColumnRelationClause> ColumnRelationClauses { get; set; } = new();
+    public List<RelationClause> ColumnRelationClauses { get; set; } = new();
 
     public Query ToQuery()
     {

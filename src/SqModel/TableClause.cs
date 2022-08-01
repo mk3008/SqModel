@@ -38,7 +38,7 @@ public class TableClause
 
     public TableClause Add(string sourceColumn, string destinationColumn, string sign = "=")
     {
-        JoinColumnRelationClause.ColumnRelationClauses.Add(new ColumnRelationClause()
+        JoinColumnRelationClause.ColumnRelationClauses.Add(new RelationClause()
         {
             Source = new ValueClause() { TableName = SourceAlias, Value = sourceColumn },
             Destination = new ValueClause() { TableName = AliasName, Value = destinationColumn },

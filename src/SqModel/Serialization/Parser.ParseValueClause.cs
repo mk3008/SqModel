@@ -8,9 +8,20 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    public ValueClause ParseColumnClause()
+    private static string[] ValueBreakTokens = new[] {
+        ",",
+        "from",
+        "=",
+        "!=",
+        ">",
+        ">=",
+        "<",
+        "<="
+    };
+
+    public ValueClause ParseValueClause()
     {
-        Logger?.Invoke($"ParseColumnClause start");
+        Logger?.Invoke($"ParseValueClause start");
 
         var c = new ValueClause();
         var cache = new List<string>();
@@ -91,7 +102,7 @@ public partial class Parser
         {
             Logger?.Invoke($"token : {token}");
 
-            if (token == "," || token.ToLower() == "from")
+            if (ValueBreakTokens.Where(x => x == token.ToLower()).Any())
             {
                 foundBreakToken();
                 break;
@@ -132,6 +143,8 @@ public partial class Parser
             if (!isInlineQuery) cache.Add(token);
             refreshInLineQueryFlag(token);
         }
+
+        if (cache.Count != 0 && c.Value == String.Empty) c.Value = cache.ToString(" ");
 
         Logger?.Invoke($"ParseColumnClause end : {c.ToQuery().CommandText}");
         return c;

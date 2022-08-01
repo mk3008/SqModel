@@ -45,12 +45,12 @@ public partial class Parser
                 //isWith = false;
                 //isSelect = true;
 
-                q.SelectClause.ColumnClauses.Add(ParseColumnClause());
+                q.SelectClause.ColumnClauses.Add(ParseValueClause());
                 token = CurrentToken;
 
                 while (token == ",")
                 {
-                    q.SelectClause.ColumnClauses.Add(ParseColumnClause());
+                    q.SelectClause.ColumnClauses.Add(ParseValueClause());
                     token = CurrentToken;
                 }
             }

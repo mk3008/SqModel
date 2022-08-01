@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ColumnRelationClause
+public class RelationClause
 {
     public ValueClause Source { get; set; } = new();
 

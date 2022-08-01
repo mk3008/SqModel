@@ -54,7 +54,7 @@ public class ValueClause : IParameterCollection
 
         if (InlineQuery != null)
         {
-            var q = InlineQuery.ToQuery();
+            var q = InlineQuery.ToInlineQuery();
             return new Query() { CommandText = $"({q.CommandText}){alias}", Parameters = q.Parameters };
         }
 
