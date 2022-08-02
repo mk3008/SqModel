@@ -16,7 +16,10 @@ public partial class Parser
         ">",
         ">=",
         "<",
-        "<="
+        "<=",
+        "is",
+        "and",
+        "or"
     };
 
     public ValueClause ParseValueClause()
@@ -35,12 +38,11 @@ public partial class Parser
             if (cache.Count == 0 || c.Value != String.Empty || c.InlineQuery != null) return;
 
             // get alias
-            if (cache.Count > 1 && cache.Last().IsLetter())
+            if (cache.Count > 1 && cache.First() != "not" && cache.Last().IsLetter() || cache.Count > 2 && cache.First() == "not" && cache.Last().IsLetter())
             {
                 c.AliasName = cache.Last();
                 cache.RemoveAt(cache.Count - 1);
             }
-
             c.Value = cache.ToString(" ");
             cache.Clear();
         };
@@ -146,7 +148,7 @@ public partial class Parser
 
         if (cache.Count != 0 && c.Value == String.Empty) c.Value = cache.ToString(" ");
 
-        Logger?.Invoke($"ParseColumnClause end : {c.ToQuery().CommandText}");
+        Logger?.Invoke($"ParseValueClause end : {c.ToQuery().CommandText}");
         return c;
     }
 }

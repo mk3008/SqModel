@@ -72,41 +72,28 @@ public partial class Parser
 
     public string ReadToken()
     {
-        //var tokens = CommandTokens.Union(SymbolTokens.Select(x => x.ToString())).Union(SpaceTokens.Select(x => x.ToString())).Union(new[] { LineCommentToken, BlockCommentToken });
-
         //Logger?.Invoke(">start ReadToken");
 
         var cache = new StringBuilder();
+        var isSymbolToken = false;
 
-        var isPeekChar = (char c) =>
+        var cn = PeekOrDefault();
+        while (cn != null)
         {
-            var nextc = PeekOrDefault();
-            return (nextc != null && nextc.Value == c);
-        };
-
-        while (true)
-        {
-            var cn = PeekOrDefault();
-            if (cn == null) break;
-
-            if (cn.IsSymbol())
+            if (isSymbolToken || cn.IsSymbol() && cache.Length == 0)
             {
-                if (cache.Length != 0) break;
-
+                isSymbolToken = true;
                 cache.Append(Read());
-                if (
-                    (cn.Value == '-' && isPeekChar('-'))
-                    || (cn.Value == '/' && isPeekChar('*'))
-                    ) cache.Append(Read());
-                break;
+                if (cache.Length == 2 && (cache.ToString() == "--" || cache.ToString() == "/*")) break;
+                cn = PeekOrDefault();
+                if (!cn.IsSymbol()) break;
+                continue;
             }
 
-            if (cn.IsSpace()) break;
-
             cache.Append(Read());
-            //Logger!.Invoke($"cache:{cache}");
 
-            continue;
+            cn = PeekOrDefault();
+            if (cn.IsSymbol() || cn.IsSpace()) break;
         }
 
         //Logger!.Invoke($"result Token:{cache}");

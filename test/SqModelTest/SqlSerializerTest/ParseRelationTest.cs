@@ -67,4 +67,56 @@ public class ParseRelationTest
 
         Assert.Equal(relationSql, text);
     }
+
+    [Fact]
+    public void IsNull()
+    {
+        /// inner join table_b as b on ...
+        var relationSql = @"a.id1 is null";
+        using var p = new Parser(relationSql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseRelation();
+        var text = clause.ToQuery().CommandText;
+
+        Assert.Equal(relationSql, text);
+    }
+
+    [Fact]
+    public void IsNotNull()
+    {
+        /// inner join table_b as b on ...
+        var relationSql = @"a.id1 is not null";
+        using var p = new Parser(relationSql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseRelation();
+        var text = clause.ToQuery().CommandText;
+
+        Assert.Equal(relationSql, text);
+    }
+
+    [Fact]
+    public void IsNullAnd()
+    {
+        /// inner join table_b as b on ...
+        var relationSql = @"a.id1 is null and a.id1 is not null";
+        using var p = new Parser(relationSql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseRelation();
+        var text = clause.ToQuery().CommandText;
+
+        Assert.Equal("a.id1 is null", text);
+    }
+
+    [Fact]
+    public void IsNotNullAnd()
+    {
+        /// inner join table_b as b on ...
+        var relationSql = @"a.id1 is not null and a.id1 is not null";
+        using var p = new Parser(relationSql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseRelation();
+        var text = clause.ToQuery().CommandText;
+
+        Assert.Equal("a.id1 is not null", text);
+    }
 }
