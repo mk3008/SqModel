@@ -8,15 +8,20 @@ namespace SqModel;
 
 public class ConditionGroupClause
 {
-    public string LogincalOperator { get; set; } = "or";
+    public string LogicalOperator { get; set; } = "and";
 
     public List<ConditionClause> ConditionClauses { get; set; } = new();
 
+    public List<ConditionGroupClause> ConditionGroupClauses { get; set; } = new();
+
     public Query ToQuery()
     {
-        var q = ConditionClauses.Select(c => c.ToQuery()).ToList().ToQuery($" {LogincalOperator} ");
-        if (ConditionClauses.Count > 1) q.CommandText = $"({q.CommandText})";
+        var q1 = new Query();
+        ConditionClauses.ForEach(x => q1 = q1.Merge(x.ToQuery(), $" {LogicalOperator} "));
+        if (ConditionClauses.Count > 1 && LogicalOperator.ToLower() != "and") q1.CommandText = $"({q1.CommandText})";
 
-        return q;
+        ConditionGroupClauses.ForEach(x => q1 = q1.Merge(x.ToQuery(), $" {LogicalOperator} "));
+
+        return q1;
     }
 }

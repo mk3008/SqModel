@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ConditionClause: IParameterCollection
+public class ConditionClause
 {
-    public string CommandText { get; set; } = string.Empty;
+    public ValueClause Source { get; set; } = new();
 
-    /// <summary>
-    /// SQL Parameter.
-    /// Specify the parameter name and value used in the command.
-    /// </summary>
-    public Dictionary<string, object> Parameters { get; set; } = new();
+    public ValueClause Destination { get; set; } = new();
+
+    public string Sign { get; set; } = "=";
 
     public Query ToQuery()
     {
-        return new Query() { CommandText = CommandText, Parameters = Parameters };
+        var sq = Source.ToQuery();
+        var ds = Destination.ToQuery();
+        sq = sq.Merge(ds, $" {Sign} ");
+        return sq;
     }
 }

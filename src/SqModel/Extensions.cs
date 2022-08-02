@@ -52,7 +52,8 @@ internal static class Extensions
     public static Query Merge(this Query source, Query query, string separator)
     {
         var text = source.CommandText;
-        if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
+        if (source.CommandText == string.Empty) text = query.CommandText;
+        else if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
 
         var prm = new Dictionary<string, object>();
         prm.Merge(source.Parameters);

@@ -16,17 +16,18 @@ public static class SelectQueryWhere
         return g.Where(table, column, parameterName, parameterValue);
     }
 
-    public static ConditionClause Where(this SelectQuery source, string commandText)
+    public static ConditionClause Where(this SelectQuery source, string sourcevalue, string sign, string destinationvalue)
     {
         var g = new ConditionGroupClause();
         source.WhereClause.ConditionGroupClauses.Add(g);
 
-        return g.Where(commandText);
+        return g.Where(sourcevalue, sign, destinationvalue);
     }
 
-    public static void Where(this SelectQuery source, Action<ConditionGroupClause> action)
+    public static void Where(this SelectQuery source, string @operator, Action<ConditionGroupClause> action)
     {
         var g = new ConditionGroupClause();
+        g.LogicalOperator = @operator;
         source.WhereClause.ConditionGroupClauses.Add(g);
         action(g);
     }

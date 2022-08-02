@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Compile Remove="Column.cs" />
+    <Compile Remove="JoinColumnRelationClause.cs" />
     <Compile Remove="Serialization\ColumnTokenSet.cs" />
     <Compile Remove="Serialization\ConditionCollectionTokenSet.cs" />
     <Compile Remove="Serialization\ConditionTokenSet.cs" />

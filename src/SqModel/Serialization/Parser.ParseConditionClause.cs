@@ -8,11 +8,11 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    public RelationClause ParseRelation()
+    public ConditionClause ParseRelation()
     {
         Logger?.Invoke($"ParseRelation start");
 
-        var r = new RelationClause();
+        var r = new ConditionClause();
 
         r.Source = ParseValueClause();
         r.Sign = CurrentToken;

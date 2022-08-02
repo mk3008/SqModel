@@ -32,13 +32,13 @@ public class TableClause
 
     public string SourceAlias { get; set; } = string.Empty;
 
-    public JoinColumnRelationClause JoinColumnRelationClause { get; set; } = new();
+    public ConditionGroupClause RelationConditionClause { get; set; } = new();
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 
     public TableClause Add(string sourceColumn, string destinationColumn, string sign = "=")
     {
-        JoinColumnRelationClause.ColumnRelationClauses.Add(new RelationClause()
+        RelationConditionClause.ConditionClauses.Add(new ConditionClause()
         {
             Source = new ValueClause() { TableName = SourceAlias, Value = sourceColumn },
             Destination = new ValueClause() { TableName = AliasName, Value = destinationColumn },
@@ -105,7 +105,7 @@ public class TableClause
         var q = fnQuery();
         if (RelationType == RelationTypes.Root || RelationType == RelationTypes.Cross) return q;
 
-        return q.Merge(JoinColumnRelationClause.ToQuery(), " on ");
+        return q.Merge(RelationConditionClause.ToQuery(), " on ");
     }
 
     public IEnumerable<CommonTableClause> GetCommonTableClauses()
