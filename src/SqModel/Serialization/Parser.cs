@@ -47,7 +47,7 @@ public partial class Parser
 
     public static char[] SpaceTokens = " \t\r\n;".ToCharArray();
 
-    public static char[] SymbolTokens = "+-*/.,()!=%<>".ToCharArray();
+    public static char[] SymbolTokens = "+-*/.,()!=%<>'".ToCharArray();
 
     public static char[] LetterChars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 

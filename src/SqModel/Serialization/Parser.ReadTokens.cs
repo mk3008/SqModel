@@ -84,6 +84,7 @@ public partial class Parser
             {
                 isSymbolToken = true;
                 cache.Append(Read());
+                if (cache.Length == 1 && cache.ToString() == "(") break;
                 if (cache.Length == 2 && (cache.ToString() == "--" || cache.ToString() == "/*")) break;
                 cn = PeekOrDefault();
                 if (!cn.IsSymbol()) break;
