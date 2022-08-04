@@ -14,7 +14,7 @@ public partial class Parser
 
         var c = new CommonTableClause();
         var isSelect = false;
-        foreach (var token in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
+        foreach (var token in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
             Logger?.Invoke($"token : {token}");
             if (string.IsNullOrEmpty(c.AliasName))

@@ -17,7 +17,7 @@ public partial class Parser
         //var isSelect = false;
         var level = 1;
 
-        foreach (var item in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
+        foreach (var item in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
             var token = item;
             Logger?.Invoke($"token : {token}");

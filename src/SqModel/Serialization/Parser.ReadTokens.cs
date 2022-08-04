@@ -10,7 +10,7 @@ public partial class Parser
 {
     public string CurrentToken { get; private set; } = string.Empty;
 
-    public IEnumerable<string> ReadAllTokens()
+    public IEnumerable<string> ReadTokens()
     {
         while (true)
         {

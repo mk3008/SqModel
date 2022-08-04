@@ -83,7 +83,7 @@ public partial class Parser
 
             using (var parser = new Parser(t) { Logger = Logger })
             {
-                var f = parser.ReadAllTokens().FirstOrDefault();
+                var f = parser.ReadTokens().FirstOrDefault();
                 if (f?.ToLower() == "select") isInlineQuery = true;
             }
 
@@ -100,7 +100,7 @@ public partial class Parser
 
         var refreshInLineQueryFlag = (string t) => maybeIineQuery = (t == "(" && cache.Count == 1) ? true : false;
 
-        foreach (var token in ReadAllTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
+        foreach (var token in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
         {
             Logger?.Invoke($"token : {token}");
 
