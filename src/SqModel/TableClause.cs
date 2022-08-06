@@ -38,11 +38,13 @@ public class TableClause
 
     public TableClause Add(string sourceColumn, string destinationColumn, string sign = "=")
     {
-        RelationConditionClause.ConditionClauses.Add(new ConditionClause()
+        var operatorToken = (RelationConditionClause.Conditions.Any()) ? "and" : string.Empty;
+        RelationConditionClause.Conditions.Add(new ConditionClause()
         {
             Source = new ValueClause() { TableName = SourceAlias, Value = sourceColumn },
             Destination = new ValueClause() { TableName = AliasName, Value = destinationColumn },
-            Sign = sign
+            Sign = sign, 
+            Operator = operatorToken
         });
         return this;
     }

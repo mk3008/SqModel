@@ -8,17 +8,17 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    public ConditionClause ParseRelation()
+    public ConditionClause ParseCondition(bool includeCurrentToken= false)
     {
-        Logger?.Invoke($"ParseRelation start");
+        Logger?.Invoke($"ParseCondition start");
 
-        var r = new ConditionClause();
+        var c = new ConditionClause();
 
-        r.Source = ParseValueClause();
-        r.Sign = CurrentToken;
-        r.Destination = ParseValueClause();
+        c.Source = ParseValueClause(includeCurrentToken);
+        c.Sign = CurrentToken;
+        c.Destination = ParseValueClause();
 
-        Logger?.Invoke($"ParseRelation end : {r.ToQuery().CommandText}");
-        return r;
+        Logger?.Invoke($"ParseCondition end : {c.ToQuery().CommandText}");
+        return c;
     }
 }

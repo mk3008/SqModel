@@ -8,13 +8,13 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    public CommonTableClause ParseCommonTableClause()
+    public CommonTableClause ParseCommonTableClause(bool includeCurrentToken = false)
     {
         Logger?.Invoke($"ParseCommonTableClause start");
 
         var c = new CommonTableClause();
         var isSelect = false;
-        foreach (var token in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
+        foreach (var token in ReadTokensWithoutComment(includeCurrentToken))
         {
             Logger?.Invoke($"token : {token}");
             if (string.IsNullOrEmpty(c.AliasName))

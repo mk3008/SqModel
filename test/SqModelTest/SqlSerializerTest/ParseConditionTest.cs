@@ -9,9 +9,9 @@ using Xunit.Abstractions;
 
 namespace SqModelTest.SqlSerializerTest;
 
-public class ParseRelationTest
+public class ParseConditionTest
 {
-    public ParseRelationTest(ITestOutputHelper output)
+    public ParseConditionTest(ITestOutputHelper output)
     {
         Output = output;
     }
@@ -25,7 +25,7 @@ public class ParseRelationTest
         var relationSql = "a.id1 = b.id2";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
 
         Assert.Equal(relationSql, clause.ToQuery().CommandText);
     }
@@ -37,7 +37,7 @@ public class ParseRelationTest
         var relationSql = "a.id1 = (1+2) * 3";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
 
         Assert.Equal(relationSql, clause.ToQuery().CommandText);
     }
@@ -49,7 +49,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 = (select x.id from table_x as x)";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -62,7 +62,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 >= 10";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -75,7 +75,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 is null";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -88,7 +88,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 is not null";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -101,7 +101,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 is null and a.id1 is not null";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal("a.id1 is null", text);
@@ -114,7 +114,7 @@ public class ParseRelationTest
         var relationSql = @"a.id1 is not null and a.id1 is not null";
         using var p = new Parser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseRelation();
+        var clause = p.ParseCondition();
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal("a.id1 is not null", text);

@@ -15,6 +15,8 @@ public static class Extensions
 
     public static bool IsSymbol(this char source) => Parser.SymbolTokens.Where(x => x == source).Any();
 
+    public static bool IsLogicalOperator(this string source) => Parser.LogicalOperatorTokens.Where(x => x == source.ToLower()).Any();
+
     public static string TrimEndSpace(this string source) => source.TrimEnd(Parser.SpaceTokens.ToArray());
 
     //public static ReadTokenResult Trim(this ReadTokenResult source)
@@ -44,5 +46,17 @@ public static class Extensions
     {
         var s = source.ToString().ToLower();
         return tokens.Where(x => x.IndexOf(s) == 0).Any();
+    }
+
+    public static Query InsertToken(this Query source, string token, string splitter = " ")
+    {
+        source.CommandText = $"{token}{splitter}{source.CommandText}";
+        return source;
+    }
+
+    public static Query DecorateBracket(this Query source)
+    {
+        source.CommandText = $"({source.CommandText})";
+        return source;
     }
 }

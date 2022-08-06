@@ -51,6 +51,8 @@ public partial class Parser
 
     public static char[] LetterChars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
+    public static string[] LogicalOperatorTokens = new[] { "and", "or" }; 
+
     //private int Index { get; set; }
 
     //private bool IsTransaction { get; set; } = false;

@@ -10,49 +10,57 @@ public partial class Parser
 {
     public string CurrentToken { get; private set; } = string.Empty;
 
+    public IEnumerable<string> ReadTokensWithoutComment(bool includeCurrentToken)
+    {
+        var tokens = (includeCurrentToken && !string.IsNullOrEmpty(CurrentToken)) ? new[] { CurrentToken } : Enumerable.Empty<string>();
+        return tokens.Union(ReadTokens()).Where(x => !x.StartsWith("--") && !x.StartsWith("/*"));
+    }
+
     public IEnumerable<string> ReadTokens()
     {
         while (true)
         {
-            ReadWhileSpace();
             var token = ReadToken();
-
             if (string.IsNullOrEmpty(token)) break;
 
-            if (token == "'")
+            if (token == "(")
             {
-                token += ReadWhileQuoteToken();
-            }
-            else if (token == "(")
-            {
-                CurrentToken = token;
                 yield return token;
                 token = ReadUntilCloseBracket();
             }
-            else if (token == "--")
-            {
-                token += ReadUntilCrLf();
-            }
-            else if (token == "/*")
-            {
-                token += ReadWhileBlockCommentToken();
-            }
+            yield return token;
+        }
+    }
+
+    public string ReadToken()
+    {
+        ReadWhileSpace();
+
+        var read = () =>
+        {
+            var token = ReadWord();
+
+            if (string.IsNullOrEmpty(token)) return string.Empty;
+
+            if (token == "'") token += ReadWhileQuoteToken();
+            else if (token == "--") token += ReadUntilCrLf();
+            else if (token == "/*") token += ReadWhileBlockCommentToken();
             else if (token.ToLower() == "inner" || token.ToLower() == "cross")
             {
                 ReadWhileSpace();
-                var next = ReadToken();
+                var next = ReadWord();
                 if (next.ToLower() != "join") throw new SyntaxException(token.ToLower());
                 token += " " + next;
             }
             else if (token.ToLower() == "left" || token.ToLower() == "right")
             {
                 ReadWhileSpace();
-                var next = ReadToken();
+                var next = ReadWord();
                 if (next.ToLower() == "outer")
                 {
                     token += " " + next;
                     ReadWhileSpace();
-                    next = ReadToken();
+                    next = ReadWord();
                 }
                 if (next.ToLower() != "join") throw new SyntaxException(token.ToLower());
                 token += " " + next;
@@ -60,20 +68,19 @@ public partial class Parser
             else if (token.ToLower() == "order" || token.ToLower() == "group")
             {
                 ReadWhileSpace();
-                var next = ReadToken();
+                var next = ReadWord();
                 if (next.ToLower() != "by") throw new SyntaxException(token.ToLower());
                 token += " " + next;
             }
+            return token;
+        };
 
-            CurrentToken = token;
-            yield return token;
-        }
+        CurrentToken = read();
+        return CurrentToken;
     }
 
-    public string ReadToken()
+    public string ReadWord()
     {
-        //Logger?.Invoke(">start ReadToken");
-
         var cache = new StringBuilder();
         var isSymbolToken = false;
 
@@ -96,9 +103,6 @@ public partial class Parser
             cn = PeekOrDefault();
             if (cn.IsSymbol() || cn.IsSpace()) break;
         }
-
-        //Logger!.Invoke($"result Token:{cache}");
-        //Logger?.Invoke(">end   ReadToken");
 
         return cache.ToString();
     }

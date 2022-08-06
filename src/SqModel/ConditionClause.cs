@@ -8,6 +8,8 @@ namespace SqModel;
 
 public class ConditionClause
 {
+    public string Operator { get; set; } = String.Empty;
+
     public ValueClause Source { get; set; } = new();
 
     public ValueClause Destination { get; set; } = new();

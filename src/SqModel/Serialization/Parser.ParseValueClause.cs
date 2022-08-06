@@ -22,7 +22,7 @@ public partial class Parser
         "or"
     };
 
-    public ValueClause ParseValueClause()
+    public ValueClause ParseValueClause(bool includeCurrentToken = false)
     {
         Logger?.Invoke($"ParseValueClause start");
 
@@ -100,7 +100,7 @@ public partial class Parser
 
         var refreshInLineQueryFlag = (string t) => maybeIineQuery = (t == "(" && cache.Count == 1) ? true : false;
 
-        foreach (var token in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
+        foreach (var token in ReadTokensWithoutComment(includeCurrentToken))
         {
             Logger?.Invoke($"token : {token}");
 

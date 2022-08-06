@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqModel.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,20 +9,50 @@ namespace SqModel;
 
 public class ConditionGroupClause
 {
-    public string LogicalOperator { get; set; } = "and";
+    public string Operator { get; set; } = String.Empty;
 
-    public List<ConditionClause> ConditionClauses { get; set; } = new();
+    public List<ConditionClause> Conditions { get; set; } = new();
 
-    public List<ConditionGroupClause> ConditionGroupClauses { get; set; } = new();
+    public List<ConditionGroupClause> GroupConditions { get; set; } = new();
+
+    public string Splitter { get; set; } = " ";
 
     public Query ToQuery()
     {
-        var q1 = new Query();
-        ConditionClauses.ForEach(x => q1 = q1.Merge(x.ToQuery(), $" {LogicalOperator} "));
-        if (ConditionClauses.Count > 1 && LogicalOperator.ToLower() != "and") q1.CommandText = $"({q1.CommandText})";
+        var subCount = 0;
+        var totalCount = 0;
 
-        ConditionGroupClauses.ForEach(x => q1 = q1.Merge(x.ToQuery(), $" {LogicalOperator} "));
+        var q = new Query();
 
-        return q1;
+        Conditions.ForEach(x =>
+        {
+            subCount++;
+            totalCount++;
+            if (subCount == 1)
+            {
+                q = x.ToQuery();
+            }
+            else
+            {
+                q = q.Merge(x.ToQuery().InsertToken(x.Operator), Splitter);
+            }
+        });
+
+        subCount = 0;
+        GroupConditions.ForEach(x =>
+        {
+            subCount++;
+            totalCount++;
+            if (subCount == 1 && totalCount == 1)
+            {
+                q = x.ToQuery().DecorateBracket();
+            }
+            else
+            {
+                q = q.Merge(x.ToQuery().DecorateBracket().InsertToken(x.Operator), Splitter);
+            }
+        });
+
+        return q;
     }
 }

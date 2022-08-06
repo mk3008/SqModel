@@ -5,9 +5,9 @@ using Xunit.Abstractions;
 
 namespace SqModelTest.SqlSerializerTest;
 
-public class ReadsTokenTest
+public class ReadTokensTest
 {
-    public ReadsTokenTest(ITestOutputHelper output)
+    public ReadTokensTest(ITestOutputHelper output)
     {
         Output = output;
     }
