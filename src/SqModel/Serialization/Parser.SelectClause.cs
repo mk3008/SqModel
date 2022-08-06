@@ -58,7 +58,7 @@ public partial class Parser
             if (token.ToLower() == "from")
             {
                 //isSelect = false;
-                q.FromClause = ParseTableClause();
+                q.FromClause = ParseTableClause(true);
                 token = CurrentToken;
             }
 

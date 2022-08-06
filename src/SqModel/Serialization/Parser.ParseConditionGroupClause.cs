@@ -21,7 +21,7 @@ public partial class Parser
 
         while (token != String.Empty)
         {
-            if (TableBreakTokens.Where(x => x == token.ToLower()).Any()) break;
+            if (ConditionBreakTokens.Any(token)) break;
             if (token == ")") break;
 
             if (token.IsLogicalOperator())
@@ -50,6 +50,10 @@ public partial class Parser
                 {
                     operatorToken = token.ToLower();
                     token = ReadToken();
+                    continue;
+                }
+                if (token.ToRelationType() != RelationTypes.Undefined)
+                {
                     continue;
                 }
             }

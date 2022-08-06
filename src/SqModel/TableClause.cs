@@ -22,7 +22,7 @@ public class TableClause
         AliasName = aliasName;
     }
 
-    public RelationTypes RelationType { get; set; } = RelationTypes.Root;
+    public RelationTypes RelationType { get; set; } = RelationTypes.Undefined;
 
     public string TableName { get; set; } = String.Empty;
 
@@ -72,14 +72,14 @@ public class TableClause
 
         switch (RelationType)
         {
-            case RelationTypes.Root:
+            case RelationTypes.From:
                 join = "from ";
                 break;
             case RelationTypes.Inner:
                 join = "inner join ";
                 break;
             case RelationTypes.Left:
-                join = "left  join ";
+                join = "left join ";
                 break;
             case RelationTypes.Right:
                 join = "right join ";
@@ -105,7 +105,7 @@ public class TableClause
         };
 
         var q = fnQuery();
-        if (RelationType == RelationTypes.Root || RelationType == RelationTypes.Cross) return q;
+        if (RelationType == RelationTypes.From || RelationType == RelationTypes.Cross) return q;
 
         return q.Merge(RelationConditionClause.ToQuery(), " on ");
     }
@@ -121,7 +121,8 @@ public class TableClause
 
 public enum RelationTypes
 {
-    Root = 1,
+    Undefined = 0,
+    From = 1,
     Inner = 2,
     Left = 3,
     Right = 4,

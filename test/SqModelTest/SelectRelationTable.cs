@@ -94,7 +94,7 @@ inner join table_b as b on a.table_a_id = b.table_b_id";
         var text = q.ToQuery().CommandText;
         var expect = @"select a.value_a, b.value_b
 from table_a as a
-left  join table_b as b on a.table_a_id = b.table_a_id";
+left join table_b as b on a.table_a_id = b.table_a_id";
 
         Assert.Equal(expect, text);
     }
@@ -155,8 +155,8 @@ cross join table_b as b";
         var expect = @"select a.value_a, b.value_b, c.value_c, d.value_d, e.value_e
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
-left  join table_c as c on a.table_a_id = c.table_a_id
-left  join table_d as d on c.table_c_id = d.table_c_id
+left join table_c as c on a.table_a_id = c.table_a_id
+left join table_d as d on c.table_c_id = d.table_c_id
 cross join table_e as e";
 
         Assert.Equal(expect, text);

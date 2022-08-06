@@ -32,6 +32,8 @@ public static class Extensions
         return Parser.LetterChars.Where(x => x == c).Any();
     }
 
+    public static bool Any(this IEnumerable<string> source, string  token) => source.Where(x => x == token.ToLower()).Any();
+
     public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
 
     public static bool IsSymbol(this char? source) => (source == null) ? false : source.Value.IsSymbol();
@@ -59,4 +61,20 @@ public static class Extensions
         source.CommandText = $"({source.CommandText})";
         return source;
     }
+
+    public static RelationTypes ToRelationType(this string source)
+    {
+        if (source.IsFromRealtion()) return RelationTypes.From;
+        else if (source.IsInnerJoinRealtion()) return RelationTypes.Inner;
+        else if (source.IsLeftJoinRelation()) return RelationTypes.Left;
+        else if (source.IsRightJoinRealtion()) return RelationTypes.Right;
+        else if (source.IsCrossJoinRealtion()) return RelationTypes.Cross;
+        return RelationTypes.Undefined;
+    }
+
+    public static bool IsFromRealtion(this string source) => Parser.FromTokens.Where(x => x == source.ToLower()).Any();
+    public static bool IsInnerJoinRealtion(this string source) => Parser.InnerJoinTokens.Where(x => x == source.ToLower()).Any();
+    public static bool IsLeftJoinRelation(this string source) => Parser.LeftJoinTokens.Where(x => x == source.ToLower()).Any();
+    public static bool IsRightJoinRealtion(this string source) => Parser.RightJoinTokens.Where(x => x == source.ToLower()).Any();
+    public static bool IsCrossJoinRealtion(this string source) => Parser.CrossJoinTokens.Where(x => x == source.ToLower()).Any();
 }
