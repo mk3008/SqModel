@@ -92,6 +92,7 @@ public partial class Parser
             using var p = new Parser(token);
             p.Logger = Logger;
             t.SubSelectClause = p.ParseSelectQuery();
+            isSubQuery = false;
             isAlias = true;
         };
 

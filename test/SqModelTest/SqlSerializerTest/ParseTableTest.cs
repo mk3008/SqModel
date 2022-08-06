@@ -75,4 +75,38 @@ cross join table_e as e";
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
+
+    [Fact]
+    public void SubQuery()
+    {
+        /// inner join table_b as b on ...
+        var sql = @"from (
+    select *
+    from table_a
+) as a";
+        using var p = new Parser(sql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseTableClause();
+
+        Assert.Equal(sql, clause.ToQuery().CommandText);
+    }
+
+    [Fact]
+    public void SubQueryMany()
+    {
+        /// inner join table_b as b on ...
+        var sql = @"from (
+    select *
+    from table_a
+) as a
+inner join (
+    select *
+    from table_b
+) as b on a.column_1 = b.column_1";
+        using var p = new Parser(sql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var clause = p.ParseTableClause();
+
+        Assert.Equal(sql, clause.ToQuery().CommandText);
+    }
 }
