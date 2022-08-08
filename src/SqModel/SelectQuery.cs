@@ -31,32 +31,6 @@ public class SelectQuery
 
     public Query ToQuery() => ToQueryCore(true);
 
-    //public Query ToSubQuery()
-    //{
-    //    var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
-    //    var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
-
-    //    //parameter
-    //    var prms = new Dictionary<string, object>();
-    //    prms.Merge(fromQ.Parameters);
-    //    prms.Merge(selectQ.Parameters);
-
-    //    //command text
-    //    var sb = new StringBuilder();
-
-    //    var s = selectQ.CommandText;
-    //    var f = fromQ.CommandText;
-    //    if (s == $"select {FromClause.TableName}.*" && f == $"from {FromClause.TableName}")
-    //    {
-    //        sb.Append(FromClause.TableName);
-    //    }
-    //    else
-    //    {
-    //        sb.Append($"(\r\n{s.Indent()}\r\n{f.Indent()}\r\n)");
-    //    }
-    //    return new Query() { CommandText = sb.ToString(), Parameters = prms };
-    //}
-
     public Query ToSubQuery() => ToQueryCore(false);
 
     public Query ToInlineQuery() => ToQueryCore(false, " ");

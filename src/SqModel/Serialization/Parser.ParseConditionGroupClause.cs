@@ -8,8 +8,6 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    //private static string[] ConditionBreakTokens = TableBreakTokens.ToArray();
-
     public ConditionGroupClause ParseConditionGroup()
     {
         Logger?.Invoke($"ParseConditionGroup start");

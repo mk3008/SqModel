@@ -13,8 +13,6 @@ public partial class Parser
         Logger?.Invoke($"ParseSelectQuery start");
         
         var q = new SelectQuery();
-        //var isWith = false;
-        //var isSelect = false;
         var level = 1;
 
         foreach (var item in ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*")))
@@ -29,7 +27,6 @@ public partial class Parser
 
             if (token.ToLower() == "with")
             {
-                //isWith = true;
                 q.With.CommonTableAliases.Add(ParseCommonTableClause());
                 token = CurrentToken;
 
@@ -42,9 +39,6 @@ public partial class Parser
 
             if (token.ToLower() == "select")
             {
-                //isWith = false;
-                //isSelect = true;
-
                 q.SelectClause.ColumnClauses.Add(ParseValueClause());
                 token = CurrentToken;
 
@@ -57,7 +51,6 @@ public partial class Parser
 
             if (token.ToLower() == "from")
             {
-                //isSelect = false;
                 q.FromClause = ParseTableClause(true);
                 token = CurrentToken;
             }
