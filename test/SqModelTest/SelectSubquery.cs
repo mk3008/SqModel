@@ -18,7 +18,10 @@ public class SelectSubquery
 
         var text = q.ToQuery().CommandText;
         var expect = @"select a.*
-from table_a as a";
+from (
+    select table_a.*
+    from table_a
+) as a";
 
         Assert.Equal(expect, text);
     }
@@ -42,8 +45,14 @@ from table_a as a";
 
         var text = q.ToQuery().CommandText;
         var expect = @"select a.*, b.*
-from table_a as a
-inner join table_b as b on a.table_a_id = b.table_a_id";
+from (
+    select table_a.*
+    from table_a
+) as a
+inner join (
+    select table_b.*
+    from table_b
+) as b on a.table_a_id = b.table_a_id";
 
         Assert.Equal(expect, text);
     }

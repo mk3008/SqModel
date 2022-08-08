@@ -10,7 +10,7 @@ namespace SqModel;
 /// Column clause.
 /// Define the column to get.
 /// </summary>
-public class ColumnClause : IParameterCollection
+public class ValueClause : IParameterCollection
 {
     /// <summary>
     /// Table name.
@@ -19,15 +19,11 @@ public class ColumnClause : IParameterCollection
     public string TableName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Column name.
+    /// Value name.
     /// </summary>
-    public string ColumnName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// SQL command text.
-    /// Specify a command to get a value other than a simple column value, such as an operation result.
-    /// </summary>
-    public string CommandText { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+        
+    public SelectQuery? InlineQuery { get; set; }
 
     /// <summary>
     /// Column alias name.
@@ -47,23 +43,26 @@ public class ColumnClause : IParameterCollection
     /// <returns></returns>
     public string GetName()
     {
-        if (ColumnName == "*") return String.Empty;
-        return (AliasName != String.Empty) ? AliasName : ColumnName;
+        if (Value == "*") return String.Empty;
+        return (AliasName != String.Empty) ? AliasName : Value;
     }
-
-    private string GetCommandText()
-    {
-        if (CommandText != string.Empty) return CommandText;
-        if (TableName != String.Empty) return $"{TableName}.{ColumnName}";
-        return ColumnName;
-    }
-
 
     public Query ToQuery()
     {
         var name = GetName();
-        var alias = (name != string.Empty && name != ColumnName) ? $" as {name}" : string.Empty;
+        var alias = (name != string.Empty && name != Value) ? $" as {name}" : string.Empty;
 
-        return new Query() { CommandText = $"{GetCommandText()}{alias}", Parameters = Parameters };
+        if (InlineQuery != null)
+        {
+            var q = InlineQuery.ToInlineQuery();
+            return new Query() { CommandText = $"({q.CommandText}){alias}", Parameters = q.Parameters };
+        }
+
+        if (TableName != String.Empty)
+        {
+            return new Query() { CommandText = $"{TableName}.{Value}{alias}", Parameters = Parameters };
+        }
+
+        return new Query() { CommandText = $"{Value}{alias}", Parameters = Parameters };
     }
 }
