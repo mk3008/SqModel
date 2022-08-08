@@ -10,17 +10,26 @@ internal static class Extensions
 {
     public static string ToString<T>(this IEnumerable<T> source, string separator)
     {
-        return string.Join(separator, source);
+        var sb = new StringBuilder();
+        var prev = string.Empty;
+        foreach (var item in source)
+        {
+            if (item == null || item.ToString() == string.Empty) throw new Exception();
+            if (prev != string.Empty && prev != "(" && item.ToString() != ")") sb.Append(separator);
+            prev = item.ToString();
+            sb.Append(prev);
+        }
+        return sb.ToString();
     }
 
-    public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair< T1, T2>> action) where T1 : notnull
+    public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair<T1, T2>> action) where T1 : notnull
     {
         foreach (var x in source) action(x);
     }
 
     public static Dictionary<T1, T2> Merge<T1, T2>(this Dictionary<T1, T2> source, Dictionary<T1, T2> dic) where T1 : notnull
     {
-        dic.ForEach(x => source[x.Key] = x.Value);       
+        dic.ForEach(x => source[x.Key] = x.Value);
         return source;
     }
 
@@ -43,7 +52,8 @@ internal static class Extensions
     public static Query Merge(this Query source, Query query, string separator)
     {
         var text = source.CommandText;
-        if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
+        if (source.CommandText == string.Empty) text = query.CommandText;
+        else if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
 
         var prm = new Dictionary<string, object>();
         prm.Merge(source.Parameters);
@@ -57,13 +67,19 @@ internal static class Extensions
         for (int i = 0; i < source; i++) action(i);
     }
 
+    public static string Space(this int source)
+    {
+        var space = string.Empty;
+        source.ForEach(x => space += " ");
+        return space;
+    }
+
     public static string Indent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
         if (source == string.Empty) return source;
 
-        var space = string.Empty;
-        spaceCount.ForEach(x => space += " ");
+        var indent = spaceCount.Space();
 
-        return $"{space}{source.Replace(separator, $"{separator}{space}")}";
+        return $"{indent}{source.Replace(separator, $"{separator}{indent}")}";
     }
 }

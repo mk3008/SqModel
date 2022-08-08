@@ -8,23 +8,16 @@ namespace SqModel;
 
 public static class ConditionGroupClauseWhere
 {
-    public static ConditionClause Where(this ConditionGroupClause source, TableClause table, string column, string parameterName, object parameterValue)
+    public static ConditionClause WhereOr(this ConditionGroupClause source, string sourcevalue, string sign, string destinationvalue) => source.Where("or", sourcevalue, sign, destinationvalue);
+
+    private static ConditionClause Where(this ConditionGroupClause source, string operatorToken, string sourcevalue, string sign, string destinationvalue)
     {
         var c = new ConditionClause();
-        c.CommandText = $"{table.AliasName}.{column} = {parameterName}";
-        c.Parameters.Add(parameterName, parameterValue);
-
-        source.ConditionClauses.Add(c);
-
-        return c;
-    }
-
-    public static ConditionClause Where(this ConditionGroupClause source, string commandText)
-    {
-        var c = new ConditionClause();
-        c.CommandText = commandText;
-
-        source.ConditionClauses.Add(c);
+        c.Operator = operatorToken;
+        c.Source = new ValueClause() { Value = sourcevalue };
+        c.Sign = sign;
+        c.Destination = new ValueClause() { Value = destinationvalue };
+        source.Conditions.Add(c);
 
         return c;
     }

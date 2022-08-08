@@ -8,12 +8,12 @@ namespace SqModel;
 
 public class WhereClause
 {
-    public List<ConditionGroupClause> ConditionGroupClauses { get; set; } = new();
+    public ConditionGroupClause ConditionClause { get; set; } = new() { Splitter = "\r\n"};
 
     public Query ToQuery()
     {
-        var q = ConditionGroupClauses.Select(c => c.ToQuery()).ToList().ToQuery("\r\nand ");
-        if (ConditionGroupClauses.Any()) q.CommandText = $"where\r\n{q.CommandText.Indent()}";
+        var q = ConditionClause.ToQuery();
+        if (q.CommandText != String.Empty) q.CommandText = $"where\r\n{q.CommandText.Indent()}";
         return q;
     }
 }

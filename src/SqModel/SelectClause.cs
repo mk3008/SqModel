@@ -14,7 +14,7 @@ public class SelectClause
 {
     public bool IsDistinct { get; set; } = false;
 
-    public List<ColumnClause> ColumnClauses { get; set; } = new();
+    public List<ValueClause> ColumnClauses { get; set; } = new();
 
     public List<string> GetColumnNames()
     {

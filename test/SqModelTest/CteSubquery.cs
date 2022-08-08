@@ -53,7 +53,10 @@ a as (
     from table_a
 )
 select y.*
-from a as y";
+from (
+    select a.*
+    from a
+) as y";
 
         Assert.Equal(expect, text);
     }
@@ -74,7 +77,10 @@ a as (
     from table_a
 )
 select a.*
-from a";
+from (
+    select a.*
+    from a
+) as a";
 
         Assert.Equal(expect, text);
 
@@ -92,7 +98,10 @@ a as (
 ),
 y as (
     select a.*
-    from a
+    from (
+        select a.*
+        from a
+    ) as a
 )
 select y.*
 from y";
