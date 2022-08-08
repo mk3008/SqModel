@@ -20,6 +20,24 @@ public class ParseTest
     private readonly ITestOutputHelper Output;
 
     [Fact]
+    public void Simple()
+    {
+        using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select a.column_1 as col1, a.column_2 as col2
+from table_a as a";
+        Assert.Equal(expect, text);
+
+        Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
+        Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
+        Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+
+        Assert.Equal("table_a", q.FromClause.TableName);
+        Assert.Equal("a", q.FromClause.AliasName);
+    }
+
+    [Fact]
     public void Full()
     {
         using var p = new Parser(@"select
@@ -71,7 +89,7 @@ where
         //FromClause
         Assert.Equal("table_a", q.FromClause.TableName);
         Assert.Equal("a", q.FromClause.AliasName);
-        Assert.Equal(3, q.FromClause.SubTableClauses.Count);       
+        Assert.Equal(3, q.FromClause.SubTableClauses.Count);
 
         //SubTableClauses
         Assert.Equal(RelationTypes.Inner, q.FromClause.SubTableClauses[0].RelationType);
@@ -85,7 +103,7 @@ where
         Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.Conditions[0].Destination.Value);
 
         //WhereClauses
-        Assert.Equal(2,q.WhereClause.ConditionClause.Conditions.Count);
+        Assert.Equal(2, q.WhereClause.ConditionClause.Conditions.Count);
         Assert.Equal("or", q.WhereClause.ConditionClause.Conditions[1].Operator);
         Assert.Equal("a", q.WhereClause.ConditionClause.Conditions[1].Source.TableName);
         Assert.Equal("column_2", q.WhereClause.ConditionClause.Conditions[1].Source.Value);

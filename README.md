@@ -1,5 +1,6 @@
 # SqModel
 A lightweight library that allows you to easily build Select queries.
+You can also parse handwritten Sql.
 
 ## Demo
 ```cs
@@ -30,6 +31,7 @@ Assert.Equal(1, acutal.Parameters[":id"]);
 - Supports view creation queries.
 - Supports insert queries.
 - Modest SQL formatting.
+- Handwritten Sql parsing.
 
 ## Constraints
 - There is no SQL syntax check function.
@@ -169,7 +171,7 @@ inner join (
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where(table_a, "id", ":id", 1);
+        q.WhereAnd(table_a, "id", ":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -191,10 +193,10 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where(g =>
+        q.WhereAnd(g =>
         {
-            g.Where("table_a.id = :id1").AddParameter(":id1", 1);
-            g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+            g.WhereOr("table_a.id = :id1").AddParameter(":id1", 1);
+            g.WhereOr("table_a.id = :id2").AddParameter(":id2", 2);
         });
 
         var acutal = q.ToQuery();
@@ -216,17 +218,17 @@ where
     public void WhereOnly()
     {
         var q = new SelectQuery();
-        q.Where(g =>
+        q.WhereAnd("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
+        q.WhereAnd(g =>
         {
-            g.Where("table_a.id = :id1").AddParameter(":id1", 1);
-            g.Where("table_a.id = :id2").AddParameter(":id2", 2);
+            g.WhereOr("table_a.id = :id1").AddParameter(":id1", 1);
+            g.WhereOr("table_a.id = :id2").AddParameter(":id2", 2);
         });
-        q.Where("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.WhereClause.ToQuery();
         var expect = @"where
-    (table_a.id = :id1 or table_a.id = :id2)
-    and table_a.sub_id = :sub_id";
+    table_a.sub_id = :sub_id
+    and (table_a.id = :id1 or table_a.id = :id2)";
 
         Assert.Equal(expect, acutal.CommandText);
         Assert.Equal(3, acutal.Parameters.Count);
@@ -326,3 +328,26 @@ from table_a as a";
     }
 ````
 
+### ParseÅiversion 0.4 or laterÅj
+You can parse handwritten SQL and use it as SqModel.
+Table joins and inline queries can be parsed, but there are patterns that cannot be parsed (ex.group by, order by).
+
+```c
+    [Fact]
+    public void Simple()
+    {
+        using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select a.column_1 as col1, a.column_2 as col2
+from table_a as a";
+        Assert.Equal(expect, text);
+
+        Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
+        Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
+        Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+
+        Assert.Equal("table_a", q.FromClause.TableName);
+        Assert.Equal("a", q.FromClause.AliasName);
+    }
+```
