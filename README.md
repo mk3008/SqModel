@@ -328,7 +328,7 @@ from table_a as a";
     }
 ````
 
-### Parseiversion 0.4 or laterj
+### Parse(version 0.4 or later)
 You can parse handwritten SQL and use it as SqModel.
 Table joins and inline queries can be parsed, but there are patterns that cannot be parsed (ex.group by, order by).
 
