@@ -8,51 +8,6 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    private string[] ConditionBreakTokens =
-        InnerJoinTokens
-        .Union(LeftJoinTokens)
-        .Union(RightJoinTokens)
-        .Union(CrossJoinTokens)
-        .Union(TableBreakTokens)
-        .Union(QueryBreakTokens).ToArray();
-
-    public static string[] FromTokens = new[]
-    {
-        "from",
-    };
-
-    public static string[] InnerJoinTokens = new[]
-    {
-        "inner join",
-    };
-
-    public static string[] LeftJoinTokens = new[]
-    {
-        "left join",
-        "left outer join",
-    };
-
-    public static string[] RightJoinTokens = new[]
-    {
-        "right join",
-        "right outer join",
-    };
-
-    public static string[] CrossJoinTokens = new[]
-    {
-        "cross join",
-    };
-
-    public static string[] TableBreakTokens = new[]
-    {
-        "where",
-    };
-
-    public static string[] QueryBreakTokens = new[]
-    {
-        ";",
-    };
-
     public TableClause ParseTableClause(bool includeCurrentToken = false)
     {
         Logger?.Invoke($"ParseTableClause start");

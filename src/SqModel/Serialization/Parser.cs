@@ -51,7 +51,81 @@ public partial class Parser
 
     public static char[] LetterChars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
-    public static string[] LogicalOperatorTokens = new[] { "and", "or" }; 
+    public static string[] LogicalOperatorTokens = new[] {
+        "and",
+        "or"
+    };
+
+    public static string[] FromTokens = new[]
+    {
+        "from",
+    };
+
+    public static string[] InnerJoinTokens = new[]
+    {
+        "inner join",
+    };
+
+    public static string[] LeftJoinTokens = new[]
+    {
+        "left join",
+        "left outer join",
+    };
+
+    public static string[] RightJoinTokens = new[]
+    {
+        "right join",
+        "right outer join",
+    };
+
+    public static string[] CrossJoinTokens = new[]
+    {
+        "cross join",
+    };
+
+    public static string[] WhereTokens = new[]
+    {
+        "where",
+    };
+
+    public static string[] QueryBreakTokens = new[]
+    {
+        ";",
+    };
+
+    private static string[] ColumnSplitTokens = new[] {
+        ",",
+    };
+
+    private static string[] SignTokens = new[] {
+        "=",
+        "!=",
+        ">",
+        ">=",
+        "<",
+        "<=",
+        "is",
+    };
+
+    private string[] ValueBreakTokens =
+        ColumnSplitTokens
+        .Union(FromTokens)
+        .Union(InnerJoinTokens)
+        .Union(LeftJoinTokens)
+        .Union(RightJoinTokens)
+        .Union(CrossJoinTokens)
+        .Union(WhereTokens)
+        .Union(QueryBreakTokens)
+        .Union(SignTokens)
+        .Union(LogicalOperatorTokens).ToArray();
+
+    private string[] ConditionBreakTokens =
+        InnerJoinTokens
+        .Union(LeftJoinTokens)
+        .Union(RightJoinTokens)
+        .Union(CrossJoinTokens)
+        .Union(WhereTokens)
+        .Union(QueryBreakTokens).ToArray();
 
     //private int Index { get; set; }
 

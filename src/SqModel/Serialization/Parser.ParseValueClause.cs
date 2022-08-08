@@ -8,32 +8,6 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    private static string[] ColumnSplitTokens = new[] {
-        ",",
-    };
-
-    private static string[] SignTokens = new[] {
-        "=",
-        "!=",
-        ">",
-        ">=",
-        "<",
-        "<=",
-        "is",
-    };
-
-    private string[] ValueBreakTokens =
-        ColumnSplitTokens
-        .Union(FromTokens)
-        .Union(InnerJoinTokens)
-        .Union(LeftJoinTokens)
-        .Union(RightJoinTokens)
-        .Union(CrossJoinTokens)
-        .Union(TableBreakTokens)
-        .Union(QueryBreakTokens)
-        .Union(SignTokens)
-        .Union(LogicalOperatorTokens).ToArray();
-
     public ValueClause ParseValueClause(bool includeCurrentToken = false)
     {
         Logger?.Invoke($"ParseValueClause start");

@@ -64,7 +64,7 @@ public partial class Parser
 
             if (token.ToLower() == "where")
             {
-                //q.WhereClause = null;
+                q.WhereClause = ParseWhereClause();
                 continue;
             };
 

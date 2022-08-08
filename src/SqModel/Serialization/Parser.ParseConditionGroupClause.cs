@@ -52,10 +52,7 @@ public partial class Parser
                     token = ReadToken();
                     continue;
                 }
-                if (token.ToRelationType() != RelationTypes.Undefined)
-                {
-                    continue;
-                }
+                continue;
             }
 
             operatorToken = string.Empty;
