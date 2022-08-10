@@ -33,7 +33,6 @@ public partial class Parser
         var level = 1;
         var isTable = true;
         var isSubQuery = false;
-        var isAlias = false;
 
         var setRelationType = (string token) =>
         {
@@ -48,20 +47,12 @@ public partial class Parser
             p.Logger = Logger;
             t.SubSelectClause = p.ParseSelectQuery();
             isSubQuery = false;
-            isAlias = true;
         };
 
         var setTableName = (string token) =>
         {
             t.TableName = token;
             isTable = false;
-            isAlias = true;
-        };
-
-        var setAlias = (string token) =>
-        {
-            t.AliasName = token;
-            isAlias = false;
         };
 
         foreach (var tmp in ReadTokensWithoutComment(includeCurrentToken))
@@ -101,27 +92,18 @@ public partial class Parser
                 continue;
             }
 
-            if (token.ToLower() == "as")
-            {
-                isAlias = true;
-                continue;
-            }
+            if (ConditionBreakTokens.Any(token)) break;
 
-            if (isAlias)
-            {
-                setAlias(token);
-                continue;
-            }
+            if (token.ToLower() == "as") continue;
 
             if (token.ToLower() == "on")
             {
-                isAlias = false;
                 t.RelationConditionClause = ParseConditionGroup();
                 if (string.IsNullOrEmpty(CurrentToken) || ConditionBreakTokens.Any(CurrentToken)) break;
                 continue;
             }
 
-            if (ConditionBreakTokens.Any(token)) break;
+            t.AliasName = token;
         }
 
         if (t.AliasName == String.Empty) t.AliasName = t.TableName;

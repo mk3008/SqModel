@@ -109,4 +109,17 @@ inner join (
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
+
+    [Fact]
+    public void AliasOmit()
+    {
+        var sql = @"from table_a
+inner join table_b on table_a.column_1 = table_b.column_1";
+
+        using var p = new Parser(sql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var sq = p.ParseTableClause();
+        var text = sq.ToQuery().CommandText;
+        Assert.Equal(sql, sq.ToQuery().CommandText);
+    }
 }
