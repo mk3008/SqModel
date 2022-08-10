@@ -26,6 +26,8 @@ public static class Extensions
 
     public static bool Any(this IEnumerable<string> source, string  token) => source.Where(x => x == token.ToLower()).Any();
 
+    public static bool Any(this string source, char token) => source.ToArray().Where(x => x == token).Any();
+
     public static bool IsSpace(this char? source) => (source == null) ? false : source.Value.IsSpace();
 
     public static bool IsSymbol(this char? source) => (source == null) ? false : source.Value.IsSymbol();
