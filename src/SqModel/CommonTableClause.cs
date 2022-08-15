@@ -19,7 +19,7 @@ public class CommonTableClause
     public Query ToQuery()
     {
         var q = (SelectQuery != null) ? SelectQuery.ToSubQuery() : new Query() { CommandText = CommandText, Parameters = Parameters };
-        q.CommandText = $"{AliasName} as (\r\n{q.CommandText.Indent()}\r\n)";
+        q.CommandText = $"{AliasName} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
 
         return q;
     }

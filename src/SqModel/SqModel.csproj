@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <Compile Remove="Column.cs" />
+    <Compile Remove="ConditionGroupClause.cs" />
+    <Compile Remove="ConditionGroupClause.Where.cs" />
     <Compile Remove="JoinColumnRelationClause.cs" />
     <Compile Remove="Serialization\ColumnTokenSet.cs" />
     <Compile Remove="Serialization\ConditionCollectionTokenSet.cs" />

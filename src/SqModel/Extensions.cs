@@ -14,7 +14,7 @@ internal static class Extensions
         var prev = string.Empty;
         foreach (var item in source)
         {
-            if (item == null || item.ToString() == string.Empty) throw new Exception();
+            if (item == null || item.ToString().IsEmpty()) throw new Exception();
             if (prev != string.Empty && prev != "(" && item.ToString() != ")") sb.Append(separator);
             prev = item.ToString();
             sb.Append(prev);
@@ -52,8 +52,8 @@ internal static class Extensions
     public static Query Merge(this Query source, Query query, string separator)
     {
         var text = source.CommandText;
-        if (source.CommandText == string.Empty) text = query.CommandText;
-        else if (query.CommandText != string.Empty) text += $"{separator}{query.CommandText}";
+        if (source.CommandText.IsEmpty()) text = query.CommandText;
+        else if (query.CommandText.IsNotEmpty()) text += $"{separator}{query.CommandText}";
 
         var prm = new Dictionary<string, object>();
         prm.Merge(source.Parameters);
@@ -74,12 +74,22 @@ internal static class Extensions
         return space;
     }
 
-    public static string Indent(this string source, string separator = "\r\n", int spaceCount = 4)
+    public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
-        if (source == string.Empty) return source;
+        if (source.IsEmpty()) return source;
 
         var indent = spaceCount.Space();
 
         return $"{indent}{source.Replace(separator, $"{separator}{indent}")}";
     }
+
+    public static bool IsEmpty(this string? source)
+        => string.IsNullOrEmpty(source);
+    public static bool IsNotEmpty(this string? source)
+    => !string.IsNullOrEmpty(source);
+
+    public static bool IsEmpty(this Query? source)
+    => string.IsNullOrEmpty(source?.CommandText);
+    public static bool IsNotEmpty(this Query? source)
+    => !string.IsNullOrEmpty(source?.CommandText);
 }

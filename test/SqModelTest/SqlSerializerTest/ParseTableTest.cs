@@ -55,7 +55,6 @@ inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2
         using var p = new Parser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
-
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
 

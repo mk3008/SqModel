@@ -98,7 +98,9 @@ public partial class Parser
 
             if (token.ToLower() == "on")
             {
-                t.RelationConditionClause = ParseConditionGroup();
+                var c = ParseOperatorContainer();
+                c.IsRoot = true;
+                t.RelationConditionClause = c;
                 if (string.IsNullOrEmpty(CurrentToken) || ConditionBreakTokens.Any(CurrentToken)) break;
                 continue;
             }

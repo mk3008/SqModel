@@ -6,21 +6,17 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ConditionClause
+public class ValueContainer
 {
-    public string Operator { get; set; } = String.Empty;
-
     public ValueClause Source { get; set; } = new();
 
-    public ValueClause Destination { get; set; } = new();
-
-    public string Sign { get; set; } = "=";
+    public ValueConjunction ValueConjunction { get; set; } = new();
 
     public Query ToQuery()
     {
         var sq = Source.ToQuery();
-        var ds = Destination.ToQuery();
-        sq = sq.Merge(ds, $" {Sign} ");
+        var ds = ValueConjunction.ToQuery();
+        sq = sq.Merge(ds, $" {ValueConjunction.Sign} ");
         return sq;
     }
 }

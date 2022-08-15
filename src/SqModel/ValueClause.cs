@@ -35,7 +35,7 @@ public class ValueClause : IParameterCollection
     /// Specify the parameter name and value used in the command.
     /// </summary>
     public Dictionary<string, object> Parameters { get; set; } = new();
-
+    
     /// <summary>
     /// Get the column name.
     /// If all columns are specified, an empty string is returned.

@@ -11,7 +11,7 @@ public class WhereQuery
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd(table_a, "id", ":id", 1);
+        q.Where.And(table_a, "id").Equal(":id").AddParameter(":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -30,7 +30,7 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd("table_a.id", "<>", ":id").Destination.AddParameter(":id", 1);
+        q.Where.And("table_a.id").NotEqual(":id").AddParameter(":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -49,8 +49,8 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd("table_a.id", "=", ":id").Destination.AddParameter(":id", 1);
-        q.WhereAnd("table_a.sub_id", "=", ":sub_id").Destination.AddParameter(":sub_id", 2);
+        q.Where.And("table_a.id").Equal(":id").AddParameter(":id", 1);
+        q.Where.And("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -71,10 +71,10 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd(g =>
+        q.Where.And(x =>
         {
-            g.WhereOr("table_a.id", "=", ":id1").Destination.AddParameter(":id1", 1);
-            g.WhereOr("table_a.id", "=", ":id2").Destination.AddParameter(":id2", 2);
+            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
 
         var acutal = q.ToQuery();
@@ -96,19 +96,19 @@ where
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
 
-        q.WhereAnd(g =>
+        q.Where.And(x =>
         {
-            g.WhereOr("table_a.id", "=", ":id1").Destination.AddParameter(":id1", 1);
-            g.WhereOr("table_a.id", "=", ":id2").Destination.AddParameter(":id2", 2);
+            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
-        q.WhereAnd("table_a.sub_id", "=", ":sub_id").Destination.AddParameter(":sub_id", 2);
+        q.Where.And("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
 from table_a
 where
-    table_a.sub_id = :sub_id
-    and (table_a.id = :id1 or table_a.id = :id2)";
+    (table_a.id = :id1 or table_a.id = :id2)
+    and table_a.sub_id = :sub_id";
 
         Assert.Equal(expect, acutal.CommandText);
         Assert.Equal(3, acutal.Parameters.Count);
@@ -121,16 +121,30 @@ where
     public void WhereOnly()
     {
         var q = new SelectQuery();
-        q.WhereAnd( g =>
+        q.Where.And(x =>
         {
-            g.WhereOr("table_a.id", "=", ":id1").Destination.AddParameter(":id1", 1);
-            g.WhereOr("table_a.id", "=", ":id2").Destination.AddParameter(":id2", 2);
+            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
-        q.WhereAnd("table_a.sub_id", "=", ":sub_id").Destination.AddParameter(":sub_id", 2);
+
+        q.Where.And("table_a", "id").Equal("table_b", "id");
+        q.Where.And("table_a", "id").Equal(":sub_id").AddParameter(":sub_id", 2);
+        q.Where.And("table_a", "id").IsNull();
+        q.Where.And("table_a", "id").IsNotNull();
+
+        q.Where.And(x =>
+        {
+            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+        });
 
         var acutal = q.WhereClause.ToQuery();
         var expect = @"where
-    table_a.sub_id = :sub_id
+    (table_a.id = :id1 or table_a.id = :id2)
+    and table_a.id = table_b.id
+    and table_a.id = :sub_id
+    and table_a.id is null
+    and table_a.id is not null
     and (table_a.id = :id1 or table_a.id = :id2)";
 
         Assert.Equal(expect, acutal.CommandText);
