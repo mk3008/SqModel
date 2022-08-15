@@ -3,21 +3,40 @@ A lightweight library that allows you to easily build Select queries.
 You can also parse handwritten Sql.
 
 ## Demo
+The following C# code and SQL are equivalent.
 ```cs
 var q = new SelectQuery();
 var table_a = q.From("table_a");
 q.Select(table_a, "*");
 q.Where.And(table_a, "id", ":id", 1);
+Console.WriteLine(q.ToQuery().CommandText);
+```
 
-var acutal = q.ToQuery();
-var expect = @"select table_a.*
+```sql
+select table_a.*
 from table_a
 where
     table_a.id = :id";
 
-Assert.Equal(expect, acutal.CommandText);
-Assert.Single(acutal.Parameters);
-Assert.Equal(1, acutal.Parameters[":id"]);
+--:id = 1
+```
+
+It is also possible to parse handwritten Select queries into the SqModel class.
+
+```cs
+using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
+var q = p.ParseSelectQuery();
+var text = q.ToQuery().CommandText;
+var expect = @"select a.column_1 as col1, a.column_2 as col2
+from table_a as a";
+Assert.Equal(expect, text);
+
+Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
+Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
+Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+
+Assert.Equal("table_a", q.FromClause.TableName);
+Assert.Equal("a", q.FromClause.AliasName);
 ```
 
 ## Feature
