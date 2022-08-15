@@ -7,7 +7,7 @@ You can also parse handwritten Sql.
 var q = new SelectQuery();
 var table_a = q.From("table_a");
 q.Select(table_a, "*");
-q.Where(table_a, "id", ":id", 1);
+q.Where.And(table_a, "id", ":id", 1);
 
 var acutal = q.ToQuery();
 var expect = @"select table_a.*
@@ -171,7 +171,7 @@ inner join (
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd(table_a, "id", ":id", 1);
+        q.Where.And(table_a, "id", ":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -193,10 +193,10 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.WhereAnd(g =>
+        q.Where.And(g =>
         {
-            g.WhereOr("table_a.id = :id1").AddParameter(":id1", 1);
-            g.WhereOr("table_a.id = :id2").AddParameter(":id2", 2);
+            g.Or("table_a.id = :id1").AddParameter(":id1", 1);
+            g.Or("table_a.id = :id2").AddParameter(":id2", 2);
         });
 
         var acutal = q.ToQuery();
@@ -218,11 +218,11 @@ where
     public void WhereOnly()
     {
         var q = new SelectQuery();
-        q.WhereAnd("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
-        q.WhereAnd(g =>
+        q.Where.And("table_a.sub_id = :sub_id").AddParameter(":sub_id", 2);
+        q.Where.And(g =>
         {
-            g.WhereOr("table_a.id = :id1").AddParameter(":id1", 1);
-            g.WhereOr("table_a.id = :id2").AddParameter(":id2", 2);
+            g.Or("table_a.id = :id1").AddParameter(":id1", 1);
+            g.Or("table_a.id = :id2").AddParameter(":id2", 2);
         });
 
         var acutal = q.WhereClause.ToQuery();
