@@ -8,12 +8,11 @@ namespace SqModel.Serialization;
 
 public partial class Parser
 {
-    public ConditionGroupClause ParseConditionGroup()
+    public OperatorContainer ParseOperatorContainer()
     {
-        Logger?.Invoke($"ParseConditionGroup start");
+        Logger?.Invoke($"ParseOperatorContainer start");
 
-        var g = new ConditionGroupClause();
-
+        var container = new OperatorContainer();
         var token = ReadToken();
         var operatorToken = string.Empty;
 
@@ -33,23 +32,21 @@ public partial class Parser
             {
                 using var p = new Parser(ReadUntilCloseBracket());
                 p.Logger = Logger;
-                var c = p.ParseConditionGroup();
+                var c = p.ParseOperatorContainer();
                 c.Operator = operatorToken;
-                g.GroupConditions.Add(c);
+                container.ConditionGroup ??= new();
+                container.ConditionGroup.Add(c);
             }
             else
             {
-                var c = ParseCondition(true);
+                var c = new OperatorContainer();
                 c.Operator = operatorToken;
-                g.Conditions.Add(c);
-                token = CurrentToken;
+                c.Condition = ParseValueContainer(true);
 
-                if (token.IsLogicalOperator())
-                {
-                    operatorToken = token.ToLower();
-                    token = ReadToken();
-                    continue;
-                }
+                container.ConditionGroup ??= new();
+                container.ConditionGroup.Add(c);
+
+                token = CurrentToken;
                 continue;
             }
 
@@ -57,7 +54,7 @@ public partial class Parser
             token = ReadToken();
         }
 
-        Logger?.Invoke($"ParseConditionGroup end : {g.ToQuery().CommandText}");
-        return g;
+        Logger?.Invoke($"ParseOperatorContainer end : {container.ToQuery().CommandText}");
+        return container;
     }
 }

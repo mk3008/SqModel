@@ -29,6 +29,18 @@ public static class TableClauseJoin
         return destination;
     }
 
+    public static TableClause Add(this TableClause source, string scolumn, string column, string sign = "=")
+    {
+        source.RelationConditionClause.And(source.SourceAlias, scolumn).Sign(sign, ValueBuilder.ToValue(source.AliasName, column));
+        return source;
+    }
+
+    public static TableClause Add(this TableClause source, string column)
+    {
+        return source.Add(column, column, "=");
+    }
+
+
     public static TableClause InnerJoin(this TableClause source, string tableName, List<string> columns)
     {
         return source.Join(tableName, tableName, RelationTypes.Inner, columns.ToDictionary());

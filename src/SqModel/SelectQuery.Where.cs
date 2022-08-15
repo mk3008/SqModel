@@ -8,50 +8,77 @@ namespace SqModel;
 
 public static class SelectQueryWhere
 {
-    public static ConditionClause WhereAnd(this SelectQuery source, TableClause table, string column, string parameterName, object parameterValue)
-    => source.Where("and", table, column, "=", parameterName, parameterValue);
 
-    public static ConditionClause WhereOr(this SelectQuery source, TableClause table, string column, string parameterName, object parameterValue)
-=> source.Where("and", table, column, "=", parameterName, parameterValue);
-
-    private static ConditionClause Where(this SelectQuery source, string operatorToekn, TableClause table, string column, string sign, string parameterName, object parameterValue)
+    public static void And(this OperatorContainer source, Action<OperatorContainer> fn)
     {
-        var c = new ConditionClause();
-        c.Operator = operatorToekn;
-        c.Source = new ValueClause() { TableName = table.AliasName, Value = column };
-        c.Sign = sign;
-        c.Destination = new ValueClause() { Value = parameterName };
-        c.Destination.AddParameter(parameterName, parameterValue);
-
-        source.WhereClause.ConditionClause.Conditions.Add(c);
-        return c;
+        var group = new OperatorContainer() { Operator = "and" };
+        source.Add(group);
+        fn(group);
     }
 
-    public static ConditionClause WhereAnd(this SelectQuery source, string sourcevalue, string sign, string destinationvalue) => source.Where("and", sourcevalue, sign, destinationvalue);
-
-    public static ConditionClause WhereOr(this SelectQuery source, string sourcevalue, string sign, string destinationvalue) => source.Where("or", sourcevalue, sign, destinationvalue);
-
-    private static ConditionClause Where(this SelectQuery source, string operatorToekn, string sourcevalue, string sign, string destinationvalue)
+    public static void Or(this OperatorContainer source, Action<OperatorContainer> fn)
     {
-        var c = new ConditionClause();
-        c.Operator = operatorToekn;
-        c.Source = new ValueClause() { Value = sourcevalue };
-        c.Sign = sign;
-        c.Destination = new ValueClause() { Value = destinationvalue };
-        
-        source.WhereClause.ConditionClause.Conditions.Add(c);
-        return c;
+        var group = new OperatorContainer() { Operator = "or" };
+        source.Add(group);
+        fn(group);
     }
 
-    public static void WhereAnd(this SelectQuery source, Action<ConditionGroupClause> action) => source.Where("and", action);
+    public static ValueContainer And(this OperatorContainer source, TableClause table, string column)
+        => source.Operate("and", ValueBuilder.ToValue(table, column));
 
-    public static void WhereOr(this SelectQuery source, Action<ConditionGroupClause> action) => source.Where("or", action);
+    public static ValueContainer And(this OperatorContainer source, string table, string column)
+        => source.Operate("and", ValueBuilder.ToValue(table, column));
 
-    private static void Where(this SelectQuery source, string logicalOperator, Action<ConditionGroupClause> action)
+    public static ValueContainer And(this OperatorContainer source, string value)
+        => source.Operate("and", ValueBuilder.ToValue(value));
+
+    public static ValueContainer Or(this OperatorContainer source, TableClause table, string column)
+        => source.Operate("or", ValueBuilder.ToValue(table, column));
+
+    public static ValueContainer Or(this OperatorContainer source, string table, string column)
+        => source.Operate("or", ValueBuilder.ToValue(table, column));
+
+    public static ValueContainer Or(this OperatorContainer source, string value)
+        => source.Operate("or", ValueBuilder.ToValue(value));
+
+    public static ValueContainer Operate(this OperatorContainer source, string @operator, ValueClause value)
     {
-        var g = new ConditionGroupClause();
-        g.Operator = logicalOperator;
-        source.WhereClause.ConditionClause.GroupConditions.Add(g);
-        action(g);
+        var c = new OperatorContainer() { Operator = @operator };
+        source.Add(c);
+        c.Condition = new();
+        c.Condition.Source = value;
+        return c.Condition;
+    }
+
+    public static ValueClause Equal(this ValueContainer source, TableClause table, string column)
+        => source.Sign("=", ValueBuilder.ToValue(table, column));
+
+    public static ValueClause Equal(this ValueContainer source, string table, string column)
+        => source.Sign("=", ValueBuilder.ToValue(table, column));
+
+    public static ValueClause Equal(this ValueContainer source, string value)
+        => source.Sign("=", ValueBuilder.ToValue(value));
+
+    public static ValueClause NotEqual(this ValueContainer source, TableClause table, string column)
+        => source.Sign("<>", ValueBuilder.ToValue(table, column));
+
+    public static ValueClause NotEqual(this ValueContainer source, string table, string column)
+        => source.Sign("<>", ValueBuilder.ToValue(table, column));
+
+    public static ValueClause NotEqual(this ValueContainer source, string value)
+        => source.Sign("<>", ValueBuilder.ToValue(value));
+
+    public static ValueClause IsNull(this ValueContainer source)
+        => source.Sign("is", ValueBuilder.GetNullValue());
+
+    public static ValueClause IsNotNull(this ValueContainer source)
+        => source.Sign("is", ValueBuilder.GetNotNullValue());
+
+    public static ValueClause Sign(this ValueContainer source, string sign, ValueClause value)
+    {
+        var c = new ValueConjunction() { Sign = sign };
+        source.ValueConjunction = c;
+        c.Destination = value;
+        return value;
     }
 }

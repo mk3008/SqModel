@@ -29,6 +29,8 @@ public class SelectQuery
 
     public WhereClause WhereClause = new();
 
+    public OperatorContainer Where => WhereClause.Container;
+
     public Query ToQuery() => ToQueryCore(true);
 
     public Query ToSubQuery() => ToQueryCore(false);
@@ -37,7 +39,7 @@ public class SelectQuery
 
     private Query ToQueryCore(bool includeCte, string splitter = "\r\n")
     {
-        var withQ = (includeCte) ? GetAllWith().ToQuery() : null;
+        var withQ = (includeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
@@ -51,7 +53,7 @@ public class SelectQuery
 
         //command text
         var sb = new StringBuilder();
-        if (withQ != null && withQ.CommandText != String.Empty)
+        if (withQ != null && withQ.IsNotEmpty())
         {
             sb.Append(withQ.CommandText);
             sb.Append(splitter);
@@ -59,7 +61,7 @@ public class SelectQuery
 
         sb.Append($"{selectQ.CommandText}");
         sb.Append($"{splitter}{fromQ.CommandText}");
-        if (whereQ.CommandText != String.Empty) sb.Append($"{splitter}{whereQ.CommandText}");
+        if (whereQ.IsNotEmpty()) sb.Append($"{splitter}{whereQ.CommandText}");
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }

@@ -13,7 +13,9 @@ public partial class Parser
         Logger?.Invoke($"ParseWhereClause start");
 
         var w = new WhereClause();
-        w.ConditionClause = ParseConditionGroup();
+        var c = ParseOperatorContainer(); 
+        c.IsRoot = true;
+        w.Container = c;
 
         Logger?.Invoke($"ParseSingleTableClause end : {w.ToQuery().CommandText}");
         return w;

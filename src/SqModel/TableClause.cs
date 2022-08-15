@@ -32,31 +32,13 @@ public class TableClause
 
     public string SourceAlias { get; set; } = string.Empty;
 
-    public ConditionGroupClause RelationConditionClause { get; set; } = new();
+    public OperatorContainer RelationConditionClause { get; set; } = new() { IsRoot = true };
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 
-    public TableClause Add(string sourceColumn, string destinationColumn, string sign = "=")
-    {
-        var operatorToken = (RelationConditionClause.Conditions.Any()) ? "and" : string.Empty;
-        RelationConditionClause.Conditions.Add(new ConditionClause()
-        {
-            Source = new ValueClause() { TableName = SourceAlias, Value = sourceColumn },
-            Destination = new ValueClause() { TableName = AliasName, Value = destinationColumn },
-            Sign = sign, 
-            Operator = operatorToken
-        });
-        return this;
-    }
-
-    public TableClause Add(string column)
-    {
-        return Add(column, column, "=");
-    }
-
     public string GetName() => (AliasName != String.Empty) ? AliasName : TableName;
 
-    public string GetAliasCommand() => (TableName != GetName() || SubSelectClause != null) ?  $" as {GetName()}" : String.Empty;
+    public string GetAliasCommand() => (TableName != GetName() || SubSelectClause != null) ? $" as {GetName()}" : String.Empty;
 
     public Query ToQuery()
     {
@@ -94,7 +76,7 @@ public class TableClause
             if (SubSelectClause != null)
             {
                 var sq = SubSelectClause.ToSubQuery();
-                var text = $"{join}(\r\n{sq.CommandText.Indent()}\r\n){GetAliasCommand()}";
+                var text = $"{join}(\r\n{sq.CommandText.InsertIndent()}\r\n){GetAliasCommand()}";
                 return new Query() { CommandText = text, Parameters = sq.Parameters };
             }
             else

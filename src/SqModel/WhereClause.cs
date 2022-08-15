@@ -8,12 +8,15 @@ namespace SqModel;
 
 public class WhereClause
 {
-    public ConditionGroupClause ConditionClause { get; set; } = new() { Splitter = "\r\n"};
+    public OperatorContainer Container { get; set; } = new() { Splitter = "\r\n", IsRoot = true };
+
+    public string Splitter { get; set; } = "\r\n";
 
     public Query ToQuery()
     {
-        var q = ConditionClause.ToQuery();
-        if (q.CommandText != String.Empty) q.CommandText = $"where\r\n{q.CommandText.Indent()}";
+        var q = Container.ToQuery();
+        if (q.IsEmpty()) return q;
+        q.CommandText = $"where{Splitter}{q.CommandText.InsertIndent()}";
         return q;
     }
 }
