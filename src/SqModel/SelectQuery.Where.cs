@@ -68,4 +68,10 @@ public static class SelectQueryWhere
         source.Condition ??= new();
         source.Condition.ExistsQuery = fn.Invoke();
     }
+
+    public static void Exists(this OperatorContainer source, SelectQuery existsQuery)
+    {
+        source.Condition ??= new();
+        source.Condition.ExistsQuery = existsQuery;
+    }
 }

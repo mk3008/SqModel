@@ -11,6 +11,8 @@ public class OperatorContainer
 {
     public string Operator { get; set; } = "and";
 
+    public string SubOperator { get; set; } = "";
+
     public bool IsRoot { get; set; } = false;
 
     public ValueContainer? Condition { get; set; } = null;
@@ -21,17 +23,25 @@ public class OperatorContainer
 
     public OperatorContainer Or => SetOperator("or");
 
-    public OperatorContainer Not => AddOperator("not");
+    public OperatorContainer Not => SetSubOperator("not");
 
     internal OperatorContainer SetOperator(string @operator)
     {
         Operator = @operator;
+        SubOperator = String.Empty;
         return this;
     }
 
-    internal OperatorContainer AddOperator(string @operator)
+    internal OperatorContainer SetSubOperator(string @operator)
     {
-        Operator = $"{Operator} {@operator}";
+        SubOperator = @operator;
+        return this;
+    }
+
+    internal OperatorContainer SetOperator(string @operator, string suboperator)
+    {
+        Operator = @operator;
+        SubOperator = suboperator;
         return this;
     }
 
@@ -57,6 +67,8 @@ public class OperatorContainer
         if (Condition != null) return Condition.ToQuery();
         if (ConditionGroup != null)
         {
+            var fn = (OperatorContainer x) => x.ToQuery().InsertToken(x.SubOperator);
+
             var q = new Query();
             var cnt = 0;
             ConditionGroup.ForEach(x =>
@@ -64,12 +76,10 @@ public class OperatorContainer
                 cnt++;
                 if (cnt == 1)
                 {
-                    q = x.ToQuery();
+                    q = fn(x);
+                    return;
                 }
-                else
-                {
-                    q = q.Merge(x.ToQuery().InsertToken(x.Operator), Splitter);
-                }
+                q = q.Merge(fn(x).InsertToken(x.Operator), Splitter);
             });
             if (!IsRoot && cnt != 1) q.DecorateBracket();
             return q;

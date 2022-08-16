@@ -11,6 +11,7 @@ internal static partial class Extensions
 {
     public static Query InsertToken(this Query source, string token, string splitter = " ")
     {
+        if (token.IsEmpty()) return source;
         source.CommandText = $"{token}{splitter}{source.CommandText}";
         return source;
     }
