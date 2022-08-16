@@ -11,7 +11,7 @@ public class WhereQuery
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where.And(table_a, "id").Equal(":id").AddParameter(":id", 1);
+        q.Where().Value(table_a, "id").Equal(":id").AddParameter(":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -30,7 +30,7 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where.And("table_a.id").NotEqual(":id").AddParameter(":id", 1);
+        q.Where().Value("table_a.id").NotEqual(":id").AddParameter(":id", 1);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -49,8 +49,8 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where.And("table_a.id").Equal(":id").AddParameter(":id", 1);
-        q.Where.And("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
+        q.Where().Value("table_a.id").Equal(":id").AddParameter(":id", 1);
+        q.Where().Value("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -71,10 +71,10 @@ where
         var q = new SelectQuery();
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
-        q.Where.And(x =>
+        q.Where().Group(x =>
         {
-            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
 
         var acutal = q.ToQuery();
@@ -96,12 +96,12 @@ where
         var table_a = q.From("table_a");
         q.Select(table_a, "*");
 
-        q.Where.And(x =>
+        q.Where().Group(x =>
         {
-            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
-        q.Where.And("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
+        q.Where().Value("table_a.sub_id").Equal(":sub_id").AddParameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
         var expect = @"select table_a.*
@@ -121,21 +121,39 @@ where
     public void WhereOnly()
     {
         var q = new SelectQuery();
-        q.Where.And(x =>
+        q.Where().Group(x =>
         {
-            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
         });
 
-        q.Where.And("table_a", "id").Equal("table_b", "id");
-        q.Where.And("table_a", "id").Equal(":sub_id").AddParameter(":sub_id", 2);
-        q.Where.And("table_a", "id").IsNull();
-        q.Where.And("table_a", "id").IsNotNull();
+        q.Where().Value("table_a", "id").Equal("table_b", "id");
+        q.Where().Value("table_a", "id").Equal(":sub_id").AddParameter(":sub_id", 2);
+        q.Where().Value("table_a", "id").IsNull();
+        q.Where().Value("table_a", "id").IsNotNull();
 
-        q.Where.And(x =>
+        q.Where().Group(x =>
         {
-            x.Or("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Or("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
+            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
+        });
+
+        q.Where().Exists(() =>
+        {
+            var x = new SelectQuery();
+            x.From("table_x", "x");
+            x.SelectAll();
+            x.Where().Value("x.id").Equal("table_a.id");
+            return x;
+        });
+
+        q.Where().Not.Exists(() =>
+        {
+            var x = new SelectQuery();
+            x.From("table_x", "x");
+            x.SelectAll();
+            x.Where().Value("x.id").Equal("table_a.id");
+            return x;
         });
 
         var acutal = q.WhereClause.ToQuery();
@@ -145,7 +163,19 @@ where
     and table_a.id = :sub_id
     and table_a.id is null
     and table_a.id is not null
-    and (table_a.id = :id1 or table_a.id = :id2)";
+    and (table_a.id = :id1 or table_a.id = :id2)
+    and exists (
+        select *
+        from table_x as x
+        where
+            x.id = table_a.id
+    )
+    and not exists (
+        select *
+        from table_x as x
+        where
+            x.id = table_a.id
+    )";
 
         Assert.Equal(expect, acutal.CommandText);
         Assert.Equal(3, acutal.Parameters.Count);

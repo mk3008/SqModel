@@ -15,9 +15,15 @@ internal static partial class Extensions
         return source;
     }
 
-    public static Query DecorateBracket(this Query source)
+    public static Query DecorateBracket(this Query source, string splitter = "")
     {
-        source.CommandText = $"({source.CommandText})";
+        source.CommandText = $"({splitter}{source.CommandText}{splitter})";
+        return source;
+    }
+
+    public static Query InsertIndent(this Query source, string separator = "\r\n", int spaceCount = 4)
+    {
+        source.CommandText = source.CommandText.InsertIndent(separator, spaceCount);
         return source;
     }
 }

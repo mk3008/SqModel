@@ -17,6 +17,33 @@ public class OperatorContainer
 
     public List<OperatorContainer>? ConditionGroup { get; set; } = null;
 
+    public OperatorContainer And => SetOperator("and");
+
+    public OperatorContainer Or => SetOperator("or");
+
+    public OperatorContainer Not => AddOperator("not");
+
+    internal OperatorContainer SetOperator(string @operator)
+    {
+        Operator = @operator;
+        return this;
+    }
+
+    internal OperatorContainer AddOperator(string @operator)
+    {
+        Operator = $"{Operator} {@operator}";
+        return this;
+    }
+
+    public OperatorContainer Where() => GetNewOperatorContainer();
+
+    public OperatorContainer GetNewOperatorContainer()
+    {
+        var c = new OperatorContainer();
+        Add(c);
+        return c;
+    }
+
     public void Add(OperatorContainer container)
     {
         ConditionGroup ??= new();

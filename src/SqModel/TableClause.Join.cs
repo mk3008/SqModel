@@ -31,7 +31,9 @@ public static class TableClauseJoin
 
     public static TableClause Add(this TableClause source, string scolumn, string column, string sign = "=")
     {
-        source.RelationConditionClause.And(source.SourceAlias, scolumn).Sign(sign, ValueBuilder.ToValue(source.AliasName, column));
+        var left = ValueBuilder.ToValue(source.SourceAlias, scolumn);
+        var right = ValueBuilder.ToValue(source.AliasName, column);
+        source.RelationConditionClause.Where().Value(left).Expression(sign, right);
         return source;
     }
 
