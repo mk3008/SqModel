@@ -15,7 +15,7 @@ public partial class Parser
         var c = new ValueContainer();
 
         c.Source = ParseValueClause(includeCurrentToken);
-        c.Sign(CurrentToken, ParseValueClause());
+        c.Expression(CurrentToken, ParseValueClause());
 
         Logger?.Invoke($"ValueContainer end : {c.ToQuery().CommandText}");
         return c;

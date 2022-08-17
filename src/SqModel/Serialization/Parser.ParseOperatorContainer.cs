@@ -14,7 +14,8 @@ public partial class Parser
 
         var container = new OperatorContainer();
         var token = ReadToken();
-        var operatorToken = string.Empty;
+        var @operator = string.Empty;
+        var suboperator = string.Empty;
 
         while (token != String.Empty)
         {
@@ -23,34 +24,45 @@ public partial class Parser
 
             if (token.IsLogicalOperator())
             {
-                operatorToken = token.ToLower();
+                @operator = token.ToLower();
                 token = ReadToken();
                 continue;
             }
 
-            if (token == "(")
+            if (token.ToLower() == "not")
+            {
+                suboperator = token.ToLower();
+                token = ReadToken();
+                continue;
+            }
+
+            if (token.ToLower() == "exists")
+            {
+                while (token != "(" || token == null) token = ReadToken();
+                if (token == null) break;
+
+                using var p = new Parser(ReadUntilCloseBracket());
+                p.Logger = Logger;
+                var eq = p.ParseSelectQuery();
+                container.Where().SetOperator(@operator, suboperator).Exists(eq);
+            }
+            else if (token == "(")
             {
                 using var p = new Parser(ReadUntilCloseBracket());
                 p.Logger = Logger;
-                var c = p.ParseOperatorContainer();
-                c.Operator = operatorToken;
+                var c = p.ParseOperatorContainer().SetOperator(@operator, suboperator);
                 container.ConditionGroup ??= new();
                 container.ConditionGroup.Add(c);
             }
             else
             {
-                var c = new OperatorContainer();
-                c.Operator = operatorToken;
-                c.Condition = ParseValueContainer(true);
-
-                container.ConditionGroup ??= new();
-                container.ConditionGroup.Add(c);
-
+                container.Where().SetOperator(@operator, suboperator).Condition = ParseValueContainer(true);
                 token = CurrentToken;
                 continue;
             }
 
-            operatorToken = string.Empty;
+            @operator = string.Empty;
+            suboperator = string.Empty;
             token = ReadToken();
         }
 

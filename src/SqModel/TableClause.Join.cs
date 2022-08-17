@@ -8,145 +8,158 @@ namespace SqModel;
 
 public static class TableClauseJoin
 {
-    public static TableClause Join(this TableClause source, string tableName, string aliasName, RelationTypes type, Dictionary<string, string> keyvalues)
+    public static TableClause Join(this TableClause source, string tableName, string aliasName, RelationTypes type)
     {
         var d = new TableClause(tableName, aliasName);
-        return source.Join(d, type, keyvalues);
+        return source.Join(d, type);
     }
 
-    public static TableClause Join(this TableClause source, SelectQuery subSelectClause, string aliasName, RelationTypes type, Dictionary<string, string> keyvalues)
+    public static TableClause Join(this TableClause source, SelectQuery subSelectClause, string aliasName, RelationTypes type)
     {
         var d = new TableClause(subSelectClause, aliasName);
-        return source.Join(d, type, keyvalues);
+        return source.Join(d, type);
     }
 
-    public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type, Dictionary<string, string> keyvalues)
+    public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type)
     {
-        destination.SourceAlias = source.AliasName;
+        destination.RelationConditionClause.SourceName = source.AliasName;
+        destination.RelationConditionClause.DestinationName = destination.AliasName;
         destination.RelationType = type;
-        keyvalues.ToList().ForEach(x => destination.Add(x.Key, x.Value));
         source.SubTableClauses.Add(destination);
         return destination;
     }
 
-    public static TableClause Add(this TableClause source, string scolumn, string column, string sign = "=")
+    public static TableClause InnerJoin(this TableClause source, CommonTableClause ct)
     {
-        source.RelationConditionClause.And(source.SourceAlias, scolumn).Sign(sign, ValueBuilder.ToValue(source.AliasName, column));
-        return source;
+        return source.Join(ct.AliasName, ct.AliasName, RelationTypes.Inner);
     }
 
-    public static TableClause Add(this TableClause source, string column)
+    public static TableClause InnerJoin(this TableClause source, string tableName)
     {
-        return source.Add(column, column, "=");
+        return source.Join(tableName, tableName, RelationTypes.Inner);
     }
 
-
-    public static TableClause InnerJoin(this TableClause source, string tableName, List<string> columns)
+    public static TableClause InnerJoin(this TableClause source, string tableName, string aliasName)
     {
-        return source.Join(tableName, tableName, RelationTypes.Inner, columns.ToDictionary());
+        return source.Join(tableName, aliasName, RelationTypes.Inner);
     }
 
-    public static TableClause InnerJoin(this TableClause source, string tableName, string aliasName, List<string> columns)
+    public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
     {
-        return source.Join(tableName, aliasName, RelationTypes.Inner, columns.ToDictionary());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Inner);
     }
 
-    public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause, string aliasName, List<string> columns)
-    {
-        return source.Join(subSelectClause, aliasName, RelationTypes.Inner, columns.ToDictionary());
-    }
-
-    public static TableClause InnerJoin(this TableClause source, Action<SelectQuery> action, string aliasName, List<string> columns)
+    public static TableClause InnerJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Inner, columns.ToDictionary());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Inner);
     }
 
-    public static TableClause InnerJoin(this TableClause source, TableClause destination, List<string> columns)
+    public static TableClause InnerJoin(this TableClause source, TableClause destination)
     {
-        return source.Join(destination, RelationTypes.Inner, columns.ToDictionary());
+        return source.Join(destination, RelationTypes.Inner);
     }
 
-    public static TableClause LeftJoin(this TableClause source, string tableName, List<string> columns)
+    public static TableClause LeftJoin(this TableClause source, string tableName)
     {
-        return source.Join(tableName, tableName, RelationTypes.Left, columns.ToDictionary());
+        return source.Join(tableName, tableName, RelationTypes.Left);
     }
 
-    public static TableClause LeftJoin(this TableClause source, string tableName, string aliasName, List<string> columns)
+    public static TableClause LeftJoin(this TableClause source, string tableName, string aliasName)
     {
-        return source.Join(tableName, aliasName, RelationTypes.Left, columns.ToDictionary());
+        return source.Join(tableName, aliasName, RelationTypes.Left);
     }
 
-    public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause, string aliasName, List<string> columns)
+    public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
     {
-        return source.Join(subSelectClause, aliasName, RelationTypes.Left, columns.ToDictionary());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Left);
     }
 
-    public static TableClause LeftJoin(this TableClause source, Action<SelectQuery> action, string aliasName, List<string> columns)
-    {
-        var subSelectClause = new SelectQuery();
-        action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public static TableClause LeftJoin(this TableClause source, TableClause destination, List<string> columns)
-    {
-        return source.Join(destination, RelationTypes.Left, columns.ToDictionary());
-    }
-
-    public static TableClause RightJoin(this TableClause source, string tableName, List<string> columns)
-    {
-        return source.Join(tableName, tableName, RelationTypes.Right, columns.ToDictionary());
-
-    }
-    public static TableClause RightJoin(this TableClause source, string tableName, string aliasName, List<string> columns)
-    {
-        return source.Join(tableName, aliasName, RelationTypes.Right, columns.ToDictionary());
-    }
-
-    public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause, string aliasName, List<string> columns)
-    {
-        return source.Join(subSelectClause, aliasName, RelationTypes.Right, columns.ToDictionary());
-    }
-
-    public static TableClause RightJoin(this TableClause source, Action<SelectQuery> action, string aliasName, List<string> columns)
+    public static TableClause LeftJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Right, columns.ToDictionary());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Left);
     }
 
-    public static TableClause RightJoin(this TableClause source, TableClause destination, List<string> columns)
+    public static TableClause LeftJoin(this TableClause source, TableClause destination)
     {
-        return source.Join(destination, RelationTypes.Right, columns.ToDictionary());
+        return source.Join(destination, RelationTypes.Left);
+    }
+
+    public static TableClause RightJoin(this TableClause source, string tableName)
+    {
+        return source.Join(tableName, tableName, RelationTypes.Right);
+
+    }
+    public static TableClause RightJoin(this TableClause source, string tableName, string aliasName)
+    {
+        return source.Join(tableName, aliasName, RelationTypes.Right);
+    }
+
+    public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
+    {
+        return source.Join(subSelectClause, aliasName, RelationTypes.Right);
+    }
+
+    public static TableClause RightJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
+    {
+        var subSelectClause = new SelectQuery();
+        action(subSelectClause);
+        return source.Join(subSelectClause, aliasName, RelationTypes.Right);
+    }
+
+    public static TableClause RightJoin(this TableClause source, TableClause destination)
+    {
+        return source.Join(destination, RelationTypes.Right);
     }
 
     public static TableClause CrossJoin(this TableClause source, string tableName)
     {
-        return source.Join(tableName, tableName, RelationTypes.Cross, new());
+        return source.Join(tableName, tableName, RelationTypes.Cross);
     }
 
     public static TableClause CrossJoin(this TableClause source, string tableName, string aliasName)
     {
-        return source.Join(tableName, aliasName, RelationTypes.Cross, new());
+        return source.Join(tableName, aliasName, RelationTypes.Cross);
     }
 
     public static TableClause CrossJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
     {
-        return source.Join(subSelectClause, aliasName, RelationTypes.Cross, new());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Cross);
     }
 
     public static TableClause CrossJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Cross, new());
+        return source.Join(subSelectClause, aliasName, RelationTypes.Cross);
     }
 
     public static TableClause CrossJoin(this TableClause source, TableClause destination)
     {
-        return source.Join(destination, RelationTypes.Cross, new());
+        return source.Join(destination, RelationTypes.Cross);
+    }
+
+    public static TableClause On(this TableClause source, string column)
+    {
+        var fn = (TableClause x) => x.Where().Equal(column);
+        source.On(fn);
+        return source;
+    }
+
+    public static TableClause On(this TableClause source, string sourcecolumn, string destinationcolumn)
+    {
+        var fn = (TableClause x) => x.Where().Equal(sourcecolumn, destinationcolumn);
+        source.On(fn);
+        return source;
+    }
+
+    public static TableClause On(this TableClause source, Action<TableClause> fn)
+    {
+        fn(source);
+        return source;
     }
 }
 

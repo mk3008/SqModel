@@ -8,6 +8,12 @@ namespace SqModel;
 
 public static class SelectQueryFrom
 {
+    public static TableClause From(this SelectQuery source, CommonTableClause ct)
+    {
+        source.FromClause = new TableClause() { TableName = ct.AliasName, AliasName = ct.AliasName, RelationType = RelationTypes.From };
+        return source.FromClause;
+    }
+
     public static TableClause From(this SelectQuery source, string tableName)
     {
         source.FromClause = new TableClause() { TableName = tableName, AliasName = tableName, RelationType = RelationTypes.From };

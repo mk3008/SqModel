@@ -96,19 +96,19 @@ where
         Assert.Equal("table_c", q.FromClause.SubTableClauses[0].TableName);
         Assert.Equal("c", q.FromClause.SubTableClauses[0].AliasName);
         Assert.Single(q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup);
-        Assert.Equal("a", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source.TableName);
-        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source.Value);
-        Assert.Equal("=", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction.Sign);
-        Assert.Equal("c", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction.Destination.TableName);
-        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction.Destination.Value);
+        Assert.Equal("a", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source?.TableName);
+        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source?.Value);
+        Assert.Equal("=", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Sign);
+        Assert.Equal("c", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.TableName);
+        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.Value);
 
         //WhereClauses
         Assert.Equal(2, q.WhereClause.Container.ConditionGroup?.Count);
         Assert.Equal("or", q.WhereClause.Container.ConditionGroup?[1].Operator);
-        Assert.Equal("a", q.WhereClause.Container.ConditionGroup?[1].Condition?.Source.TableName);
-        Assert.Equal("column_2", q.WhereClause.Container.ConditionGroup?[1].Condition?.Source.Value);
-        Assert.Equal("=", q.WhereClause.Container.ConditionGroup?[1].Condition?.ValueConjunction.Sign);
-        Assert.Equal("2", q.WhereClause.Container.ConditionGroup?[1].Condition?.ValueConjunction.Destination.Value);
+        Assert.Equal("a", q.WhereClause.Container.ConditionGroup?[1].Condition?.Source?.TableName);
+        Assert.Equal("column_2", q.WhereClause.Container.ConditionGroup?[1].Condition?.Source?.Value);
+        Assert.Equal("=", q.WhereClause.Container.ConditionGroup?[1].Condition?.ValueConjunction?.Sign);
+        Assert.Equal("2", q.WhereClause.Container.ConditionGroup?[1].Condition?.ValueConjunction?.Destination.Value);
     }
 
     //    [Fact]

@@ -8,91 +8,116 @@ public class SelectSubquery
     [Fact]
     public void Default()
     {
-        var sub = new SelectQuery();
-        var table_a = sub.From("table_a");
-        sub.Select(table_a, "*");
-
         var q = new SelectQuery();
-        var a = q.From(sub, "a");
-        q.Select(a, "*");
+        q.From(x =>
+        {
+            x.From("table_a", "a");
+            x.SelectAll();
+        }, "b");
+        q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.*
+        var expect = @"select *
 from (
-    select table_a.*
-    from table_a
+    select *
+    from table_a as a
+) as b";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void SubQueries()
+    {
+        var q = new SelectQuery();
+        var tb1 = q.From(x =>
+        {
+            x.From("table_a1", "a1");
+            x.SelectAll();
+        }, "b1");
+        tb1.InnerJoin(x =>
+        {
+            x.From("table_a2", "a2");
+            x.SelectAll();
+        }, "b2").On("id");
+
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select *
+from (
+    select *
+    from table_a1 as a1
+) as b1
+inner join (
+    select *
+    from table_a2 as a2
+) as b2 on b1.id = b2.id";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void Nest()
+    {
+        var q = new SelectQuery();
+        q.From(x =>
+        {
+            x.From(y =>
+            {
+                y.From(z =>
+                {
+                    z.From("table_z", "z");
+                    z.SelectAll();
+                }, "y");
+                y.SelectAll();
+            }, "x");
+            x.SelectAll();
+        }, "a");
+
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select *
+from (
+    select *
+    from (
+        select *
+        from (
+            select *
+            from table_z as z
+        ) as y
+    ) as x
 ) as a";
 
         Assert.Equal(expect, text);
     }
 
     [Fact]
-    public void Many()
+    public void Composition()
     {
-        var sub1 = new SelectQuery();
-        var table_a = sub1.From("table_a");
-        sub1.Select(table_a, "*");
+        var q1 = new SelectQuery();
+        q1.From("table_a", "a");
+        q1.SelectAll();
 
-        var sub2 = new SelectQuery();
-        var table_b = sub2.From("table_b");
-        sub2.Select(table_b, "*");
+        var q2 = new SelectQuery();
+        q2.From(q1, "b");
+        q2.SelectAll();
 
-        var q = new SelectQuery();
-        var a = q.From(sub1, "a");
-        var b = a.InnerJoin(sub2, "b", new() { "table_a_id" });
-        q.Select(a, "*");
-        q.Select(b, "*");
+        var q3 = new SelectQuery();
+        q3.From(q2, "c");
+        q3.SelectAll();
 
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.*, b.*
+        var text = q3.ToQuery().CommandText;
+        var expect = @"select *
 from (
-    select table_a.*
-    from table_a
-) as a
-inner join (
-    select table_b.*
-    from table_b
-) as b on a.table_a_id = b.table_a_id";
+    select *
+    from (
+        select *
+        from table_a as a
+    ) as b
+) as c";
 
         Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void Valiable()
-    {
-        var q = new SelectQuery();
-        var a = q.From(sq =>
-        {
-            var t = sq.From("table_a");
-            sq.Select(t, "*");
-            sq.Select(":val1", "val1").AddParameter(":val1", 1);
-        }
-        , "a");
-
-        var b = a.InnerJoin(sq =>
-        {
-            var t = sq.From("table_b");
-            sq.Select(t, "*");
-            sq.Select(":val2", "val2").AddParameter(":val2", 2);
-        }, "b", new() { "table_a_id" });
-
-        q.Select(a, "*");
-        q.Select(b, "*");
-
-        var actual = q.ToQuery();
-        var text = actual.CommandText;
-        var expect = @"select a.*, b.*
-from (
-    select table_a.*, :val1 as val1
-    from table_a
-) as a
-inner join (
-    select table_b.*, :val2 as val2
-    from table_b
-) as b on a.table_a_id = b.table_a_id";
-
-        Assert.Equal(expect, text);
-        Assert.Equal(1, actual.Parameters[":val1"]);
-        Assert.Equal(2, actual.Parameters[":val2"]);
     }
 }

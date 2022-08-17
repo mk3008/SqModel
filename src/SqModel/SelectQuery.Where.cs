@@ -9,76 +9,69 @@ namespace SqModel;
 public static class SelectQueryWhere
 {
 
-    public static void And(this OperatorContainer source, Action<OperatorContainer> fn)
+    public static void Group(this OperatorContainer source, Action<OperatorContainer> fn)
     {
         var group = new OperatorContainer() { Operator = "and" };
         source.Add(group);
         fn(group);
     }
 
-    public static void Or(this OperatorContainer source, Action<OperatorContainer> fn)
+    public static ValueContainer Value(this OperatorContainer source, TableClause table, string column)
+        => source.Value(ValueBuilder.ToValue(table, column));
+
+    public static ValueContainer Value(this OperatorContainer source, string table, string column)
+        => source.Value(ValueBuilder.ToValue(table, column));
+
+    public static ValueContainer Value(this OperatorContainer source, string value)
+        => source.Value(ValueBuilder.ToValue(value));
+
+    public static ValueContainer Value(this OperatorContainer source, ValueClause value)
     {
-        var group = new OperatorContainer() { Operator = "or" };
-        source.Add(group);
-        fn(group);
-    }
-
-    public static ValueContainer And(this OperatorContainer source, TableClause table, string column)
-        => source.Operate("and", ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer And(this OperatorContainer source, string table, string column)
-        => source.Operate("and", ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer And(this OperatorContainer source, string value)
-        => source.Operate("and", ValueBuilder.ToValue(value));
-
-    public static ValueContainer Or(this OperatorContainer source, TableClause table, string column)
-        => source.Operate("or", ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer Or(this OperatorContainer source, string table, string column)
-        => source.Operate("or", ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer Or(this OperatorContainer source, string value)
-        => source.Operate("or", ValueBuilder.ToValue(value));
-
-    public static ValueContainer Operate(this OperatorContainer source, string @operator, ValueClause value)
-    {
-        var c = new OperatorContainer() { Operator = @operator };
-        source.Add(c);
-        c.Condition = new();
-        c.Condition.Source = value;
-        return c.Condition;
+        source.Condition = new() { Source = value };
+        return source.Condition;
     }
 
     public static ValueClause Equal(this ValueContainer source, TableClause table, string column)
-        => source.Sign("=", ValueBuilder.ToValue(table, column));
+        => source.Expression("=", ValueBuilder.ToValue(table, column));
 
     public static ValueClause Equal(this ValueContainer source, string table, string column)
-        => source.Sign("=", ValueBuilder.ToValue(table, column));
+        => source.Expression("=", ValueBuilder.ToValue(table, column));
 
     public static ValueClause Equal(this ValueContainer source, string value)
-        => source.Sign("=", ValueBuilder.ToValue(value));
+        => source.Expression("=", ValueBuilder.ToValue(value));
 
     public static ValueClause NotEqual(this ValueContainer source, TableClause table, string column)
-        => source.Sign("<>", ValueBuilder.ToValue(table, column));
+        => source.Expression("<>", ValueBuilder.ToValue(table, column));
 
     public static ValueClause NotEqual(this ValueContainer source, string table, string column)
-        => source.Sign("<>", ValueBuilder.ToValue(table, column));
+        => source.Expression("<>", ValueBuilder.ToValue(table, column));
 
     public static ValueClause NotEqual(this ValueContainer source, string value)
-        => source.Sign("<>", ValueBuilder.ToValue(value));
+        => source.Expression("<>", ValueBuilder.ToValue(value));
 
     public static ValueClause IsNull(this ValueContainer source)
-        => source.Sign("is", ValueBuilder.GetNullValue());
+        => source.Expression("is", ValueBuilder.GetNullValue());
 
     public static ValueClause IsNotNull(this ValueContainer source)
-        => source.Sign("is", ValueBuilder.GetNotNullValue());
+        => source.Expression("is", ValueBuilder.GetNotNullValue());
 
-    public static ValueClause Sign(this ValueContainer source, string sign, ValueClause value)
+    public static ValueClause Expression(this ValueContainer source, string sign, ValueClause value)
     {
         var c = new ValueConjunction() { Sign = sign };
         source.ValueConjunction = c;
         c.Destination = value;
         return value;
+    }
+
+    public static void Exists(this OperatorContainer source, Func<SelectQuery> fn)
+    {
+        source.Condition ??= new();
+        source.Condition.ExistsQuery = fn.Invoke();
+    }
+
+    public static void Exists(this OperatorContainer source, SelectQuery existsQuery)
+    {
+        source.Condition ??= new();
+        source.Condition.ExistsQuery = existsQuery;
     }
 }
