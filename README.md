@@ -3,21 +3,29 @@ A lightweight library that allows you to easily build Select queries.
 You can also parse handwritten Sql.
 
 ## Demo
-The following C# code and SQL are equivalent.
+You can compose your select query like this:
 ```cs
 var sq = new SelectQuery();
-var table = sq.From("table_a", "a");
-sq.SelectAll(table);
-sq.Where().Value(table, "id").Equal(":id").AddParameter(":id", 1);
-var q = sq.ToQuery();
-Console.WriteLine(q.CommandText);
-```
+var ta = sq.From("table_a", "a");
+var tb = ta.LeftJoin("table_b", "b").On("id", "table_a_id");
 
-```sql
-select a.*
+sq.Select(ta, "id");
+sq.Select(tb, "table_a_id", "a_id");
+
+sq.Where().Value(ta, "id").Equal(":id").AddParameter(":id", 1);
+sq.Where().Value(tb, "table_a_id").IsNull();
+
+var q = sq.ToQuery();
+
+/*
+select a.id, b.table_a_id as a_id
 from table_a as a
+left join table_b as b on a.id = b.table_a_id
 where
-    a.id = :id --1
+a.id = :id --1
+and b.table_a_id is null
+*/
+Console.WriteLine(q.CommandText);
 ```
 
 It is also possible to parse handwritten Select queries into the SqModel class.
