@@ -32,7 +32,9 @@ public class TableClause
 
     public string SourceAlias { get; set; } = string.Empty;
 
-    public OperatorContainer RelationConditionClause { get; set; } = new() { IsRoot = true };
+    public OperatorContainer RelationConditionClause { get; set; } = new RelationContainer() { IsRoot = true };
+
+    public RelationContainer Where() => (RelationContainer)RelationConditionClause.Where();
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 

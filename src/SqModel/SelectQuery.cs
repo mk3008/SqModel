@@ -29,7 +29,7 @@ public class SelectQuery
 
     public WhereClause WhereClause = new();
 
-    public OperatorContainer Where() => WhereClause.Container.GetNewOperatorContainer();
+    public OperatorContainer Where() => WhereClause.Container.Where();
 
     public Query ToQuery() => ToQueryCore(true);
 

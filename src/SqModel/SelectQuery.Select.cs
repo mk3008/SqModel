@@ -29,6 +29,13 @@ public static class SelectQuerySelect
         return c;
     }
 
+    public static ValueClause SelectAll(this SelectQuery source, TableClause table)
+    {
+        var c = new ValueClause() { TableName = table.AliasName, Value = "*" };
+        source.SelectClause.ColumnClauses.Add(c);
+        return c;
+    }
+
     public static ValueClause SelectAll(this SelectQuery source, string table)
     {
         var c = new ValueClause() { TableName = table, Value = "*" };

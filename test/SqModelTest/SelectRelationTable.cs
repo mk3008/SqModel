@@ -10,109 +10,17 @@ public class SelectRelationTable
     public void Default()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a");
-        var table_b = table_a.InnerJoin("table_b", new() { "table_a_id" });
+        var ta = q.From("table_a", "a");
+        var tb = ta.InnerJoin("table_b", "b").On("table_a_id");
+        tb.InnerJoin("table_c", "c").On("table_b_id", "TABLE_B_ID");
 
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select table_a.value_a, table_b.value_b
-from table_a
-inner join table_b on table_a.table_a_id = table_b.table_a_id";
-
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void InnerJoin()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.InnerJoin("table_b", "b", new() { "table_a_id" });
-
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
+        q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
+        var expect = @"select *
 from table_a as a
-inner join table_b as b on a.table_a_id = b.table_a_id";
-
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void JoinConditions()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.InnerJoin("table_b", "b", new() { "table_a_id", "table_a_sub_id" });
-
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
-from table_a as a
-inner join table_b as b on a.table_a_id = b.table_a_id and a.table_a_sub_id = b.table_a_sub_id";
-
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void JoinCondition()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-
-        var dic = new Dictionary<string, string>();
-        dic.Add("table_a_id", "table_b_id");
-        var table_b = table_a.Join("table_b","b", RelationTypes.Inner, dic);
-
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
-from table_a as a
-inner join table_b as b on a.table_a_id = b.table_b_id";
-
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void LeftJoin()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.LeftJoin("table_b", "b", new() { "table_a_id" });
-
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
-from table_a as a
-left join table_b as b on a.table_a_id = b.table_a_id";
-
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void RightJoin()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.RightJoin("table_b", "b", new() { "table_a_id" });
-
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
-from table_a as a
-right join table_b as b on a.table_a_id = b.table_a_id";
+inner join table_b as b on a.table_a_id = b.table_a_id
+inner join table_c as c on b.table_b_id = c.TABLE_B_ID";
 
         Assert.Equal(expect, text);
     }
@@ -121,16 +29,42 @@ right join table_b as b on a.table_a_id = b.table_a_id";
     public void CrossJoin()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.CrossJoin("table_b", "b");
+        var ta = q.From("table_a", "a");
+        ta.CrossJoin("table_b", "b");
 
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
+        q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b
+        var expect = @"select *
 from table_a as a
 cross join table_b as b";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void Conditions()
+    {
+        var q = new SelectQuery();
+        var ta = q.From("table_a", "a");
+        ta.InnerJoin("table_b", "b").On(x =>
+        {
+            x.Where().Equal("id");
+            x.Where().Equal("a_id", "b_id");
+            x.Where().Group(y =>
+            {
+                y.Where().Or.Equal("id3");
+                y.Where().Or.Equal("id4");
+            });
+            x.Where().Value("x", "id5").Equal("y", "id6");
+        });
+
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select *
+from table_a as a
+inner join table_b as b on a.id = b.id and a.a_id = b.b_id and (a.id3 = b.id3 or a.id4 = b.id4) and x.id5 = y.id6";
 
         Assert.Equal(expect, text);
     }
@@ -139,25 +73,23 @@ cross join table_b as b";
     public void Relations()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        var table_b = table_a.InnerJoin("table_b", "b", new() { "table_a_id" });
-        var table_c = table_a.LeftJoin("table_c", "c", new() { "table_a_id" });
-        var table_d = table_c.LeftJoin("table_d", "d", new() { "table_c_id" });
-        var table_e = table_d.CrossJoin("table_e", "e");
+        var ta = q.From("table_a", "a");
+        var tb = ta.InnerJoin("table_b", "b").On("table_a_id");
+        var tc = ta.LeftJoin("table_c", "c").On("table_a_id");
+        var td = tc.LeftJoin("table_d", "d").On("table_c_id");
+        var te = ta.RightJoin("table_e", "e").On("table_a_id");
+        ta.CrossJoin("table_f", "f");
 
-        q.Select(table_a, "value_a");
-        q.Select(table_b, "value_b");
-        q.Select(table_c, "value_c");
-        q.Select(table_d, "value_d");
-        q.Select(table_e, "value_e");
+        q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.value_a, b.value_b, c.value_c, d.value_d, e.value_e
+        var expect = @"select *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
 left join table_c as c on a.table_a_id = c.table_a_id
 left join table_d as d on c.table_c_id = d.table_c_id
-cross join table_e as e";
+right join table_e as e on a.table_a_id = e.table_a_id
+cross join table_f as f";
 
         Assert.Equal(expect, text);
     }

@@ -11,6 +11,10 @@ public class OperatorContainer
 {
     public string Operator { get; set; } = "and";
 
+    public string SourceName { get; set; } = string.Empty;
+
+    public string DestinationName { get; set; } = string.Empty;
+
     public string SubOperator { get; set; } = "";
 
     public bool IsRoot { get; set; } = false;
@@ -19,11 +23,11 @@ public class OperatorContainer
 
     public List<OperatorContainer>? ConditionGroup { get; set; } = null;
 
-    public OperatorContainer And => SetOperator("and");
+    virtual public OperatorContainer And => SetOperator("and");
 
-    public OperatorContainer Or => SetOperator("or");
+    virtual public OperatorContainer Or => SetOperator("or");
 
-    public OperatorContainer Not => SetSubOperator("not");
+    virtual public OperatorContainer Not => SetSubOperator("not");
 
     internal OperatorContainer SetOperator(string @operator)
     {
@@ -45,9 +49,9 @@ public class OperatorContainer
         return this;
     }
 
-    public OperatorContainer Where() => GetNewOperatorContainer();
+    virtual public OperatorContainer Where() => GetNewOperatorContainer();
 
-    public OperatorContainer GetNewOperatorContainer()
+    private OperatorContainer GetNewOperatorContainer()
     {
         var c = new OperatorContainer();
         Add(c);
