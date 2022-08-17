@@ -5,20 +5,19 @@ You can also parse handwritten Sql.
 ## Demo
 The following C# code and SQL are equivalent.
 ```cs
-var q = new SelectQuery();
-var table_a = q.From("table_a");
-q.Select(table_a, "*");
-q.Where.And(table_a, "id", ":id", 1);
-Console.WriteLine(q.ToQuery().CommandText);
+var sq = new SelectQuery();
+var table = sq.From("table_a", "a");
+sq.SelectAll(table);
+sq.Where().Value(table, "id").Equal(":id").AddParameter(":id", 1);
+var q = sq.ToQuery();
+Console.WriteLine(q.CommandText);
 ```
 
 ```sql
-select table_a.*
-from table_a
+select a.*
+from table_a as a
 where
-    table_a.id = :id";
-
---:id = 1
+    a.id = :id --1
 ```
 
 It is also possible to parse handwritten Select queries into the SqModel class.
