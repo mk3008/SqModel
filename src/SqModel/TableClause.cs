@@ -34,7 +34,7 @@ public class TableClause
 
     public OperatorContainer RelationConditionClause { get; set; } = new RelationContainer() { IsRoot = true };
 
-    public RelationContainer Where() => (RelationContainer)RelationConditionClause.Where();
+    public RelationContainer Where => (RelationContainer)RelationConditionClause;
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 

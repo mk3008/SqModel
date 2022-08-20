@@ -8,15 +8,13 @@ namespace SqModel;
 
 public class RelationContainer : OperatorContainer
 {
-    public override RelationContainer And => (RelationContainer)base.And;
+    public override RelationContainer And() => (RelationContainer)base.And();
 
-    public override RelationContainer Or => (RelationContainer)base.Or;
+    public override RelationContainer Or() => (RelationContainer)base.Or();
 
-    public override RelationContainer Not => (RelationContainer)base.Not;
+    public override RelationContainer Not() => (RelationContainer)base.Not();
 
-    public override RelationContainer Where() => GetNewRelationContainer();
-
-    private RelationContainer GetNewRelationContainer()
+    public override RelationContainer Add()
     {
         var c = new RelationContainer() { SourceName = SourceName, DestinationName = DestinationName };
         Add(c);
@@ -25,7 +23,7 @@ public class RelationContainer : OperatorContainer
 
     public void Group(Action<RelationContainer> fn)
     {
-        var group = new RelationContainer() { Operator = "and", SourceName =SourceName, DestinationName = DestinationName };
+        var group = new RelationContainer() { Operator = "and", SourceName = SourceName, DestinationName = DestinationName };
         Add(group);
         fn(group);
     }

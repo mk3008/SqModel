@@ -129,14 +129,14 @@ public static class TableClauseExtension
 
     public static TableClause On(this TableClause source, string sourcecolumn, string destinationcolumn)
     {
-        var fn = (TableClause x) => x.Where().Equal(sourcecolumn, destinationcolumn);
+        var fn = (RelationContainer x) => x.Add().Equal(sourcecolumn, destinationcolumn);
         source.On(fn);
         return source;
     }
 
-    public static TableClause On(this TableClause source, Action<TableClause> fn)
+    public static TableClause On(this TableClause source, Action<RelationContainer> fn)
     {
-        fn(source);
+        fn(source.Where);
         return source;
     }
 }

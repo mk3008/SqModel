@@ -44,7 +44,7 @@ public partial class SqlParser
                 using var p = new SqlParser(ReadUntilCloseBracket());
                 p.Logger = Logger;
                 var eq = p.ParseSelectQuery();
-                container.Where().SetOperator(@operator, suboperator).Exists(eq);
+                container.Add().SetOperator(@operator, suboperator).Exists(eq);
             }
             else if (token == "(")
             {
@@ -56,7 +56,7 @@ public partial class SqlParser
             }
             else
             {
-                container.Where().SetOperator(@operator, suboperator).Condition = ParseValueContainer(true);
+                container.Add().SetOperator(@operator, suboperator).Condition = ParseValueContainer(true);
                 token = CurrentToken;
                 continue;
             }

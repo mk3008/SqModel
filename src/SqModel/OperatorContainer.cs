@@ -23,11 +23,11 @@ public class OperatorContainer
 
     public List<OperatorContainer>? ConditionGroup { get; set; } = null;
 
-    virtual public OperatorContainer And => SetOperator("and");
+    virtual public OperatorContainer And() => SetOperator("and");
 
-    virtual public OperatorContainer Or => SetOperator("or");
+    virtual public OperatorContainer Or() => SetOperator("or");
 
-    virtual public OperatorContainer Not => SetSubOperator("not");
+    virtual public OperatorContainer Not() => SetSubOperator("not");
 
     internal OperatorContainer SetOperator(string @operator)
     {
@@ -49,16 +49,14 @@ public class OperatorContainer
         return this;
     }
 
-    virtual public OperatorContainer Where() => GetNewOperatorContainer();
-
-    private OperatorContainer GetNewOperatorContainer()
+    public virtual OperatorContainer Add()
     {
-        var c = new OperatorContainer();
-        Add(c);
-        return c;
+        var container = new OperatorContainer();
+        Add(container);
+        return container;
     }
 
-    public void Add(OperatorContainer container)
+    internal void Add(OperatorContainer container)
     {
         ConditionGroup ??= new();
         ConditionGroup.Add(container);

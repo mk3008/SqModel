@@ -49,14 +49,14 @@ cross join table_b as b";
         var ta = q.From("table_a", "a");
         ta.InnerJoin("table_b", "b").On(x =>
         {
-            x.Where().Equal("id");
-            x.Where().Equal("a_id", "b_id");
-            x.Where().Group(y =>
+            x.Add().Equal("id");
+            x.Add().Equal("a_id", "b_id");
+            x.Add().Group(y =>
             {
-                y.Where().Or.Equal("id3");
-                y.Where().Or.Equal("id4");
+                y.Add().Or().Equal("id3");
+                y.Add().Or().Equal("id4");
             });
-            x.Where().Value("x", "id5").Equal("y", "id6");
+            x.Add().Value("x", "id5").Equal("y", "id6");
         });
 
         q.SelectAll();
