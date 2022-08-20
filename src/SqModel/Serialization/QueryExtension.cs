@@ -16,11 +16,21 @@ internal static class QueryExtension
         return source;
     }
 
-    public static Query DecorateBracket(this Query source, string splitter = "")
+    public static Query AddToken(this Query source, string token, string splitter = " ")
     {
-        source.CommandText = $"({splitter}{source.CommandText}{splitter})";
+        if (token.IsEmpty()) return source;
+        source.CommandText = $"{source.CommandText}{splitter}{token}";
         return source;
     }
+
+    public static Query Decorate(this Query source, string prefix, string sufix, string splitter = " ")
+    {
+        source.CommandText = $"{prefix}{splitter}{source.CommandText}{splitter}{sufix}";
+        return source;
+    }
+
+    public static Query DecorateBracket(this Query source, string splitter = "")
+        => source.Decorate("(", ")", splitter);
 
     public static Query InsertIndent(this Query source, string separator = "\r\n", int spaceCount = 4)
     {

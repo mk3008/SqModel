@@ -63,6 +63,13 @@ public partial class SqlParser
             isAlias = true;
         };
 
+        var setCaseExpression = () =>
+        {
+            c.CaseExpression = ParseCaseExpression(true);
+            isValue = false;
+            isAlias = true;
+        };
+
         var tryParseInlineQuery = (string t) =>
         {
             maybeIineQuery = false;
@@ -120,6 +127,12 @@ public partial class SqlParser
             {
                 setTableToken(token);
                 continue;
+            }
+
+            if (token.ToLower() == "case")
+            {
+                setCaseExpression();
+               continue;
             }
 
             if (isValue)

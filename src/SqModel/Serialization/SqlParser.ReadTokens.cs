@@ -16,25 +16,27 @@ public partial class SqlParser
         return tokens.Union(ReadTokens()).Where(x => !x.StartsWith("--") && !x.StartsWith("/*"));
     }
 
-    public IEnumerable<string> ReadTokens()
+    public IEnumerable<string> ReadTokens(bool isSkipSpaceToken = true)
     {
         while (true)
         {
-            var token = ReadToken();
+            var token = ReadToken(isSkipSpaceToken);
             if (string.IsNullOrEmpty(token)) break;
 
             if (token == "(")
             {
                 yield return token;
-                token = ReadUntilCloseBracket();
+                yield return ReadUntilCloseBracket();
+                continue;
             }
+
             yield return token;
         }
     }
 
-    public string ReadToken()
+    public string ReadToken(bool isSkipSpaceToken = true)
     {
-        ReadWhileSpace();
+        if (isSkipSpaceToken) ReadWhileSpace();
 
         var read = () =>
         {
@@ -99,6 +101,7 @@ public partial class SqlParser
             }
 
             cache.Append(Read());
+            if (cn.IsSpace()) break;
 
             cn = PeekOrDefault();
             if (cn.IsSymbol() || cn.IsSpace()) break;

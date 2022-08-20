@@ -12,7 +12,7 @@ public class Query
 
     public Dictionary<string, object> Parameters { get; set; } = new();
 
-    public Query Merge(Query query, string separator)
+    public Query Merge(Query query, string separator = " ")
     {
         var text = CommandText;
         if (CommandText.IsEmpty()) text = query.CommandText;

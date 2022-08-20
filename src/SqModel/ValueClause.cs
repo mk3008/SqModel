@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqModel.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,8 +23,10 @@ public class ValueClause : IParameterCollection
     /// Value name.
     /// </summary>
     public string Value { get; set; } = string.Empty;
-        
+
     public SelectQuery? InlineQuery { get; set; }
+
+    public CaseExpression? CaseExpression { get; set; }
 
     /// <summary>
     /// Column alias name.
@@ -35,7 +38,7 @@ public class ValueClause : IParameterCollection
     /// Specify the parameter name and value used in the command.
     /// </summary>
     public Dictionary<string, object> Parameters { get; set; } = new();
-    
+
     /// <summary>
     /// Get the column name.
     /// If all columns are specified, an empty string is returned.
@@ -50,19 +53,26 @@ public class ValueClause : IParameterCollection
     public Query ToQuery()
     {
         var name = GetName();
-        var alias = (name != string.Empty && name != Value) ? $" as {name}" : string.Empty;
+        var alias = (name != string.Empty && name != Value) ? $"as {name}" : string.Empty;
 
+        Query? q = null;
         if (InlineQuery != null)
         {
-            var q = InlineQuery.ToInlineQuery();
-            return new Query() { CommandText = $"({q.CommandText}){alias}", Parameters = q.Parameters };
+            q = InlineQuery.ToInlineQuery().DecorateBracket(); ;
         }
-
-        if (TableName != String.Empty)
+        else if (CaseExpression != null)
         {
-            return new Query() { CommandText = $"{TableName}.{Value}{alias}", Parameters = Parameters };
+            q = CaseExpression.ToQuery();
+        }
+        else if (TableName != String.Empty)
+        {
+            q = new Query() { CommandText = $"{TableName}.{Value}", Parameters = Parameters };
+        }
+        else
+        {
+            q = new Query() { CommandText = $"{Value}", Parameters = Parameters };
         }
 
-        return new Query() { CommandText = $"{Value}{alias}", Parameters = Parameters };
+        return q.AddToken(alias);
     }
 }

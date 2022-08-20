@@ -8,6 +8,30 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
+    public string ReadUntilTokens(List<string> breakTokens, string leveluptoken = "", string leveldowntoken = "")
+    {
+        var sb = new StringBuilder();
+
+        var level = 0;
+        while (true)
+        {
+            var token = ReadToken(false);
+            if (token == " ")
+            {
+                sb.Append(token);
+                continue;
+            }
+            if (token.IsEmpty()) break;
+
+            if (token.ToLower() == leveluptoken) level++;   
+            if (level == 0 && breakTokens.Contains(token.ToLower())) break;
+
+            if (token.ToLower() == leveldowntoken) level--;
+            sb.Append(token);
+        }
+        return sb.ToString();
+    }
+
     public string ReadUntilCrLf()
     {
         var digit = (char c) =>
