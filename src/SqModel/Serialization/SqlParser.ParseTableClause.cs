@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
     public TableClause ParseTableClause(bool includeCurrentToken = false)
     {
@@ -43,7 +43,7 @@ public partial class Parser
 
         var setSubquery = (string token) =>
         {
-            using var p = new Parser(token);
+            using var p = new SqlParser(token);
             p.Logger = Logger;
             t.SubSelectClause = p.ParseSelectQuery();
             isSubQuery = false;

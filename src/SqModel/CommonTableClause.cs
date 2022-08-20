@@ -8,17 +8,17 @@ namespace SqModel;
 
 public class CommonTableClause
 {
-    public string CommandText { get; set; } = String.Empty;
+    //public string CommandText { get; set; } = String.Empty;
 
     public Dictionary<string, object> Parameters { get; set; } = new();
 
-    public SelectQuery? SelectQuery { get; set; } = null;
+    public SelectQuery SelectQuery { get; set; } = new();
 
     public string AliasName { get; set; } = string.Empty;
 
     public Query ToQuery()
     {
-        var q = (SelectQuery != null) ? SelectQuery.ToSubQuery() : new Query() { CommandText = CommandText, Parameters = Parameters };
+        var q = SelectQuery.ToSubQuery();
         q.CommandText = $"{AliasName} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
 
         return q;

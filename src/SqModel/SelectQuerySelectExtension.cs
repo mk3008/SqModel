@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public static class SelectQuerySelect
+public static class SelectQuerySelectExtension
 {
     public static ValueClause Select(this SelectQuery source, TableClause table, string columnName, string? aliasName = null)
     {
@@ -29,6 +29,16 @@ public static class SelectQuerySelect
         return c;
     }
 
+    public static ValueClause Select(this SelectQuery source, SelectQuery inlinequery, string aliasName)
+    {
+        var c = new ValueClause() { InlineQuery = inlinequery, AliasName = aliasName };
+        source.SelectClause.ColumnClauses.Add(c);
+        return c;
+    }
+
+    public static ValueClause Select(this SelectQuery source, Func<SelectQuery> fn, string aliasName)
+        => Select(fn(), aliasName);
+
     public static ValueClause SelectAll(this SelectQuery source, TableClause table)
     {
         var c = new ValueClause() { TableName = table.AliasName, Value = "*" };
@@ -49,5 +59,16 @@ public static class SelectQuerySelect
         source.SelectClause.ColumnClauses.Add(c);
         return c;
     }
+
+    public static ValueClause SelectCount(this SelectQuery source, string? alias = null)
+    {
+        var c = new ValueClause() { Value = "count(*)" };
+        if (alias != null) c.AliasName = alias;
+        source.SelectClause.ColumnClauses.Add(c);
+        return c;
+    }
+
+    public static IEnumerable<string> GetColumns(this SelectQuery source)
+        => source.SelectClause.GetColumnNames();
 }
 

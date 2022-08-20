@@ -22,7 +22,7 @@ public class ParseWhereTest
     public void Default()
     {
         var condition = "1 = 1";
-        using var p = new Parser(condition);
+        using var p = new SqlParser(condition);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseWhereClause();
         var q = clause.ToQuery();
@@ -36,7 +36,7 @@ public class ParseWhereTest
     public void Exists()
     {
         var condition = "exists (select * from table_b as b where b.id = a.id)";
-        using var p = new Parser(condition);
+        using var p = new SqlParser(condition);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseWhereClause();
         var q = clause.ToQuery();
@@ -54,7 +54,7 @@ public class ParseWhereTest
     public void NotExists()
     {
         var condition = "not exists (select * from table_b as b where b.id = a.id)";
-        using var p = new Parser(condition);
+        using var p = new SqlParser(condition);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseWhereClause();
         var q = clause.ToQuery();

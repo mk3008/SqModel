@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-internal static partial class Extensions
+internal static class stringExtension
 {
     public static RelationTypes ToRelationType(this string source)
     {
@@ -19,19 +19,19 @@ internal static partial class Extensions
     }
 
     public static bool IsFromRealtion(this string source)
-        => Parser.FromTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.FromTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool IsInnerJoinRealtion(this string source)
-        => Parser.InnerJoinTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.InnerJoinTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool IsLeftJoinRelation(this string source)
-        => Parser.LeftJoinTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.LeftJoinTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool IsRightJoinRealtion(this string source)
-        => Parser.RightJoinTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.RightJoinTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool IsCrossJoinRealtion(this string source)
-        => Parser.CrossJoinTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.CrossJoinTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool Any(this IEnumerable<string> source, string token)
         => source.Where(x => x == token.ToLower()).Any();
@@ -43,12 +43,12 @@ internal static partial class Extensions
         => source < 0;
 
     public static bool IsLogicalOperator(this string source)
-        => Parser.LogicalOperatorTokens.Where(x => x == source.ToLower()).Any();
+        => SqlParser.LogicalOperatorTokens.Where(x => x == source.ToLower()).Any();
 
     public static bool IsLetter(this string source)
     {
         if (source.Length == 0) return false;
         var c = source.ToCharArray().First();
-        return Parser.LetterChars.Where(x => x == c).Any();
+        return SqlParser.LetterChars.Where(x => x == c).Any();
     }
 }

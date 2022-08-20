@@ -23,7 +23,7 @@ public class ParseConditionGroupTest
     {
         /// inner join table_b as b on ...
         var relationSql = "a.id1 = b.id1 and a.id2 = b.id2 and a.id3 = b.id3";
-        using var p = new Parser(relationSql);
+        using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseOperatorContainer();
         clause.IsRoot = true;
@@ -36,7 +36,7 @@ public class ParseConditionGroupTest
     {
         /// inner join table_b as b on ...
         var relationSql = "a.id1 = b.id1 and a.id2 = b.id2 or a.id3 = b.id3";
-        using var p = new Parser(relationSql);
+        using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseOperatorContainer();
         clause.IsRoot = true;
@@ -49,7 +49,7 @@ public class ParseConditionGroupTest
     {
         /// inner join table_b as b on ...
         var relationSql = "a.id3 = b.id3 or (a.id1 = b.id1 and a.id2 = b.id2)";
-        using var p = new Parser(relationSql);
+        using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseOperatorContainer();
         clause.IsRoot = true;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser : IDisposable
+public partial class SqlParser : IDisposable
 {
     private bool disposedValue;
     

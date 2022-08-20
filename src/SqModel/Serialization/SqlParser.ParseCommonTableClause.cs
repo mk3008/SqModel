@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
     public CommonTableClause ParseCommonTableClause(bool includeCurrentToken = false)
     {
@@ -31,7 +31,7 @@ public partial class Parser
             if (isSelect)
             {
                 //token is select query string.
-                using var p = new Parser(token);
+                using var p = new SqlParser(token);
                 p.Logger = Logger;
                 c.SelectQuery = p.ParseSelectQuery();
                 isSelect = false;

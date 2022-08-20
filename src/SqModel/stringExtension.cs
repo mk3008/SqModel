@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-internal static partial class Extensions
+internal static class stringExtension
 {
     public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
     {

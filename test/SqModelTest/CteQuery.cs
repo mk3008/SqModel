@@ -77,4 +77,28 @@ inner join c on b.table_b_id = c.table_b_id";
 
         Assert.Equal(expect, text);
     }
+
+    [Fact]
+    public void PushToCommonTable()
+    {
+        var q = new SelectQuery();
+        q.From("table_a");
+        q.SelectAll();
+
+        q = q.PushToCommonTable("a");
+
+        q.From("a");
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"with
+a as (
+    select *
+    from table_a
+)
+select *
+from a";
+
+        Assert.Equal(expect, text);
+    }
 }

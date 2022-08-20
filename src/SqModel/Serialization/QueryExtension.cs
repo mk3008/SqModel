@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-internal static partial class Extensions
+internal static class QueryExtension
 {
     public static Query InsertToken(this Query source, string token, string splitter = " ")
     {

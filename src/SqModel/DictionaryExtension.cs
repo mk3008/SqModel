@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-internal static partial class Extensions
+internal static class DictionaryExtension
 {
     public static void ForEach<T1, T2>(this Dictionary<T1, T2> source, Action<KeyValuePair<T1, T2>> action) where T1 : notnull
     {

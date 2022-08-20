@@ -33,7 +33,7 @@ select *
 from a
 inner join b on a.column_1 = b.column_1";
 
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var sq = p.ParseSelectQuery();
         var text = sq.ToQuery().CommandText;

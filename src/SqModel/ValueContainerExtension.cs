@@ -6,31 +6,8 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public static class SelectQueryWhere
+public static class ValueContainerExtension
 {
-
-    public static void Group(this OperatorContainer source, Action<OperatorContainer> fn)
-    {
-        var group = new OperatorContainer() { Operator = "and" };
-        source.Add(group);
-        fn(group);
-    }
-
-    public static ValueContainer Value(this OperatorContainer source, TableClause table, string column)
-        => source.Value(ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer Value(this OperatorContainer source, string table, string column)
-        => source.Value(ValueBuilder.ToValue(table, column));
-
-    public static ValueContainer Value(this OperatorContainer source, string value)
-        => source.Value(ValueBuilder.ToValue(value));
-
-    public static ValueContainer Value(this OperatorContainer source, ValueClause value)
-    {
-        source.Condition = new() { Source = value };
-        return source.Condition;
-    }
-
     public static ValueClause Equal(this ValueContainer source, TableClause table, string column)
         => source.Expression("=", ValueBuilder.ToValue(table, column));
 
@@ -61,17 +38,5 @@ public static class SelectQueryWhere
         source.ValueConjunction = c;
         c.Destination = value;
         return value;
-    }
-
-    public static void Exists(this OperatorContainer source, Func<SelectQuery> fn)
-    {
-        source.Condition ??= new();
-        source.Condition.ExistsQuery = fn.Invoke();
-    }
-
-    public static void Exists(this OperatorContainer source, SelectQuery existsQuery)
-    {
-        source.Condition ??= new();
-        source.Condition.ExistsQuery = existsQuery;
     }
 }

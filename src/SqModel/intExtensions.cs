@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-internal static partial class Extensions
+internal static class intExtensions
 {
     public static void ForEach(this int source, Action<int> action)
     {

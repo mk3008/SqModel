@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
-    public Parser(string text)
+    public SqlParser(string text)
     {
         Text = text;
         Reader = new StringReader(Text);
+    }
+
+    public static SelectQuery Parse(string text)
+    {
+        using var p = new SqlParser(text);
+        return p.ParseSelectQuery();
     }
 
     public string Text { get; init; }

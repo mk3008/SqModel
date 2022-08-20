@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class SelectQuery
+public partial class SelectQuery
 {
     public TableClause FromClause { get; set; } = new();
 
@@ -26,6 +26,9 @@ public class SelectQuery
         GetCommonTableClauses().ToList().ForEach(x => w.CommonTableAliases.Add(x));
         return w;
     }
+
+    public void Distinct(bool isdistinct = true )
+        => SelectClause.IsDistinct = isdistinct;
 
     public WhereClause WhereClause = new();
 
@@ -65,4 +68,15 @@ public class SelectQuery
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }
+
+    public SelectQuery PushToCommonTable(string alias)
+    {
+        var q = new SelectQuery();
+        q.With.Add(this, alias);
+        return q;
+    }
+
+    public CommonTableClause SearchCommonTable(string alias)
+        => GetCommonTableClauses().Where(x => x.AliasName == alias).First();
+
 }

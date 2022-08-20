@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public static class SelectQueryFrom
+public static class SelectQueryFromExtension
 {
     public static TableClause From(this SelectQuery source, CommonTableClause ct)
     {

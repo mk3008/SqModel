@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
     public WhereClause ParseWhereClause()
     {

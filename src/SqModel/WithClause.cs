@@ -20,14 +20,14 @@ public class WithClause
         foreach (var item in CommonTableAliases) yield return item;
     }
 
-    public CommonTableClause Add(string commandText, string alias, Dictionary<string, object>? prms = null)
-    {
-        var c = new CommonTableClause() { CommandText = commandText, AliasName = alias, Parameters = prms ?? new() };
-        CommonTableAliases.Add(c);
-        return c;
-    }
+    //public CommonTableClause Add(string commandText, string alias, Dictionary<string, object>? prms = null)
+    //{
+    //    var c = new CommonTableClause() { CommandText = commandText, AliasName = alias, Parameters = prms ?? new() };
+    //    CommonTableAliases.Add(c);
+    //    return c;
+    //}
 
-    public CommonTableClause Add(SelectQuery selectQuery, string alias)
+    internal CommonTableClause Add(SelectQuery selectQuery, string alias)
     {
         var c = new CommonTableClause() { SelectQuery = selectQuery, AliasName = alias };
         CommonTableAliases.Add(c);

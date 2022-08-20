@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
     public OperatorContainer ParseOperatorContainer()
     {
@@ -41,14 +41,14 @@ public partial class Parser
                 while (token != "(" || token == null) token = ReadToken();
                 if (token == null) break;
 
-                using var p = new Parser(ReadUntilCloseBracket());
+                using var p = new SqlParser(ReadUntilCloseBracket());
                 p.Logger = Logger;
                 var eq = p.ParseSelectQuery();
                 container.Where().SetOperator(@operator, suboperator).Exists(eq);
             }
             else if (token == "(")
             {
-                using var p = new Parser(ReadUntilCloseBracket());
+                using var p = new SqlParser(ReadUntilCloseBracket());
                 p.Logger = Logger;
                 var c = p.ParseOperatorContainer().SetOperator(@operator, suboperator);
                 container.ConditionGroup ??= new();

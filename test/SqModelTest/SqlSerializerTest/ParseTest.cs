@@ -22,7 +22,7 @@ public class ParseTest
     [Fact]
     public void Simple()
     {
-        using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
+        using var p = new SqlParser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
         var expect = @"select a.column_1 as col1, a.column_2 as col2
@@ -40,7 +40,7 @@ from table_a as a";
     [Fact]
     public void Full()
     {
-        using var p = new Parser(@"select
+        using var p = new SqlParser(@"select
     a.column_1 as col1
     , a.column_2 as col2
     , ((1+2) * 3) as col3
@@ -114,7 +114,7 @@ where
     //    [Fact]
     //    public void Simple()
     //    {
-    //        using var p = new Parser(@"select
+    //        using var p = new SqlParser(@"select
     //    a.*
     //    , *
     //    , a.column_1 as col1
@@ -136,7 +136,7 @@ where
     //    [Fact]
     //    public void SimpleWith()
     //    {
-    //        using var p = new Parser(@"
+    //        using var p = new SqlParser(@"
     //with
     //a as (
     //    select

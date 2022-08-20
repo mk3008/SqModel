@@ -18,7 +18,7 @@ public class ReadTokensTest
     public void Split()
     {
         var text = "a b\rc\nd\r\ne\tf";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -35,7 +35,7 @@ public class ReadTokensTest
     public void Word()
     {
         var text = "a bc def";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -49,7 +49,7 @@ public class ReadTokensTest
     public void ReservedWord()
     {
         var text = "left outer join a";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -62,7 +62,7 @@ public class ReadTokensTest
     public void Symbol()
     {
         var text = ". .. ...";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -76,7 +76,7 @@ public class ReadTokensTest
     public void WordAndSymbol()
     {
         var text = "a.b";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -90,7 +90,7 @@ public class ReadTokensTest
     public void Quote()
     {
         var text = "start'comment text'end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -104,7 +104,7 @@ public class ReadTokensTest
     public void QuoteEscape()
     {
         var text = "start'comment''text'end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -118,7 +118,7 @@ public class ReadTokensTest
     public void Bracket()
     {
         var text = "start(comment text)end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -134,7 +134,7 @@ public class ReadTokensTest
     public void BracketNest()
     {
         var text = "start((comment)(text))end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -150,7 +150,7 @@ public class ReadTokensTest
     public void LineComment()
     {
         var text = "start-- comment text\r\nend";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -164,7 +164,7 @@ public class ReadTokensTest
     public void BlockComment()
     {
         var text = "start/* comment\r\ntext */end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -178,7 +178,7 @@ public class ReadTokensTest
     public void BlockCommentNest()
     {
         var text = "start/* comment /* nest */ */end";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
@@ -192,7 +192,7 @@ public class ReadTokensTest
     public void LineCommentInBlockComment()
     {
         var text = "start--/* comment */blockend\r\nlineend";
-        using var p = new Parser(text);
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 

@@ -86,7 +86,7 @@ from (
 
 
         var q2 = new SelectQuery();
-        q2.With.Add(commonY, "y");
+        q2.With(commonY, "y");
         var y = q2.From("y");
         q2.Select(y, "*");
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-internal static partial class Extensions
+internal static class QueryExtension
 {
     public static Query ToQuery(this List<Query> source, string separator)
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-internal static partial class Extensions
+internal static class IEnumerableExtension
 {
     public static string ToString<T>(this IEnumerable<T> source, string separator)
     {

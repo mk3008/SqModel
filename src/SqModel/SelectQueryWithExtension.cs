@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public static class SelectQueryWith
+public static class SelectQueryWithExtension
 {
     public static CommonTableClause With(this SelectQuery source, Action<SelectQuery> action, string alias)
     {
-        var q = new SelectQuery();
-        action(q);
-        return source.With.Add(q, alias);
+        var sq = new SelectQuery();
+        action(sq);
+        return source.With.Add(sq, alias);
     }
 
+    public static CommonTableClause With(this SelectQuery source, Func<SelectQuery> fn, string alias)
+        => source.With.Add(fn(), alias);
+
     public static CommonTableClause With(this SelectQuery source, SelectQuery commonQuery, string alias)
-    {
-        return source.With.Add(commonQuery, alias);
-    }
+        => source.With.Add(commonQuery, alias);
 }

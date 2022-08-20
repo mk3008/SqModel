@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Serialization;
 
-public partial class Parser
+public partial class SqlParser
 {
     public ValueClause ParseValueClause(bool includeCurrentToken = false)
     {
@@ -67,7 +67,7 @@ public partial class Parser
         {
             maybeIineQuery = false;
 
-            using (var parser = new Parser(t) { Logger = Logger })
+            using (var parser = new SqlParser(t) { Logger = Logger })
             {
                 var f = parser.ReadTokens().FirstOrDefault();
                 if (f?.ToLower() == "select") isInlineQuery = true;
@@ -79,7 +79,7 @@ public partial class Parser
                 return;
             }
 
-            using var p = new Parser(t) { Logger = Logger };
+            using var p = new SqlParser(t) { Logger = Logger };
             c.InlineQuery = p.ParseSelectQuery();
             cache.Clear();
         };

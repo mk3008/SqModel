@@ -23,7 +23,7 @@ public class ParseTableTest
     {
         /// inner join table_b as b on ...
         var sql = "from table_a as a";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
 
@@ -37,7 +37,7 @@ public class ParseTableTest
     {
         /// inner join table_b as b on ...
         var sql = "inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
 
@@ -52,7 +52,7 @@ public class ParseTableTest
         /// inner join table_b as b on ...
         var sql = @"from table_a as a
 inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
         Assert.Equal(sql, clause.ToQuery().CommandText);
@@ -68,7 +68,7 @@ inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2
 left join table_c as c on b.column_3 = c.column_3
 right join table_d as d on c.column_4 = c.column4
 cross join table_e as e";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
 
@@ -83,7 +83,7 @@ cross join table_e as e";
     select *
     from table_a
 ) as a";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
 
@@ -102,7 +102,7 @@ inner join (
     select *
     from table_b
 ) as b on a.column_1 = b.column_1";
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
 
@@ -115,7 +115,7 @@ inner join (
         var sql = @"from table_a
 inner join table_b on table_a.column_1 = table_b.column_1";
 
-        using var p = new Parser(sql);
+        using var p = new SqlParser(sql);
         p.Logger = (x) => Output.WriteLine(x);
         var sq = p.ParseTableClause();
         var text = sq.ToQuery().CommandText;
