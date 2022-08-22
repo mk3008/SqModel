@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqModel;
+namespace SqModel.Building;
 
 public static class SelectQueryFromExtension
 {

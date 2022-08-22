@@ -26,17 +26,3 @@ public class CaseExpression
         return q;
     }
 }
-
-public class CaseExpression<T> : CaseExpression where T : ConditionValuePair, new()
-{
-    internal T? CurrentConditionValuePair { get; set; } = null;
-
-    public virtual T Add()
-    {
-        var c = new T();
-        ConditionValues.Add(c);
-        CurrentConditionValuePair = c;
-        return c;
-    }
-}
-

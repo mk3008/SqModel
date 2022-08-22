@@ -1,4 +1,5 @@
-﻿using SqModel.Serialization;
+﻿using SqModel.Building;
+using SqModel.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ConditionValuePair : IReturnValueClauseSettable
+public class ConditionValuePair : IReturnValueSettable
 {
     public ValueContainer? ConditionExpression { get; set; } = null;
 
@@ -37,64 +38,9 @@ public class ConditionValuePair : IReturnValueClauseSettable
         return q;
     }
 
-    public ValueClause SetReturnValueClause(ValueClause value)
+    public ValueClause SetReturnValue(ValueClause value)
     {
         ReturnValue = value;
         return value;
     }
 }
-
-public class CaseConditionValuePair : ConditionValuePair
-    , IWhenValueSettable<IReturnValueClauseSettable>
-{
-    public IReturnValueClauseSettable SetWhenValueClause(ValueClause value)
-    {
-        ConditionValue = value;
-        return this;
-    }
-}
-
-public class CaseWhenConditionValuePair : ConditionValuePair
-    , IWhenValueSettable<ISignValueClauseSettable<IReturnValueClauseSettable>>
-    , ISignValueClauseSettable<IReturnValueClauseSettable>
-{
-    public ISignValueClauseSettable<IReturnValueClauseSettable> SetWhenValueClause(ValueClause value)
-    {
-        ConditionExpression ??= new();
-        ConditionExpression.Source = value;
-        return this;
-    }
-
-    public IReturnValueClauseSettable SetSignValueClause(string sign, ValueClause value)
-    {
-        if (ConditionExpression == null) throw new InvalidProgramException();
-
-        var c = new ValueConjunction() { Sign = sign };
-        ConditionExpression.ValueConjunction = c;
-        c.Destination = value;
-
-        return this;
-    }
-}
-
-
-public interface IWhenValueSettable<T>
-{
-    T SetWhenValueClause(ValueClause value);
-}
-
-public static class IWhenValueSettableExtension
-{
-    public static T When<T>(this IWhenValueSettable<T> source, TableClause table, string column)
-    => source.SetWhenValueClause(ValueBuilder.ToValue(table, column));
-
-    public static T When<T>(this IWhenValueSettable<T> source, string table, string column)
-        => source.SetWhenValueClause(ValueBuilder.ToValue(table, column));
-
-    public static T When<T>(this IWhenValueSettable<T> source, string value)
-        => source.SetWhenValueClause(ValueBuilder.ToValue(value));
-
-    public static T When<T>(this IWhenValueSettable<T> source, ValueClause value)
-        => source.SetWhenValueClause(value);
-}
-

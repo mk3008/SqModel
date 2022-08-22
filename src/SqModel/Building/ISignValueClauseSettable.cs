@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqModel;
+namespace SqModel.Building;
 
 public interface ISignValueClauseSettable<T>
 {
     T SetSignValueClause(string sign, ValueClause value);
 }
 
-public static class IValueClauseSettableExtension
+public static class ISignValueClauseSettableExtension
 {
     public static T Equal<T>(this ISignValueClauseSettable<T> source, TableClause table, string column)
         => source.SetSignValueClause("=", ValueBuilder.ToValue(table, column));

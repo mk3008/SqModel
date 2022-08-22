@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqModel;
+namespace SqModel.Building;
 
 public static class SelectQuerySelectExtension
 {
@@ -37,7 +37,7 @@ public static class SelectQuerySelectExtension
     }
 
     public static ValueClause Select(this SelectQuery source, Func<SelectQuery> fn, string aliasName)
-        => Select(fn(), aliasName);
+        => fn().Select(aliasName);
 
     public static ValueClause SelectAll(this SelectQuery source, TableClause table)
     {
