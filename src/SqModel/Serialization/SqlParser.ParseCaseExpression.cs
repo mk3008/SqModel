@@ -138,7 +138,7 @@ public partial class SqlParser
 
             //set ReturnValue
             var valuetoken = ReadUntilSplitToken();
-            using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Value = p.ParseValueClause();
+            using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.ReturnValue = p.ParseValueClause();
 
             return cv;
         }
@@ -151,7 +151,7 @@ public partial class SqlParser
 
             //set ReturnValue
             var valuetoken = ReadUntilSplitToken();
-            using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Value = p.ParseValueClause();
+            using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.ReturnValue = p.ParseValueClause();
 
             return cv;
         }
@@ -160,7 +160,7 @@ public partial class SqlParser
         {
             //set ReturnValue
             var cv = new ConditionValuePair();
-            using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.Value = p.ParseValueClause();
+            using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.ReturnValue = p.ParseValueClause();
 
             return cv;
         }

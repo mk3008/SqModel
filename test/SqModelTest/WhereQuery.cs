@@ -156,6 +156,19 @@ where
             return x;
         });
 
+        q.Where.Add().Case("table_a.id", x => {
+            x.Add().When("1").Then("10");
+            x.Add().When("2").Then("20");
+            x.Add().When("3").Then("30");
+        }).Equal("1");
+
+        q.Where.Add().CaseWhen(x =>
+        {
+            x.Add().When("table_a", "id").Equal("1").Then("10");
+            x.Add().When("table_b", "id").Equal("2").Then("20");
+            x.Add().When("table_c", "id").Equal("3").Then("30");
+        }).Equal("1");
+
         var acutal = q.WhereClause.ToQuery();
         var expect = @"where
     (table_a.id = :id1 or table_a.id = :id2)
@@ -175,9 +188,12 @@ where
         from table_x as x
         where
             x.id = table_a.id
-    )";
+    )
+    and case table_a.id when 1 then 10 when 2 then 20 when 3 then 30 end = 1
+    and case when table_a.id = 1 then 10 when table_b.id = 2 then 20 when table_c.id = 3 then 30 end = 1";
 
-        Assert.Equal(expect, acutal.CommandText);
+        var text = acutal.CommandText;
+        Assert.Equal(expect, text);
         Assert.Equal(3, acutal.Parameters.Count);
         Assert.Equal(1, acutal.Parameters[":id1"]);
         Assert.Equal(2, acutal.Parameters[":id2"]);

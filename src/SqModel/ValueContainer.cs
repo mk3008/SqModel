@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ValueContainer
+public class ValueContainer : ISignValueClauseSettable<ValueClause>
 {
     public ValueClause? Source { get; set; } = null;
 
@@ -26,6 +26,13 @@ public class ValueContainer
             sq = sq.Merge(ds, $" {ValueConjunction.Sign} ");
             return sq;
         }
+
         return new Query();
+    }
+
+    public ValueClause SetSignValueClause(string sign, ValueClause value)
+    {
+        ValueConjunction = new ValueConjunction() { Sign = sign, Destination = value };
+        return value;
     }
 }
