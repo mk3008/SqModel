@@ -31,13 +31,13 @@ public class RelationContainer : OperatorContainer
     public void Equal(string column)
     {
         Condition = new() { Source = ValueBuilder.ToValue(SourceName, column) };
-        Condition.Expression("=", ValueBuilder.ToValue(DestinationName, column));
+        Condition.SetSignValueClause("=", ValueBuilder.ToValue(DestinationName, column));
     }
 
     public void Equal(string sourcecolumn, string destinationcolumn)
     {
         Condition = new() { Source = ValueBuilder.ToValue(SourceName, sourcecolumn) };
-        Condition.Expression("=", ValueBuilder.ToValue(DestinationName, destinationcolumn));
+        Condition.SetSignValueClause("=", ValueBuilder.ToValue(DestinationName, destinationcolumn));
     }
 
     public void Equal(Dictionary<string, string> columnmap)
@@ -45,7 +45,7 @@ public class RelationContainer : OperatorContainer
         foreach (var item in columnmap)
         {
             Condition = new() { Source = ValueBuilder.ToValue(SourceName, item.Key) };
-            Condition.Expression("=", ValueBuilder.ToValue(DestinationName, item.Value));
+            Condition.SetSignValueClause("=", ValueBuilder.ToValue(DestinationName, item.Value));
         }
     }
 }

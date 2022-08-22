@@ -41,4 +41,34 @@ public static class OperatorContainerExtension
         source.Condition ??= new();
         source.Condition.ExistsQuery = existsQuery;
     }
+
+    public static ValueContainer CaseWhen(this OperatorContainer source, Action<CaseExpression<CaseWhenConditionValuePair>> action)
+    {
+        var c = new CaseExpression<CaseWhenConditionValuePair>();
+        source.Condition ??= new();
+        source.Condition.Source ??= new();
+        source.Condition.Source.CaseExpression = c;
+        action(c);
+        return source.Condition;
+    }
+
+    public static ValueContainer Case(this OperatorContainer source, TableClause table, string column, Action<CaseExpression<CaseConditionValuePair>> action)
+        => source.Case(ValueBuilder.ToValue(table, column), action);
+
+    public static ValueContainer Case(this OperatorContainer source, string table, string column, Action<CaseExpression<CaseConditionValuePair>> action)
+        => source.Case(ValueBuilder.ToValue(table, column), action);
+
+    public static ValueContainer Case(this OperatorContainer source, string value, Action<CaseExpression<CaseConditionValuePair>> action)
+        => source.Case(ValueBuilder.ToValue(value), action);
+
+    public static ValueContainer Case(this OperatorContainer source, ValueClause value, Action<CaseExpression<CaseConditionValuePair>> action)
+    {
+        var c = new CaseExpression<CaseConditionValuePair>();
+        source.Condition ??= new();
+        source.Condition.Source ??= new();
+        source.Condition.Source.CaseExpression = c;
+        c.Value = value;
+        action(c);
+        return source.Condition;
+    }
 }

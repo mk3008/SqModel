@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ConditionValuePair
+public class ConditionValuePair : IReturnValueClauseSettable
 {
     public ValueContainer? ConditionExpression { get; set; } = null;
 
     public ValueClause? ConditionValue { get; set; } = null;
 
-    public ValueClause Value { get; set; } = new();
+    public ValueClause ReturnValue { get; set; } = new();
 
     private static string PrefixToken { get; set; } = "when";
 
@@ -33,7 +33,68 @@ public class ConditionValuePair
         else q = new Query() { CommandText = OmitToken };
 
         // ... value
-        q = q.Merge(Value.ToQuery());
+        q = q.Merge(ReturnValue.ToQuery());
         return q;
     }
+
+    public ValueClause SetReturnValueClause(ValueClause value)
+    {
+        ReturnValue = value;
+        return value;
+    }
 }
+
+public class CaseConditionValuePair : ConditionValuePair
+    , IWhenValueSettable<IReturnValueClauseSettable>
+{
+    public IReturnValueClauseSettable SetWhenValueClause(ValueClause value)
+    {
+        ConditionValue = value;
+        return this;
+    }
+}
+
+public class CaseWhenConditionValuePair : ConditionValuePair
+    , IWhenValueSettable<ISignValueClauseSettable<IReturnValueClauseSettable>>
+    , ISignValueClauseSettable<IReturnValueClauseSettable>
+{
+    public ISignValueClauseSettable<IReturnValueClauseSettable> SetWhenValueClause(ValueClause value)
+    {
+        ConditionExpression ??= new();
+        ConditionExpression.Source = value;
+        return this;
+    }
+
+    public IReturnValueClauseSettable SetSignValueClause(string sign, ValueClause value)
+    {
+        if (ConditionExpression == null) throw new InvalidProgramException();
+
+        var c = new ValueConjunction() { Sign = sign };
+        ConditionExpression.ValueConjunction = c;
+        c.Destination = value;
+
+        return this;
+    }
+}
+
+
+public interface IWhenValueSettable<T>
+{
+    T SetWhenValueClause(ValueClause value);
+}
+
+public static class IWhenValueSettableExtension
+{
+    public static T When<T>(this IWhenValueSettable<T> source, TableClause table, string column)
+    => source.SetWhenValueClause(ValueBuilder.ToValue(table, column));
+
+    public static T When<T>(this IWhenValueSettable<T> source, string table, string column)
+        => source.SetWhenValueClause(ValueBuilder.ToValue(table, column));
+
+    public static T When<T>(this IWhenValueSettable<T> source, string value)
+        => source.SetWhenValueClause(ValueBuilder.ToValue(value));
+
+    public static T When<T>(this IWhenValueSettable<T> source, ValueClause value)
+        => source.SetWhenValueClause(value);
+}
+
