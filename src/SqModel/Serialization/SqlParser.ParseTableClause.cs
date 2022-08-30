@@ -100,7 +100,7 @@ public partial class SqlParser
             {
                 var c = ParseOperatorContainer();
                 c.IsRoot = true;
-                t.RelationConditionClause = c;
+                t.RelationClause = c;
                 if (string.IsNullOrEmpty(CurrentToken) || ConditionBreakTokens.Any(CurrentToken)) break;
                 continue;
             }

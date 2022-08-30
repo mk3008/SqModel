@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqModel.Clause;
+using SqModel.CommandContainer;
 
 namespace SqModel.Building;
 
@@ -17,8 +19,8 @@ public static class TableClauseExtension
 
     public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type)
     {
-        destination.RelationConditionClause.SourceName = source.AliasName;
-        destination.RelationConditionClause.DestinationName = destination.AliasName;
+        destination.RelationClause.LeftTable = source.AliasName;
+        destination.RelationClause.RightTable = destination.AliasName;
         destination.RelationType = type;
         source.SubTableClauses.Add(destination);
         return destination;
@@ -36,8 +38,8 @@ public static class TableClauseExtension
     public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
         => source.Join(subSelectClause, aliasName, RelationTypes.Inner);
 
-    public static TableClause InnerJoin(this TableClause source, CommonTableClause ct)
-        => source.Join(ct.AliasName, ct.AliasName, RelationTypes.Inner);
+    public static TableClause InnerJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Inner);
 
     public static TableClause InnerJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
         => source.Join(fn(), aliasName, RelationTypes.Inner);
@@ -61,8 +63,8 @@ public static class TableClauseExtension
     public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
         => source.Join(subSelectClause, aliasName, RelationTypes.Left);
 
-    public static TableClause LeftJoin(this TableClause source, CommonTableClause ct)
-        => source.Join(ct.AliasName, ct.AliasName, RelationTypes.Left);
+    public static TableClause LeftJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Left);
 
     public static TableClause LeftJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
         => source.Join(fn(), aliasName, RelationTypes.Left);
@@ -86,8 +88,8 @@ public static class TableClauseExtension
     public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
         => source.Join(subSelectClause, aliasName, RelationTypes.Right);
 
-    public static TableClause RightJoin(this TableClause source, CommonTableClause ct)
-        => source.Join(ct.AliasName, ct.AliasName, RelationTypes.Right);
+    public static TableClause RightJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Right);
 
     public static TableClause RightJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
         => source.Join(fn(), aliasName, RelationTypes.Right);
@@ -111,8 +113,8 @@ public static class TableClauseExtension
     public static TableClause CrossJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
         => source.Join(subSelectClause, aliasName, RelationTypes.Cross);
 
-    public static TableClause CrossJoin(this TableClause source, CommonTableClause ct)
-        => source.Join(ct.AliasName, ct.AliasName, RelationTypes.Cross);
+    public static TableClause CrossJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Cross);
 
     public static TableClause CrossJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
         => source.Join(fn(), aliasName, RelationTypes.Cross);
@@ -129,14 +131,18 @@ public static class TableClauseExtension
 
     public static TableClause On(this TableClause source, string sourcecolumn, string destinationcolumn)
     {
-        var fn = (RelationContainer x) => x.Add().Equal(sourcecolumn, destinationcolumn);
-        source.On(fn);
+        var st = source.RelationClause.LeftTable;
+        var dt = source.RelationClause.RightTable;
+        source.On.Add().Column(st, sourcecolumn).Equal(dt, destinationcolumn);
         return source;
     }
 
-    public static TableClause On(this TableClause source, Action<RelationContainer> fn)
+    public static TableClause On(this TableClause source, Action<RelationGroup> fn)
     {
-        fn(source.Where);
+        var r = source.RelationClause;
+        var g = new RelationGroup() {LeftTable = r.LeftTable, RightTable = r.RightTable };
+        source.RelationClause.Collection.Add(g);
+        fn(g);
         return source;
     }
 }

@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqModel.Clause;
+using SqModel.CommandContainer;
 
 namespace SqModel.Building;
 
 public static class SelectQueryFromExtension
 {
-    public static TableClause From(this SelectQuery source, CommonTableClause ct)
+    public static TableClause From(this SelectQuery source, CommonTable ct)
     {
-        source.FromClause = new TableClause() { TableName = ct.AliasName, AliasName = ct.AliasName, RelationType = RelationTypes.From };
+        source.FromClause = new TableClause() { TableName = ct.Name, AliasName = ct.Name, RelationType = RelationTypes.From };
         return source.FromClause;
     }
 

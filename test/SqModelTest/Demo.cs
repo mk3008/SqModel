@@ -1,5 +1,7 @@
 ﻿using SqModel;
 using SqModel.Building;
+using SqModel.Command;
+using SqModel.CommandContainer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +21,8 @@ public class Demo
         var tb = ta.LeftJoin("table_b", "b").On("id", "table_a_id");
 
         sq.SelectAll();
-        sq.Where.Add().Value(ta, "id").Equal(":id").AddParameter(":id", 1);
-        sq.Where.Add().Value(tb, "table_a_id").IsNull();
+        sq.Where.Add().Column(ta, "id").Equal(":id").Parameter(":id", 1);
+        sq.Where.Add().Column(tb, "table_a_id").IsNull();
 
         var q = sq.ToQuery();
 

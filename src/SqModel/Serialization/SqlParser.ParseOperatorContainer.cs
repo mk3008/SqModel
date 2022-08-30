@@ -9,11 +9,11 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
-    public OperatorContainer ParseOperatorContainer()
+    public ConditionItem ParseOperatorContainer()
     {
         Logger?.Invoke($"ParseOperatorContainer start");
 
-        var container = new OperatorContainer();
+        var container = new ConditionItem();
         var token = ReadToken();
         var @operator = string.Empty;
         var suboperator = string.Empty;

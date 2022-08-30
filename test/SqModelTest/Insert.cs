@@ -1,5 +1,8 @@
 ﻿using SqModel;
 using SqModel.Building;
+using SqModel.Command;
+using SqModel.CommandContainer;
+using SqModel.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +53,7 @@ from table_a as a";
     {
         var q = new SelectQuery();
         var table_a = q.From("table_a", "a");
-        q.Select(table_a, "id", "index_value");
+        q.Select(table_a, "id").As("index_value");
 
         var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };
 

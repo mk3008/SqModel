@@ -1,4 +1,7 @@
-﻿using System;
+﻿using SqModel.Clause;
+using SqModel.CommandContainer;
+using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +15,11 @@ public partial class SelectQuery
 
     public SelectClause SelectClause { get; set; } = new();
 
+    public SelectClause Select => SelectClause;
+
     public WithClause With { get; set; } = new();
 
-    public IEnumerable<CommonTableClause> GetCommonTableClauses()
+    public IEnumerable<CommonTable> GetCommonTableClauses()
     {
         foreach (var item in FromClause.GetCommonTableClauses()) yield return item;
         foreach (var item in With.GetCommonTableClauses()) yield return item;
@@ -27,14 +32,11 @@ public partial class SelectQuery
         return w;
     }
 
-    public void Distinct(bool isdistinct = true )
-        => SelectClause.IsDistinct = isdistinct;
-
     public WhereClause WhereClause = new();
 
-    public OperatorContainer Where => WhereClause.Container;
+    public ConditionGroup Where => WhereClause.ConditionGroup;
 
-    public Query ToQuery() => ToQueryCore(true);
+    public virtual Query ToQuery() => ToQueryCore(true);
 
     public Query ToSubQuery() => ToQueryCore(false);
 
@@ -76,7 +78,34 @@ public partial class SelectQuery
         return q;
     }
 
-    public CommonTableClause SearchCommonTable(string alias)
-        => GetCommonTableClauses().Where(x => x.AliasName == alias).First();
+    public CommonTable SearchCommonTable(string alias)
+        => GetCommonTableClauses().Where(x => x.Name == alias).First();
 
+}
+
+public static class SelectQueryExtension
+{
+    public static Query ToCreateTableQuery(this SelectQuery source, string tablename, bool istemporary = true)
+    {
+        var q = source.ToQuery();
+        var tmp = (istemporary) ? "temporary " : "";
+        q.CommandText = $"create {tmp}table {tablename}\r\nas\r\n{q.CommandText}";
+        return q;
+    }
+
+    public static SelectQuery Distinct(this SelectQuery source, bool isdistinct = true)
+    {
+        source.SelectClause.IsDistinct = isdistinct;
+        return source;
+    }
+
+    public static Query ToInsertQuery(this SelectQuery source, string tablename)
+    {
+        var q = source.ToQuery();
+        var cols = source.SelectClause.GetColumnNames();
+        var coltext = $"({cols.ToString(", ")})";
+
+        q.CommandText = $"insert into {tablename}{coltext}\r\n{q.CommandText}";
+        return q;
+    }
 }

@@ -39,12 +39,12 @@ public partial class SqlParser
 
             if (token.ToLower() == "select")
             {
-                q.SelectClause.ColumnClauses.Add(ParseValueClause());
+                q.SelectClause.Collection.Add(ParseValueClause());
                 token = CurrentToken;
 
                 while (token == ",")
                 {
-                    q.SelectClause.ColumnClauses.Add(ParseValueClause());
+                    q.SelectClause.Collection.Add(ParseValueClause());
                     token = CurrentToken;
                 }
             }

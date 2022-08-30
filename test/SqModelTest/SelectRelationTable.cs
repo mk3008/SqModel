@@ -1,5 +1,6 @@
 using SqModel;
 using SqModel.Building;
+using SqModel.CommandContainer;
 using System.Collections.Generic;
 using Xunit;
 
@@ -48,24 +49,23 @@ cross join table_b as b";
     {
         var q = new SelectQuery();
         var ta = q.From("table_a", "a");
-        ta.InnerJoin("table_b", "b").On(x =>
-        {
-            x.Add().Equal("id");
-            x.Add().Equal("a_id", "b_id");
-            x.Add().Group(y =>
-            {
-                y.Add().Or().Equal("id3");
-                y.Add().Or().Equal("id4");
-            });
-            x.Add().Value("x", "id5").Equal("y", "id6");
-        });
+        var tb = ta.InnerJoin("table_b", "b").On(x =>
+           {
+               x.Add().Value(10).Equal(10);
+               x.Add().Column("a", "a_id").Equal("b", "b_id");
+               x.AddGroup(y =>
+               {
+                   y.Add().Value(10).Equal(10);
+                   y.Add().Or().Column("a", "a_id").Equal("b", "b_id");
+               });
+           });
 
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
         var expect = @"select *
 from table_a as a
-inner join table_b as b on a.id = b.id and a.a_id = b.b_id and (a.id3 = b.id3 or a.id4 = b.id4) and x.id5 = y.id6";
+inner join table_b as b on (10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id = b.b_id))";
 
         Assert.Equal(expect, text);
     }

@@ -29,9 +29,9 @@ public class ParseTest
 from table_a as a";
         Assert.Equal(expect, text);
 
-        Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
-        Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
-        Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+        Assert.Equal("a", q.SelectClause.Collection[0].TableName);
+        Assert.Equal("column_1", q.SelectClause.Collection[0].Value);
+        Assert.Equal("col1", q.SelectClause.Collection[0].AliasName);
 
         Assert.Equal("table_a", q.FromClause.TableName);
         Assert.Equal("a", q.FromClause.AliasName);
@@ -70,21 +70,21 @@ where
 
         Assert.Equal(expect, text);
 
-        Assert.Equal(5, q.SelectClause.ColumnClauses.Count);
+        Assert.Equal(5, q.SelectClause.Collection.Count);
 
         //ColumnClauses(Column)
-        Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
-        Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
-        Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+        Assert.Equal("a", q.SelectClause.Collection[0].TableName);
+        Assert.Equal("column_1", q.SelectClause.Collection[0].Value);
+        Assert.Equal("col1", q.SelectClause.Collection[0].AliasName);
 
         //ColumnClauses(Value)
-        Assert.Equal("((1+2) * 3)", q.SelectClause.ColumnClauses[2].Value);
-        Assert.Equal("col3", q.SelectClause.ColumnClauses[2].AliasName);
+        Assert.Equal("((1+2) * 3)", q.SelectClause.Collection[2].Value);
+        Assert.Equal("col3", q.SelectClause.Collection[2].AliasName);
 
         //ColumnClauses(InlineQuery)
-        Assert.Equal("b", q.SelectClause.ColumnClauses[3].InlineQuery?.FromClause.TableName);
-        Assert.Equal("b", q.SelectClause.ColumnClauses[3].InlineQuery?.SelectClause.ColumnClauses[0].TableName);
-        Assert.Equal("value", q.SelectClause.ColumnClauses[3].InlineQuery?.SelectClause.ColumnClauses[0].Value);
+        Assert.Equal("b", q.SelectClause.Collection[3].InlineQuery?.FromClause.TableName);
+        Assert.Equal("b", q.SelectClause.Collection[3].InlineQuery?.SelectClause.ColumnClauses[0].TableName);
+        Assert.Equal("value", q.SelectClause.Collection[3].InlineQuery?.SelectClause.ColumnClauses[0].Value);
 
         //FromClause
         Assert.Equal("table_a", q.FromClause.TableName);
@@ -95,12 +95,12 @@ where
         Assert.Equal(RelationTypes.Inner, q.FromClause.SubTableClauses[0].RelationType);
         Assert.Equal("table_c", q.FromClause.SubTableClauses[0].TableName);
         Assert.Equal("c", q.FromClause.SubTableClauses[0].AliasName);
-        Assert.Single(q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup);
-        Assert.Equal("a", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source?.TableName);
-        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.Source?.Value);
-        Assert.Equal("=", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Sign);
-        Assert.Equal("c", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.TableName);
-        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationConditionClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.Value);
+        Assert.Single(q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup);
+        Assert.Equal("a", q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup?[0].Condition?.Source?.TableName);
+        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup?[0].Condition?.Source?.Value);
+        Assert.Equal("=", q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup?[0].Condition?.ValueConjunction?.Sign);
+        Assert.Equal("c", q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.TableName);
+        Assert.Equal("column_1", q.FromClause.SubTableClauses[0].RelationClause.ConditionGroup?[0].Condition?.ValueConjunction?.Destination.Value);
 
         //WhereClauses
         Assert.Equal(2, q.WhereClause.Container.ConditionGroup?.Count);

@@ -1,5 +1,7 @@
 using SqModel;
 using SqModel.Building;
+using SqModel.Command;
+using SqModel.CommandContainer;
 using Xunit;
 
 namespace SqModelTest;
@@ -53,7 +55,7 @@ from table_a as a";
     {
         var q = new SelectQuery();
         var table_a = q.From("table_a", "a");
-        q.Select(table_a, "column_x", "x");
+        q.Select(table_a, "column_x").As("x");
 
         var text = q.ToQuery().CommandText;
         var expect = @"select a.column_x as x
@@ -67,7 +69,7 @@ from table_a as a";
     {
         var q = new SelectQuery();
         var table_a = q.From("table_a", "a");
-        q.Select("'test'", "test");
+        q.Select("'test'").As("test");
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
@@ -82,7 +84,7 @@ from table_a as a";
     {
         var q = new SelectQuery();
         var table_a = q.From("table_a", "a");
-        q.Select(":val", "value").AddParameter(":val", 1);
+        q.Select(":val").As("value").Parameter(":val", 1);
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
@@ -99,8 +101,8 @@ from table_a as a";
         var q = new SelectQuery();
         var table_a = q.From("table_a", "a");
 
-        q.Select(table_a, "column_x", "x");
-        q.Select(":val", "value").AddParameter(":val", 1);
+        q.Select(table_a, "column_x").As("x");
+        q.Select(":val").Parameter(":val", 1).As("value");
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
