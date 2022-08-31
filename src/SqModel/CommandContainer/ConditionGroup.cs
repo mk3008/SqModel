@@ -44,4 +44,23 @@ public static class ConditionGroupExtension
         source.Collection.Add(c);
         action(c);
     }
+
+    public static ConditionGroup And(this ConditionGroup source)
+    => source.SetOperator("and");
+
+    public static ConditionGroup Or(this ConditionGroup source)
+        => source.SetOperator("or");
+
+    internal static ConditionGroup SetOperator(this ConditionGroup source, string @operator)
+    {
+        source.Operator = @operator;
+        return source;
+    }
+
+    internal static ConditionGroup SetOperator(this ConditionGroup source, string @operator, string suboperator)
+    {
+        source.Operator = @operator;
+        source.SubOperator = suboperator;
+        return source;
+    }
 }

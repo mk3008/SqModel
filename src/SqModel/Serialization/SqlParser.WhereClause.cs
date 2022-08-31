@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqModel.Clause;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,14 +11,12 @@ public partial class SqlParser
 {
     public WhereClause ParseWhereClause()
     {
-        Logger?.Invoke($"ParseWhereClause start");
+        Logger?.Invoke($"{nameof(ParseWhereClause)} start");
 
         var w = new WhereClause();
-        var c = ParseOperatorContainer(); 
-        c.IsRoot = true;
-        w.Container = c;
+        w.ConditionGroup = ParseConditionGroup(); ;
 
-        Logger?.Invoke($"ParseSingleTableClause end : {w.ToQuery().CommandText}");
+        Logger?.Invoke($"{nameof(ParseWhereClause)} end : {w.ToQuery().CommandText}");
         return w;
     }
 }

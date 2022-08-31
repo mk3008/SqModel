@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqModel.CommandContainer;
+using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +10,26 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
-    public ValueContainer ParseValueContainer(bool includeCurrentToken = false)
+    public LogicalExpression ParseValueContainer(bool includeCurrentToken = false)
     {
-        Logger?.Invoke($"ValueContainer start");
+        Logger?.Invoke($"{nameof(ParseValueContainer)}  start");
 
-        var c = new ValueContainer();
+        var c = new LogicalExpression();
 
-        c.Source = ParseValueClause(includeCurrentToken);
-        c.SetSignValueClause(CurrentToken, ParseValueClause());
+        c.Left = ParseValueClause(includeCurrentToken);
+        var sign = string.Empty;
+        if (CurrentToken.IsNotEmpty() && CurrentToken.First().IsSymbol())
+        {
+            sign = CurrentToken;
+        }
+        else
+        {
+            sign = ReadToken();
+        }
+        c.Right = ParseValueClause();
+        c.Right.Conjunction = sign;
 
-        Logger?.Invoke($"ValueContainer end : {c.ToQuery().CommandText}");
+        Logger?.Invoke($"{nameof(ParseValueContainer)}  end : {c.ToQuery().CommandText}");
         return c;
     }
 }

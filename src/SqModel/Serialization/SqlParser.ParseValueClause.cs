@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqModel.Command;
+using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,69 +10,46 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
-    public ValueClause ParseValueClause(bool includeCurrentToken = false)
+    public ICommand ParseValueClause(bool includeCurrentToken = false)
     {
-        Logger?.Invoke($"ParseValueClause start");
+        Logger?.Invoke($"{nameof(ParseValueClause)} start");
 
-        var c = new ValueClause();
+        ICommand? c = null;
         var cache = new List<string>();
-        var isAlias = false;
+
         var isValue = false;
+        var table = string.Empty;
+        var value = string.Empty;
+
         var maybeIineQuery = false;
         var isInlineQuery = false;
 
-        var foundBreakToken = () =>
-        {
-            if (cache.Count == 0 || c.Value != String.Empty || c.InlineQuery != null) return;
-
-            // get alias
-            if (cache.Count > 1 && cache.First() != "not" && cache.Last().IsLetter() || cache.Count > 2 && cache.First() == "not" && cache.Last().IsLetter())
-            {
-                c.AliasName = cache.Last();
-                cache.RemoveAt(cache.Count - 1);
-            }
-            c.Value = cache.ToString(" ");
-            cache.Clear();
-        };
-
-        var foundAsToken = () =>
-        {
-            if (c.Value == String.Empty && c.InlineQuery == null)
-            {
-                c.Value = cache.ToString(" ");
-                cache.Clear();
-            }
-            isAlias = true;
-        };
-
-        var setAliasToken = (string t) =>
-        {
-            c.AliasName = t;
-            isAlias = false;
-        };
-
         var setTableToken = (string t) =>
         {
-            c.TableName = cache.First();
+            table = cache.First();
             cache.Clear();
             isValue = true;
         };
 
-        var setValueToken = (string t) =>
+        Func<ICommand?> createCommandOrDefault = () =>
         {
-            c.Value = t;
-            isValue = false;
-            isAlias = true;
+            if (cache.Count == 0 || c != null) return null;
+            return new CommandValue() { CommandText = cache.ToString(" ") };
         };
 
-        var setCaseExpression = () =>
+        Func<string, ICommand> createCommandValue = t =>
         {
-            c.CaseExpression = ParseCaseExpression(true);
-            isValue = false;
-            isAlias = true;
+            if (table.IsEmpty())
+            {
+                return new CommandValue() { CommandText = t };
+            }
+            else
+            {
+                return new ColumnCommand() { Table = table, Column = t };
+            }
         };
 
-        var tryParseInlineQuery = (string t) =>
+        Func<string, ICommand?> parseInlineQueryOrDefault = t =>
         {
             maybeIineQuery = false;
 
@@ -83,12 +62,13 @@ public partial class SqlParser
             if (!isInlineQuery)
             {
                 cache.Add(t);
-                return;
+                return null; ;
             }
 
             using var p = new SqlParser(t) { Logger = Logger };
-            c.InlineQuery = p.ParseSelectQuery();
-            cache.Clear();
+            var inq = p.ParseSelectQuery();
+            inq.IsOneLineFormat = true;
+            return new SelectQueryCommand() { Query = inq };
         };
 
         var refreshInLineQueryFlag = (string t) => maybeIineQuery = (t == "(" && cache.Count == 1) ? true : false;
@@ -97,27 +77,12 @@ public partial class SqlParser
         {
             Logger?.Invoke($"token : {token}");
 
-            if (ValueBreakTokens.Where(x => x == token.ToLower()).Any())
-            {
-                foundBreakToken();
-                break;
-            }
-
-            if (token.ToLower() == "as")
-            {
-                foundAsToken();
-                continue;
-            }
-
-            if (isAlias)
-            {
-                setAliasToken(token);
-                continue;
-            }
+            if (ValueBreakTokens.Where(x => x == token.ToLower()).Any()) break;
 
             if (maybeIineQuery)
             {
-                tryParseInlineQuery(token);
+                c = parseInlineQueryOrDefault(token);
+                if (c != null) break;
                 continue;
             }
 
@@ -131,23 +96,25 @@ public partial class SqlParser
 
             if (token.ToLower() == "case")
             {
-                setCaseExpression();
-               continue;
+                c = ParseCaseExpression(true);
+                break;
             }
 
             if (isValue)
             {
-                setValueToken(token);
-                continue;
+                c = createCommandValue(token);
+                break;
             }
 
             if (!isInlineQuery) cache.Add(token);
             refreshInLineQueryFlag(token);
         }
 
-        if (cache.Count != 0 && c.Value == String.Empty) c.Value = cache.ToString(" ");
+        if (c == null) c = createCommandOrDefault();
+        if (c == null) throw new SyntaxException("command");
 
-        Logger?.Invoke($"ParseValueClause end : {c.ToQuery().CommandText}");
+        Logger?.Invoke($"{nameof(ParseValueClause)} end : {c.ToQuery().CommandText}");
+
         return c;
     }
 }

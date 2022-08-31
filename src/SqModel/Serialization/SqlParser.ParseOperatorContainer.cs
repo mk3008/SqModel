@@ -1,4 +1,6 @@
 ﻿using SqModel.Building;
+using SqModel.CommandContainer;
+using SqModel.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,11 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
-    public ConditionItem ParseOperatorContainer()
+    public ConditionGroup ParseConditionGroup()
     {
-        Logger?.Invoke($"ParseOperatorContainer start");
+        Logger?.Invoke($"{this.GetType().Name} start");
 
-        var container = new ConditionItem();
+        var container = new ConditionGroup();
         var token = ReadToken();
         var @operator = string.Empty;
         var suboperator = string.Empty;
@@ -42,24 +44,22 @@ public partial class SqlParser
                 while (token != "(" || token == null) token = ReadToken();
                 if (token == null) break;
 
-                using var p = new SqlParser(ReadUntilCloseBracket());
-                p.Logger = Logger;
+                using var p = new SqlParser(ReadUntilCloseBracket()) { Logger = Logger };
                 var eq = p.ParseSelectQuery();
+                eq.IsOneLineFormat = true;
                 container.Add().SetOperator(@operator, suboperator).Exists(eq);
             }
             else if (token == "(")
             {
-                using var p = new SqlParser(ReadUntilCloseBracket());
-                p.Logger = Logger;
-                var c = p.ParseOperatorContainer().SetOperator(@operator, suboperator);
-                container.ConditionGroup ??= new();
-                container.ConditionGroup.Add(c);
+                using var p = new SqlParser(ReadUntilCloseBracket()) { Logger = Logger };
+                var c = p.ParseConditionGroup().SetOperator(@operator, suboperator);
+                container.Collection.Add(c);
             }
             else
             {
-                container.Add().SetOperator(@operator, suboperator).Condition = ParseValueContainer(true);
-                token = CurrentToken;
-                continue;
+                container.Add().SetOperator(@operator, suboperator).Expression = ParseValueContainer(true);
+                //token = CurrentToken;
+                //continue;
             }
 
             @operator = string.Empty;
@@ -67,7 +67,7 @@ public partial class SqlParser
             token = ReadToken();
         }
 
-        Logger?.Invoke($"ParseOperatorContainer end : {container.ToQuery().CommandText}");
+        Logger?.Invoke($"{this.GetType().Name}  end : {container.ToQuery().CommandText}");
         return container;
     }
 }

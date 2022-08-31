@@ -25,8 +25,9 @@ public class ParseConditionGroupTest
         var relationSql = "a.id1 = b.id1 and a.id2 = b.id2 and a.id3 = b.id3";
         using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseOperatorContainer();
-        clause.IsRoot = true;
+        var clause = p.ParseConditionGroup();
+        clause.IsOneLineFormat = true;
+        clause.IsDecorateBracket = false;
         var q = clause.ToQuery();
         Assert.Equal(relationSql, q.CommandText);
     }
@@ -38,8 +39,9 @@ public class ParseConditionGroupTest
         var relationSql = "a.id1 = b.id1 and a.id2 = b.id2 or a.id3 = b.id3";
         using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseOperatorContainer();
-        clause.IsRoot = true;
+        var clause = p.ParseConditionGroup();
+        clause.IsOneLineFormat = true;
+        clause.IsDecorateBracket = false;
         var q = clause.ToQuery();
         Assert.Equal("a.id1 = b.id1 and a.id2 = b.id2 or a.id3 = b.id3", q.CommandText);
     }
@@ -51,8 +53,9 @@ public class ParseConditionGroupTest
         var relationSql = "a.id3 = b.id3 or (a.id1 = b.id1 and a.id2 = b.id2)";
         using var p = new SqlParser(relationSql);
         p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseOperatorContainer();
-        clause.IsRoot = true;
+        var clause = p.ParseConditionGroup();
+        clause.IsOneLineFormat = true;
+        clause.IsDecorateBracket = false;
         var q = clause.ToQuery();
         Assert.Equal("a.id3 = b.id3 or (a.id1 = b.id1 and a.id2 = b.id2)", q.CommandText);
     }

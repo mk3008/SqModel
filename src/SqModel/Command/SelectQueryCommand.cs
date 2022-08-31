@@ -20,6 +20,7 @@ public class SelectQueryCommand : ICommand
     public Query ToQuery()
     {
         if (Query == null) throw new InvalidProgramException();
-        return Query.ToInlineQuery().DecorateBracket().InsertToken(Conjunction);
+        Query.IsincludeCte = false;
+        return Query.ToQuery().DecorateBracket().InsertToken(Conjunction);
     }
 }

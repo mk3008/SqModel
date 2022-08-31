@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,6 +90,10 @@ public partial class SqlParser
         "is",
     };
 
+    private static string[] AliasTokens = new[] {
+        "as",
+    };
+
     private string[] ValueBreakTokens =
         ColumnSplitTokens
         .Union(FromTokens)
@@ -99,9 +104,10 @@ public partial class SqlParser
         .Union(WhereTokens)
         .Union(QueryBreakTokens)
         .Union(SignTokens)
-        .Union(LogicalOperatorTokens).ToArray();
+        .Union(LogicalOperatorTokens)
+        .Union(AliasTokens).ToArray();
 
-    private string[] ConditionBreakTokens =
+    internal string[] ConditionBreakTokens =
         InnerJoinTokens
         .Union(LeftJoinTokens)
         .Union(RightJoinTokens)

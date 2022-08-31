@@ -46,7 +46,7 @@ public static class SelectItemExtension
 
     public static SelectItem InlineQuery(this SelectItem source, Action<SelectQuery> action)
     {
-        var c = new SelectQueryCommand() { Query = new() };
+        var c = new SelectQueryCommand() { Query = new() { IsOneLineFormat = true } };
         source.Command = c;
         action(c.Query);
         return source;

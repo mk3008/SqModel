@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqModel.CommandContainer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,18 +9,18 @@ namespace SqModel.Serialization;
 
 public partial class SqlParser
 {
-    public CommonTableClause ParseCommonTableClause(bool includeCurrentToken = false)
+    public CommonTable ParseCommonTable(bool includeCurrentToken = false)
     {
-        Logger?.Invoke($"ParseCommonTableClause start");
+        Logger?.Invoke($"{this.GetType().Name} start");
 
-        var c = new CommonTableClause();
+        var c = new CommonTable();
         var isSelect = false;
         foreach (var token in ReadTokensWithoutComment(includeCurrentToken))
         {
             Logger?.Invoke($"token : {token}");
-            if (string.IsNullOrEmpty(c.AliasName))
+            if (string.IsNullOrEmpty(c.Name))
             {
-                c.AliasName = token;
+                c.Name = token;
                 continue;
             }
             if (token == "as" || token == ")") continue;
@@ -31,16 +32,15 @@ public partial class SqlParser
             if (isSelect)
             {
                 //token is select query string.
-                using var p = new SqlParser(token);
-                p.Logger = Logger;
-                c.SelectQuery = p.ParseSelectQuery();
+                using var p = new SqlParser(token) { Logger = Logger };
+                c.Query = p.ParseSelectQuery();
                 isSelect = false;
                 continue;
             }
-            if (token == "select" || token == ",") break;
+            if (token == "select" || token == ",") break; //cte is end, or next common table.
         }
 
-        Logger?.Invoke($"ParseCommonTableClause end : {c.ToQuery().CommandText}");
+        Logger?.Invoke($"{this.GetType().Name} end : {c.ToQuery().CommandText}");
         return c;
     }
 }

@@ -8,18 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="SqlSerializerTest\**" />
-    <EmbeddedResource Remove="SqlSerializerTest\**" />
-    <None Remove="SqlSerializerTest\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="CloumnTest.cs" />
     <Compile Remove="ColumnRelationSetTest.cs" />
     <Compile Remove="ColumnRelationTest.cs" />
     <Compile Remove="SelectQueryCommonTableAliasTest.cs" />
     <Compile Remove="SelectQueryRelationTest.cs" />
     <Compile Remove="SelectQueryTest.cs" />
+    <Compile Remove="SqlSerializerTest\ParseTest.cs" />
     <Compile Remove="TableAliasTest.cs" />
     <Compile Remove="TableRelationTest.cs" />
     <Compile Remove="VirtualColumnTest.cs" />

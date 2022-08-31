@@ -36,7 +36,7 @@ public static class RelationGroupExtension
 {
     public static Relation Add(this RelationGroup source)
     {
-        var c = new Relation() { LeftTable = source.LeftTable, RightTable = source.RightTable};
+        var c = new Relation() { LeftTable = source.LeftTable, RightTable = source.RightTable };
         source.Collection.Add(c);
         return c;
     }
@@ -46,5 +46,24 @@ public static class RelationGroupExtension
         var c = new RelationGroup() { LeftTable = source.LeftTable, RightTable = source.RightTable };
         source.Collection.Add(c);
         action(c);
+    }
+
+    public static RelationGroup And(this RelationGroup source)
+        => source.SetOperator("and");
+
+    public static RelationGroup Or(this RelationGroup source)
+        => source.SetOperator("or");
+
+    internal static RelationGroup SetOperator(this RelationGroup source, string @operator)
+    {
+        source.Operator = @operator;
+        return source;
+    }
+
+    internal static RelationGroup SetOperator(this RelationGroup source, string @operator, string suboperator)
+    {
+        source.Operator = @operator;
+        source.SubOperator = suboperator;
+        return source;
     }
 }

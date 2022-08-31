@@ -1,4 +1,5 @@
 ﻿using SqModel;
+using SqModel.Clause;
 using SqModel.Serialization;
 using System;
 using System.Collections.Generic;

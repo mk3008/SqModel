@@ -36,15 +36,16 @@ public partial class SelectQuery
 
     public ConditionGroup Where => WhereClause.ConditionGroup;
 
-    public virtual Query ToQuery() => ToQueryCore(true);
+    public bool IsOneLineFormat { get; set; } = false;
 
-    public Query ToSubQuery() => ToQueryCore(false);
+    public bool IsincludeCte { get; set; } = true;
 
-    public Query ToInlineQuery() => ToQueryCore(false, " ");
-
-    private Query ToQueryCore(bool includeCte, string splitter = "\r\n")
+    public virtual Query ToQuery()
     {
-        var withQ = (includeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
+        var splitter = IsOneLineFormat ? " " : "\r\n";
+        WhereClause.IsOneLineFormat = IsOneLineFormat;
+
+        var withQ = (IsincludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
@@ -80,7 +81,6 @@ public partial class SelectQuery
 
     public CommonTable SearchCommonTable(string alias)
         => GetCommonTableClauses().Where(x => x.Name == alias).First();
-
 }
 
 public static class SelectQueryExtension

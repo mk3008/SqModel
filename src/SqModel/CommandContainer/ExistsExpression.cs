@@ -7,10 +7,15 @@ using System.Threading.Tasks;
 
 namespace SqModel.CommandContainer;
 
-public class ExistsExpression : SelectQuery, ILogicalExpression
+public class ExistsExpression : ILogicalExpression
 {
-    public override Query ToQuery()
+    public SelectQuery? Query { get; set; } = null;
+
+    public Query ToQuery()
     {
-        return base.ToInlineQuery().DecorateBracket().InsertToken("exists");
+        if (Query == null) throw new InvalidProgramException();
+        Query.IsincludeCte = false;
+        //Query.IsOneLineFormat = true;
+        return Query.ToQuery().DecorateBracket().InsertToken("exists");
     }
 }

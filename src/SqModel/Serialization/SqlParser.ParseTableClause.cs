@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqModel.Clause;
+using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -98,9 +100,7 @@ public partial class SqlParser
 
             if (token.ToLower() == "on")
             {
-                var c = ParseOperatorContainer();
-                c.IsRoot = true;
-                t.RelationClause = c;
+                t.RelationClause = new RelationGroupParser(this).Parse();
                 if (string.IsNullOrEmpty(CurrentToken) || ConditionBreakTokens.Any(CurrentToken)) break;
                 continue;
             }
@@ -109,6 +109,8 @@ public partial class SqlParser
         }
 
         if (t.AliasName == String.Empty) t.AliasName = t.TableName;
+
+        t.RelationClause.IsDecorateBracket = false;
 
         Logger?.Invoke($"ParseSingleTableClause end : {t.ToQuery().CommandText}");
         return t;

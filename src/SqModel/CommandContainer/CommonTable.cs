@@ -15,7 +15,8 @@ public class CommonTable : IQueryable
 
     public Query ToQuery()
     {
-        var q = Query.ToSubQuery();
+        Query.IsincludeCte = false;
+        var q = Query.ToQuery();
         q.CommandText = $"{Name} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
 
         return q;

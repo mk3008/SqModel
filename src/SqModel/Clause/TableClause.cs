@@ -80,7 +80,8 @@ public class TableClause
         {
             if (SubSelectClause != null)
             {
-                var sq = SubSelectClause.ToSubQuery();
+                SubSelectClause.IsincludeCte = false;
+                var sq = SubSelectClause.ToQuery();
                 var text = $"{join}(\r\n{sq.CommandText.InsertIndent()}\r\n){GetAliasCommand()}";
                 return new Query() { CommandText = text, Parameters = sq.Parameters };
             }

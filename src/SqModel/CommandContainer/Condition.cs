@@ -35,9 +35,16 @@ public static class ConditionExtension
     public static Condition Or(this Condition source)
         => source.SetOperator("or");
 
-    private static Condition SetOperator(this Condition source, string @operator)
+    internal static Condition SetOperator(this Condition source, string @operator)
     {
         source.Operator = @operator;
+        return source;
+    }
+
+    internal static Condition SetOperator(this Condition source, string @operator, string suboperator)
+    {
+        source.Operator = @operator;
+        source.SubOperator = suboperator;
         return source;
     }
 
@@ -99,11 +106,19 @@ public static class ConditionExtension
         return source.SetLeftValue(c);
     }
 
-    public static void Exists(this Condition source, Action<ExistsExpression> action)
+    public static void Exists(this Condition source, Action<SelectQuery> action)
     {
-        var c = new ExistsExpression();
-        c.WhereClause.SetOneLineFormat();
+        var q = new SelectQuery();
+        q.IsOneLineFormat = true;
+
+        var c = new ExistsExpression() { Query = q };
         source.Expression = c;
-        action(c);
+        action(q);
+    }
+
+    public static void Exists(this Condition source, SelectQuery query)
+    {
+        var c = new ExistsExpression() { Query = query };
+        source.Expression = c;
     }
 }

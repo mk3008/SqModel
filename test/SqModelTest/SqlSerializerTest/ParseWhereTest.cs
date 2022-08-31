@@ -39,14 +39,11 @@ public class ParseWhereTest
         using var p = new SqlParser(condition);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseWhereClause();
+        //clause.IsOneLineFormat = true;
+        //clause.ConditionGroup.IsOneLineFormat = true;
         var q = clause.ToQuery();
         var expect = @"where
-    exists (
-        select *
-        from table_b as b
-        where
-            b.id = a.id
-    )";
+    exists (select * from table_b as b where b.id = a.id)";
         Assert.Equal(expect, q.CommandText);
     }
 
@@ -59,12 +56,7 @@ public class ParseWhereTest
         var clause = p.ParseWhereClause();
         var q = clause.ToQuery();
         var expect = @"where
-    not exists (
-        select *
-        from table_b as b
-        where
-            b.id = a.id
-    )";
+    not exists (select * from table_b as b where b.id = a.id)";
         Assert.Equal(expect, q.CommandText);
     }
 }
