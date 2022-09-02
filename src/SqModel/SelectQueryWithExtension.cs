@@ -8,16 +8,22 @@ namespace SqModel;
 
 public static class SelectQueryWithExtension
 {
-    public static CommonTable With(this SelectQuery source, Action<SelectQuery> action, string alias)
+    public static CommonTable With(this SelectQuery source, string name)
     {
-        var sq = new SelectQuery();
-        action(sq);
-        return source.With.Add(sq, alias);
+        var c = new CommonTable() { Name = name };
+        source.With.CommonTableAliases.Add(c);
+        return c;
     }
 
-    public static CommonTable With(this SelectQuery source, Func<SelectQuery> fn, string alias)
-        => source.With.Add(fn(), alias);
+    public static CommonTable As(this CommonTable source, Action<SelectQuery> action)
+    {
+        action(source.Query);
+        return source;
+    }
 
-    public static CommonTable With(this SelectQuery source, SelectQuery commonQuery, string alias)
-        => source.With.Add(commonQuery, alias);
+    public static CommonTable As(this CommonTable source, SelectQuery query)
+    {
+        source.Query = query;
+        return source;
+    }
 }

@@ -9,11 +9,11 @@ public class CteQuery
     public void Default()
     {
         var q = new SelectQuery();
-        var ta = q.With(x =>
+        var ta = q.With("a").As(x =>
         {
             x.From("table_a");
             x.SelectAll();
-        }, "a");
+        });
 
         q.From(ta);
         q.SelectAll();
@@ -34,21 +34,21 @@ from a";
     public void Many()
     {
         var q = new SelectQuery();
-        var cta = q.With(x =>
+        var cta = q.With("a").As(x =>
         {
             x.From("table_a");
             x.SelectAll();
-        }, "a");
-        var ctb = q.With(x =>
+        });
+        var ctb = q.With("b").As(x =>
         {
             x.From("table_b");
             x.SelectAll();
-        }, "b");
-        var ctc = q.With(x =>
+        });
+        var ctc = q.With("c").As(x =>
         {
             x.From("table_c");
             x.SelectAll();
-        }, "c");
+        });
 
         var ta = q.From(cta);
         var tb = ta.InnerJoin(ctb).On("table_a_id");

@@ -8,11 +8,11 @@ public class CteSubquery
     private SelectQuery CreateCommonQuery(string tableName, string aliasName)
     {
         var q = new SelectQuery();
-        q.With(x =>
+        q.With(aliasName).As(x =>
         {
             var t = x.From(tableName);
             x.Select(t, "*");
-        }, aliasName);
+        });
 
         var table = q.From(aliasName);
         q.Select(table, "*");
@@ -86,7 +86,7 @@ from (
 
 
         var q2 = new SelectQuery();
-        q2.With(commonY, "y");
+        q2.With("y").As(commonY);
         var y = q2.From("y");
         q2.Select(y, "*");
 
