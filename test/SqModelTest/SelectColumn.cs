@@ -59,9 +59,10 @@ public class SelectColumn
             x.Add().When("a", "id").Then(20);
             x.Add().When(ta, "id").Then(30);
             x.Add().When(1).Then(30);
+            x.Add().Else(100);
         }).As("case_2");
 
-        //        var acutal = q.ToQuery();
+        var acutal = q.ToQuery();
         //        var expect = @"select table_a.*
         //from table_a
         //where

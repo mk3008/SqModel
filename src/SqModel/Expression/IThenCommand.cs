@@ -24,4 +24,16 @@ public static class IThenCommandExtension
 
     public static void Then(this IThenCommand source, IValueClause value)
         => source.ThenValue = value;
+
+    public static void Else(this IThenCommand source, TableClause table, string column)
+        => source.Then(ValueBuilder.Create(table, column));
+
+    public static void Else(this IThenCommand source, string table, string column)
+        => source.Then(ValueBuilder.Create(table, column));
+
+    public static void Else(this IThenCommand source, object commandtext)
+        => source.Then(ValueBuilder.Create(commandtext));
+
+    public static void Else(this IThenCommand source, IValueClause value)
+        => source.ThenValue = value;
 }
