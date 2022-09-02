@@ -29,6 +29,20 @@ public class SelectColumn
         q.Select.Add().Column(ta, "table_a_id").As("id");
         q.Select.Add().Column("a", "table_a_id").As("id");
 
+        q.Select.Add().Strings(x =>
+        {
+            x.Add().Column(ta, "table_a_id");
+            x.Add().Column(ta, "table_a_id");
+            x.Add().Column(ta, "table_a_id");
+        }).As("id");
+
+        q.Select.Add().Concat(x =>
+        {
+            x.Add().Column(ta, "table_a_id");
+            x.Add().Column(ta, "table_a_id");
+            x.Add().Column(ta, "table_a_id");
+        }).As("id");
+
         //brief
         q.Select(ta, "table_a_id").As("id");
         q.Select("a", "table_a_id").As("id");

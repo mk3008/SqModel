@@ -32,4 +32,20 @@ public static class SelectItemExtension
         action(c);
         return source;
     }
+
+    public static SelectItem Strings(this SelectItem source, Action<StringsExpression> action)
+    {
+        var c = new StringsExpression();
+        source.Command = c;
+        action(c);
+        return source;
+    }
+
+    public static SelectItem Concat(this SelectItem source, Action<ConcatExpression> action)
+    {
+        var c = new ConcatExpression();
+        source.Command = c;
+        action(c);
+        return source;
+    }
 }

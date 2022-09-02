@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public interface IValueContainer
+public interface IValueContainer : IQueryable
 {
     public IValueClause? Command { get; set; }
 
-    string ColumnName { get; set; }
+    string ColumnName { set; }
 
-    string Name { get; set; }
+    string Name { set; }
 }
 
 public static class IValueContainerExtension
