@@ -1,8 +1,5 @@
 ﻿using SqModel;
-using SqModel.Building;
-using SqModel.Clause;
-using SqModel.Command;
-using SqModel.CommandContainer;
+using SqModel.Expression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,14 +61,14 @@ public class SelectColumn
             x.Add().When(1).Then(30);
         }).As("case_2");
 
-//        var acutal = q.ToQuery();
-//        var expect = @"select table_a.*
-//from table_a
-//where
-//    table_a.id = :id";
+        //        var acutal = q.ToQuery();
+        //        var expect = @"select table_a.*
+        //from table_a
+        //where
+        //    table_a.id = :id";
 
-//        Assert.Equal(expect, acutal.CommandText);
-//        Assert.Single(acutal.Parameters);
-//        Assert.Equal(1, acutal.Parameters[":id"]);
+        //        Assert.Equal(expect, acutal.CommandText);
+        //        Assert.Single(acutal.Parameters);
+        //        Assert.Equal(1, acutal.Parameters[":id"]);
     }
 }

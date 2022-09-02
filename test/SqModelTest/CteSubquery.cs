@@ -1,7 +1,4 @@
 using SqModel;
-using SqModel.Building;
-using SqModel.Command;
-using SqModel.CommandContainer;
 using Xunit;
 
 namespace SqModelTest;

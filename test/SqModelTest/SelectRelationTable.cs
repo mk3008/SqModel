@@ -1,6 +1,4 @@
 using SqModel;
-using SqModel.Building;
-using SqModel.CommandContainer;
 using System.Collections.Generic;
 using Xunit;
 

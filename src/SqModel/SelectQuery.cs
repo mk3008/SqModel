@@ -1,5 +1,4 @@
-﻿using SqModel.Clause;
-using SqModel.CommandContainer;
+﻿using SqModel;
 using SqModel.Extension;
 using System;
 using System.Collections.Generic;

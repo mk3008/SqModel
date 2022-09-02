@@ -1,8 +1,4 @@
 ﻿using SqModel;
-using SqModel.Building;
-using SqModel.Command;
-using SqModel.CommandContainer;
-using SqModel.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +14,7 @@ public class Insert
     public void Default()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a","a");
+        var table_a = q.From("table_a", "a");
         q.Select(table_a, "id");
 
         var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };

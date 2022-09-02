@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SqModel.Expression;
+
+public interface IThenCommand
+{
+    IValueClause? ThenValue { get; set; }
+}
+
+public static class IThenCommandExtension
+{
+    public static void Then(this IThenCommand source, TableClause table, string column)
+        => source.Then(ValueBuilder.Create(table, column));
+
+    public static void Then(this IThenCommand source, string table, string column)
+        => source.Then(ValueBuilder.Create(table, column));
+
+    public static void Then(this IThenCommand source, object commandtext)
+        => source.Then(ValueBuilder.Create(commandtext));
+
+    public static void Then(this IThenCommand source, IValueClause value)
+        => source.ThenValue = value;
+}
