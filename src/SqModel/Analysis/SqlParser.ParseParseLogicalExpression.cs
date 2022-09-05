@@ -10,9 +10,9 @@ namespace SqModel.Analysis;
 
 public partial class SqlParser
 {
-    public LogicalExpression ParseValueContainer(bool includeCurrentToken = false)
+    public LogicalExpression ParseLogicalExpression(bool includeCurrentToken = false)
     {
-        Logger?.Invoke($"{nameof(ParseValueContainer)}  start");
+        Logger?.Invoke($"{nameof(ParseLogicalExpression)}  start");
 
         var c = new LogicalExpression();
 
@@ -29,7 +29,7 @@ public partial class SqlParser
         c.Right = ParseValueClause();
         c.Right.Conjunction = sign;
 
-        Logger?.Invoke($"{nameof(ParseValueContainer)}  end : {c.ToQuery().CommandText}");
+        Logger?.Invoke($"{nameof(ParseLogicalExpression)}  end : {c.ToQuery().CommandText}");
         return c;
     }
 }

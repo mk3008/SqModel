@@ -62,7 +62,7 @@ internal class RelationGroupParser
             }
             else
             {
-                group.Add().SetOperator(@operator, suboperator).Expression = Parser.ParseValueContainer(true);
+                group.Add().SetOperator(@operator, suboperator).Expression = Parser.ParseLogicalExpression(true);
                 token = Parser.ReadToken();
                 continue;
             }

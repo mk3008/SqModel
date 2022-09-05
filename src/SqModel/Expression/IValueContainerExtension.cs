@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace SqModel.Expression;
 
-public static class SelectItemExtension
+public static class IValueContainerExtension
 {
-    public static SelectItem Case(this SelectItem source, TableClause table, string column, Action<CaseExpression> action)
+    public static IValueContainer Case(this IValueContainer source, TableClause table, string column, Action<CaseExpression> action)
         => source.Case(ValueBuilder.Create(table, column), action);
 
-    public static SelectItem Case(this SelectItem source, string table, string column, Action<CaseExpression> action)
+    public static IValueContainer Case(this IValueContainer source, string table, string column, Action<CaseExpression> action)
         => source.Case(ValueBuilder.Create(table, column), action);
 
-    public static SelectItem Case(this SelectItem source, string commandtext, Action<CaseExpression> action)
+    public static IValueContainer Case(this IValueContainer source, string commandtext, Action<CaseExpression> action)
         => source.Case(ValueBuilder.Create(commandtext), action);
 
-    public static SelectItem Case(this SelectItem source, IValueClause value, Action<CaseExpression> action)
+    public static IValueContainer Case(this IValueContainer source, IValueClause value, Action<CaseExpression> action)
     {
         var c = new CaseExpression() { Value = value };
         source.Command = c;
@@ -25,7 +25,7 @@ public static class SelectItemExtension
         return source;
     }
 
-    public static SelectItem CaseWhen(this SelectItem source, Action<CaseWhenExpression> action)
+    public static IValueContainer CaseWhen(this IValueContainer source, Action<CaseWhenExpression> action)
     {
         var c = new CaseWhenExpression();
         source.Command = c;
@@ -33,7 +33,7 @@ public static class SelectItemExtension
         return source;
     }
 
-    public static SelectItem Strings(this SelectItem source, Action<StringsExpression> action)
+    public static IValueContainer Strings(this IValueContainer source, Action<StringsExpression> action)
     {
         var c = new StringsExpression();
         source.Command = c;
@@ -41,7 +41,7 @@ public static class SelectItemExtension
         return source;
     }
 
-    public static SelectItem Concat(this SelectItem source, Action<ConcatExpression> action)
+    public static IValueContainer Concat(this IValueContainer source, Action<ConcatExpression> action)
     {
         var c = new ConcatExpression();
         source.Command = c;

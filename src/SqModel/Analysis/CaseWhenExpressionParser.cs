@@ -69,7 +69,7 @@ internal class CaseWhenExpressionParser
     {
         //set Condition
         var cv = new CaseWhenValuePair();
-        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.When(p.ParseValueContainer());
+        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.When(p.ParseLogicalExpression());
 
         //set ReturnValue
         var valuetoken = ReadUntilSplitToken();

@@ -56,7 +56,7 @@ public partial class SqlParser
             }
             else
             {
-                container.Add().SetOperator(@operator, suboperator).Expression = ParseValueContainer(true);
+                container.Add().SetOperator(@operator, suboperator).Expression = ParseLogicalExpression(true);
                 //token = CurrentToken;
                 //continue;
             }

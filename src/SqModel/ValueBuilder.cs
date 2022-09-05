@@ -27,4 +27,9 @@ internal static class ValueBuilder
 
     public static IValueClause GetNotNullValue()
         => new CommandValue() { CommandText = "not null" };
+
+    public static IValueClause GetTrue()
+        => new CommandValue() { CommandText = "true" };
+    public static IValueClause GetFalse()
+        => new CommandValue() { CommandText = "false" };
 }

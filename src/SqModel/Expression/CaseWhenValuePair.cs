@@ -8,7 +8,7 @@ namespace SqModel.Expression;
 
 public class CaseWhenValuePair : IThenCommand
 {
-    public LogicalExpression? WhenExpression { get; set; } = null;
+    public ICondition? WhenExpression { get; set; } = null;
 
     public IValueClause? ThenValue { get; set; } = null;
 
@@ -37,16 +37,32 @@ public class CaseWhenValuePair : IThenCommand
 
 public static class CaseWhenValuePairExtension
 {
-    public static CaseWhenValuePair When(this CaseWhenValuePair source, Action<LogicalExpression> action)
+    public static CaseWhenValuePair When(this CaseWhenValuePair source, Action<Condition> action)
     {
-        source.WhenExpression = new();
-        action(source.WhenExpression);
+        var c = new Condition();
+        source.WhenExpression = c;
+        action(c);
+        return source;
+    }
+
+    public static CaseWhenValuePair WhenGroup(this CaseWhenValuePair source, Action<ConditionGroup> action)
+    {
+        var c = new ConditionGroup();
+        source.WhenExpression = c;
+        action(c);
         return source;
     }
 
     public static CaseWhenValuePair When(this CaseWhenValuePair source, LogicalExpression expression)
     {
-        source.WhenExpression = expression;
+        var c = new Condition() { Expression = expression };
+        source.WhenExpression = c;
+        return source;
+    }
+
+    public static CaseWhenValuePair When(this CaseWhenValuePair source, ICondition condition)
+    {
+        source.WhenExpression = condition;
         return source;
     }
 }

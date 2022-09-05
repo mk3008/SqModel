@@ -24,7 +24,7 @@ public class LogicalExpression : ILogicalExpression
 public static class LogicalExpressionExtension
 {
     public static LogicalExpression Value(this LogicalExpression source, object commandtext)
-=> source.SetLeftValue(ValueBuilder.Create(commandtext));
+        => source.SetLeftValue(ValueBuilder.Create(commandtext));
 
     public static LogicalExpression Column(this LogicalExpression source, TableClause table, string column)
         => source.SetLeftValue(ValueBuilder.Create(table, column));
@@ -61,6 +61,12 @@ public static class LogicalExpressionExtension
 
     public static void IsNotNull(this LogicalExpression source)
         => source.SetRightCommand("is", ValueBuilder.GetNotNullValue());
+
+    public static void True(this LogicalExpression source)
+        => source.SetRightCommand("=", ValueBuilder.GetTrue());
+
+    public static void False(this LogicalExpression source)
+        => source.SetRightCommand("=", ValueBuilder.GetFalse());
 
     private static IValueClause SetRightCommand(this LogicalExpression source, string conjunction, IValueClause value)
     {
