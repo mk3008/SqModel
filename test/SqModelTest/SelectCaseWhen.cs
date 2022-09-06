@@ -15,7 +15,7 @@ public class SelectCaseWhen
     public void DefaultCaseWhen()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
+        var ta = q.From("table_a").As("a");
 
         q.Select.Add().CaseWhen(x =>
         {
@@ -40,7 +40,7 @@ from table_a as a";
     public void DefaultCase()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
+        var ta = q.From("table_a").As("a");
 
         q.Select.Add().Case("1", x =>
         {

@@ -63,10 +63,10 @@ public static class LogicalExpressionExtension
         => source.SetRightCommand("is", ValueBuilder.GetNotNullValue());
 
     public static void True(this LogicalExpression source)
-        => source.SetRightCommand("=", ValueBuilder.GetTrue());
+        => source.SetRightCommand("=", ValueBuilder.Create(true));
 
     public static void False(this LogicalExpression source)
-        => source.SetRightCommand("=", ValueBuilder.GetFalse());
+        => source.SetRightCommand("=", ValueBuilder.Create(false));
 
     private static IValueClause SetRightCommand(this LogicalExpression source, string conjunction, IValueClause value)
     {

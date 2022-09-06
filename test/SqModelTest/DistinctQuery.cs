@@ -9,7 +9,7 @@ public class DistinctQuery
     public void Default()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "name");
         q.SelectClause.IsDistinct = true;
         q.Distinct();
@@ -25,7 +25,7 @@ from table_a as a";
     public void Ignore()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "name");
         q.SelectClause.IsDistinct = true;
         q.Distinct(false);
@@ -43,10 +43,10 @@ from table_a as a";
         var q = new SelectQuery();
         var x = q.From(sq =>
         {
-            var a = sq.From("table_a", "a");
+            var a = sq.From("table_a").As("a");
             sq.Select(a, "name");
             sq.Distinct();
-        }, "x");
+        }).As("x");
         q.Select(x, "*");
 
         var text = q.ToQuery().CommandText;

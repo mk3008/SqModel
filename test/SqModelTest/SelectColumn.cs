@@ -15,7 +15,7 @@ public class SelectColumn
     public void Default()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
+        var ta = q.From("table_a").As("a");
 
         q.Select.Add().All();
         q.Select.Add().All(ta);
@@ -56,7 +56,7 @@ public class SelectColumn
 
         q.Select.Add().InlineQuery(x =>
         {
-            x.From("table_b", "b");
+            x.From("table_b").As("b");
             x.Select("b.id");
         }).As("b_id");
 

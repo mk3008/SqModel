@@ -127,101 +127,96 @@ public static class TableClauseExtension
     public static TableClause InnerJoin(this TableClause source, string tableName)
         => source.Join(tableName, tableName, RelationTypes.Inner);
 
-    public static TableClause InnerJoin(this TableClause source, string tableName, string aliasName)
-        => source.Join(tableName, aliasName, RelationTypes.Inner);
-
     public static TableClause InnerJoin(this TableClause source, TableClause destination)
         => source.Join(destination, RelationTypes.Inner);
 
-    public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
-        => source.Join(subSelectClause, aliasName, RelationTypes.Inner);
+    public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Inner);
 
     public static TableClause InnerJoin(this TableClause source, CommonTable ct)
         => source.Join(ct.Name, ct.Name, RelationTypes.Inner);
 
-    public static TableClause InnerJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
-        => source.Join(fn(), aliasName, RelationTypes.Inner);
+    public static TableClause InnerJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Inner);
 
-    public static TableClause InnerJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
+    public static TableClause InnerJoin(this TableClause source, Action<SelectQuery> action)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Inner);
+        return source.Join(subSelectClause, "", RelationTypes.Inner);
     }
 
     public static TableClause LeftJoin(this TableClause source, string tableName)
         => source.Join(tableName, tableName, RelationTypes.Left);
 
-    public static TableClause LeftJoin(this TableClause source, string tableName, string aliasName)
-        => source.Join(tableName, aliasName, RelationTypes.Left);
-
     public static TableClause LeftJoin(this TableClause source, TableClause destination)
         => source.Join(destination, RelationTypes.Left);
 
-    public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
-        => source.Join(subSelectClause, aliasName, RelationTypes.Left);
+    public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Left);
 
     public static TableClause LeftJoin(this TableClause source, CommonTable ct)
         => source.Join(ct.Name, ct.Name, RelationTypes.Left);
 
-    public static TableClause LeftJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
-        => source.Join(fn(), aliasName, RelationTypes.Left);
+    public static TableClause LeftJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Left);
 
-    public static TableClause LeftJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
+    public static TableClause LeftJoin(this TableClause source, Action<SelectQuery> action)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Left);
+        return source.Join(subSelectClause, "", RelationTypes.Left);
     }
 
     public static TableClause RightJoin(this TableClause source, string tableName)
         => source.Join(tableName, tableName, RelationTypes.Right);
 
-    public static TableClause RightJoin(this TableClause source, string tableName, string aliasName)
-        => source.Join(tableName, aliasName, RelationTypes.Right);
-
     public static TableClause RightJoin(this TableClause source, TableClause destination)
         => source.Join(destination, RelationTypes.Right);
 
-    public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
-        => source.Join(subSelectClause, aliasName, RelationTypes.Right);
+    public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Right);
 
     public static TableClause RightJoin(this TableClause source, CommonTable ct)
         => source.Join(ct.Name, ct.Name, RelationTypes.Right);
 
-    public static TableClause RightJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
-        => source.Join(fn(), aliasName, RelationTypes.Right);
+    public static TableClause RightJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Right);
 
-    public static TableClause RightJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
+    public static TableClause RightJoin(this TableClause source, Action<SelectQuery> action)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Right);
+        return source.Join(subSelectClause, "", RelationTypes.Right);
     }
 
     public static TableClause CrossJoin(this TableClause source, string tableName)
         => source.Join(tableName, tableName, RelationTypes.Cross);
 
-    public static TableClause CrossJoin(this TableClause source, string tableName, string aliasName)
-        => source.Join(tableName, aliasName, RelationTypes.Cross);
-
     public static TableClause CrossJoin(this TableClause source, TableClause destination)
         => source.Join(destination, RelationTypes.Cross);
 
-    public static TableClause CrossJoin(this TableClause source, SelectQuery subSelectClause, string aliasName)
-        => source.Join(subSelectClause, aliasName, RelationTypes.Cross);
+    public static TableClause CrossJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Cross);
 
     public static TableClause CrossJoin(this TableClause source, CommonTable ct)
         => source.Join(ct.Name, ct.Name, RelationTypes.Cross);
 
-    public static TableClause CrossJoin(this TableClause source, Func<SelectQuery> fn, string aliasName)
-        => source.Join(fn(), aliasName, RelationTypes.Cross);
+    public static TableClause CrossJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Cross);
 
-    public static TableClause CrossJoin(this TableClause source, Action<SelectQuery> action, string aliasName)
+    public static TableClause CrossJoin(this TableClause source, Action<SelectQuery> action)
     {
         var subSelectClause = new SelectQuery();
         action(subSelectClause);
-        return source.Join(subSelectClause, aliasName, RelationTypes.Cross);
+        return source.Join(subSelectClause, "", RelationTypes.Cross);
+    }
+
+    public static TableClause As(this TableClause source, string aliasName)
+    {
+        source.AliasName = aliasName;
+        source.RelationClause.RightTable = source.AliasName;
+        return source;
     }
 
     public static TableClause On(this TableClause source, string column)

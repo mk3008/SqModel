@@ -14,7 +14,7 @@ public class Insert
     public void Default()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "id");
 
         var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };
@@ -31,7 +31,7 @@ from table_a as a";
     public void ColumnNameOmitted()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "*");
 
         var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };
@@ -48,7 +48,7 @@ from table_a as a";
     public void ColumnNameAlias()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "id").As("index_value");
 
         var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };

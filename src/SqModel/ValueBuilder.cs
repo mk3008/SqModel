@@ -14,6 +14,12 @@ internal static class ValueBuilder
     public static IValueClause Create(string table, string column)
         => new ColumnValue() { Table = table, Column = column };
 
+    public static IValueClause Create(bool value)
+    {
+        if (value) return new CommandValue() { CommandText = "true" };
+        return new CommandValue() { CommandText = "false" };
+    }
+
     public static IValueClause Create(object commandtext)
     {
         var val = commandtext?.ToString();
@@ -27,9 +33,4 @@ internal static class ValueBuilder
 
     public static IValueClause GetNotNullValue()
         => new CommandValue() { CommandText = "not null" };
-
-    public static IValueClause GetTrue()
-        => new CommandValue() { CommandText = "true" };
-    public static IValueClause GetFalse()
-        => new CommandValue() { CommandText = "false" };
 }

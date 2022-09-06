@@ -20,23 +20,17 @@ public static class SelectQueryFromExtension
         return source.FromClause;
     }
 
-    public static TableClause From(this SelectQuery source, string tableName, string aliasName)
+    public static TableClause From(this SelectQuery source, SelectQuery subquery)
     {
-        source.FromClause = new TableClause() { TableName = tableName, AliasName = aliasName, RelationType = RelationTypes.From };
+        source.FromClause = new TableClause() { SubSelectClause = subquery, RelationType = RelationTypes.From };
         return source.FromClause;
     }
 
-    public static TableClause From(this SelectQuery source, SelectQuery subquery, string alias)
-    {
-        source.FromClause = new TableClause() { SubSelectClause = subquery, AliasName = alias, RelationType = RelationTypes.From };
-        return source.FromClause;
-    }
-
-    public static TableClause From(this SelectQuery source, Action<SelectQuery> action, string alias)
+    public static TableClause From(this SelectQuery source, Action<SelectQuery> action)
     {
         var q = new SelectQuery();
         action(q);
-        source.FromClause = new TableClause() { SubSelectClause = q, AliasName = alias, RelationType = RelationTypes.From };
+        source.FromClause = new TableClause() { SubSelectClause = q, RelationType = RelationTypes.From };
         return source.FromClause;
     }
 }

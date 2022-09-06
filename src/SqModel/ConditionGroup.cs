@@ -50,6 +50,15 @@ public static class ConditionGroupExtension
     public static ConditionGroup Or(this ConditionGroup source)
         => source.SetOperator("or");
 
+    public static ConditionGroup Not(this ConditionGroup source)
+        => source.SetSubOperator("not");
+
+    private static ConditionGroup SetSubOperator(this ConditionGroup source, string suboperator)
+    {
+        source.SubOperator = suboperator;
+        return source;
+    }
+
     internal static ConditionGroup SetOperator(this ConditionGroup source, string @operator)
     {
         source.Operator = @operator;

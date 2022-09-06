@@ -11,9 +11,9 @@ public class SelectSubquery
         var q = new SelectQuery();
         q.From(x =>
         {
-            x.From("table_a", "a");
+            x.From("table_a").As("a");
             x.SelectAll();
-        }, "b");
+        }).As("b");
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
@@ -32,14 +32,14 @@ from (
         var q = new SelectQuery();
         var tb1 = q.From(x =>
         {
-            x.From("table_a1", "a1");
+            x.From("table_a1").As("a1");
             x.SelectAll();
-        }, "b1");
+        }).As("b1");
         tb1.InnerJoin(x =>
         {
-            x.From("table_a2", "a2");
+            x.From("table_a2").As("a2");
             x.SelectAll();
-        }, "b2").On("id");
+        }).As("b2").On("id");
 
         q.SelectAll();
 
@@ -67,13 +67,13 @@ inner join (
             {
                 y.From(z =>
                 {
-                    z.From("table_z", "z");
+                    z.From("table_z").As("z");
                     z.SelectAll();
-                }, "y");
+                }).As("y");
                 y.SelectAll();
-            }, "x");
+            }).As("x");
             x.SelectAll();
-        }, "a");
+        }).As("a");
 
         q.SelectAll();
 
@@ -97,15 +97,15 @@ from (
     public void Composition()
     {
         var q1 = new SelectQuery();
-        q1.From("table_a", "a");
+        q1.From("table_a").As("a");
         q1.SelectAll();
 
         var q2 = new SelectQuery();
-        q2.From(q1, "b");
+        q2.From(q1).As("b");
         q2.SelectAll();
 
         var q3 = new SelectQuery();
-        q3.From(q2, "c");
+        q3.From(q2).As("c");
         q3.SelectAll();
 
         var text = q3.ToQuery().CommandText;

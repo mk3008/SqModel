@@ -43,7 +43,7 @@ from a";
         var commonA = CreateCommonQuery("table_a", "a");
 
         var q = new SelectQuery();
-        var y = q.From(commonA, "y");
+        var y = q.From(commonA).As("y");
         q.Select(y, "*");
 
         var text = q.ToQuery().CommandText;
@@ -67,7 +67,7 @@ from (
         var commonA = CreateCommonQuery("table_a", "a");
 
         var commonY = new SelectQuery();
-        var table_a = commonY.From(commonA, "a");
+        var table_a = commonY.From(commonA).As("a");
         commonY.Select(table_a, "*");
 
         var text = commonY.ToQuery().CommandText;
@@ -115,7 +115,7 @@ from y";
         q1.Select(":val1").As("value1").Parameter(":val1", 1);
 
         var q2 = new SelectQuery();
-        var y = q2.From(q1, "y");
+        var y = q2.From(q1).As("y");
         q2.Select(y, "*");
         q2.Select(":val2").As("value2").Parameter(":val2", 2);
 

@@ -141,14 +141,14 @@ where
 
         q.Where.Add().Exists(x =>
         {
-            x.From("table_x", "x");
+            x.From("table_x").As("x");
             x.SelectAll();
             x.Where.Add().Equal("x", "table_a", "id");
         });
 
         q.Where.Add().Not().Exists(x =>
         {
-            x.From("table_x", "x");
+            x.From("table_x").As("x");
             x.SelectAll();
             x.Where.Add().Column("x", "id").Equal("table_a", "id");
         });
