@@ -48,11 +48,12 @@ from table_a as a";
             x.Add().When("a", "id").Then(20);
             x.Add().When(ta, "id").Then(30);
             x.Add().When(1).Then(30);
+            x.Add().When(1).ThenNull();
             x.Add().Else(100);
         }).As("case_2");
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 else 100 end as case_2
+        var expect = @"select case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
 from table_a as a";
 
         Assert.Equal(expect, text);

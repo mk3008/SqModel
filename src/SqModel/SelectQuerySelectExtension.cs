@@ -25,4 +25,7 @@ public static class SelectQuerySelectExtension
 
     public static void SelectAll(this SelectQuery source)
         => source.Select.Add().All();
+
+    public static void SelectCount(this SelectQuery source)
+        => source.Select.Add().Value("count(*)");
 }
