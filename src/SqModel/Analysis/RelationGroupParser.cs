@@ -9,67 +9,59 @@ using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
-internal class RelationGroupParser
+internal static class RelationGroupParser
 {
-    public RelationGroupParser(SqlParser parser)
-    {
-        Parser = parser;
-    }
-
-    private SqlParser Parser { get; init; }
-
     private static string StartToken = "on";
 
-    public RelationGroup Parse()
+    public static RelationGroup Parse(SqlParser parser)
     {
         var group = new RelationGroup() { IsDecorateBracket = false };
 
-        var q = Parser.ReadTokensWithoutComment();
-        var startToken = Parser.CurrentToken.IsNotEmpty() ? Parser.CurrentToken : q.First();
+        var q = parser.ReadTokensWithoutComment();
+        var startToken = parser.CurrentToken.IsNotEmpty() ? parser.CurrentToken : q.First();
 
         if (startToken.ToLower() != StartToken) throw new InvalidProgramException($"First token must be '{StartToken}'.");
         q.First(); //skip start token token
 
-        AddRelation(group, string.Empty);
+        AddRelation(parser, group, string.Empty);
 
-        while (Parser.CurrentToken.IsLogicalOperator())
+        while (parser.CurrentToken.IsLogicalOperator())
         {
-            var @operator = Parser.CurrentToken;
+            var @operator = parser.CurrentToken;
 
             q.First();
 
-            AddRelation(group, @operator);
+            AddRelation(parser, group, @operator);
         }
         return group;
     }
 
-    public void AddRelation(RelationGroup group, string @operator)
+    public static void AddRelation(SqlParser parser, RelationGroup group, string @operator)
     {
         var suboperator = string.Empty;
 
-        var q = Parser.ReadTokensWithoutComment();
+        var q = parser.ReadTokensWithoutComment();
 
-        if (Parser.CurrentToken.ToLower() == "not")
+        if (parser.CurrentToken.ToLower() == "not")
         {
-            suboperator = Parser.CurrentToken;
+            suboperator = parser.CurrentToken;
             q.First();
         }
 
-        if (Parser.CurrentToken == "(")
+        if (parser.CurrentToken == "(")
         {
-            var subquery = Parser.ReadUntilCloseBracket();
-            using var p = new SqlParser(subquery) { Logger = Parser.Logger };
-            var xp = new RelationGroupParser(p);
-            xp.AddRelation(group, @operator);
+            var subquery = parser.ReadUntilCloseBracket();
+            using var p = new SqlParser(subquery) { Logger = parser.Logger };
+            AddRelation(p, group, @operator);
             return;
         }
-        else if (Parser.CurrentToken.ToLower() == "exists")
+        else if (parser.CurrentToken.ToLower() == "exists")
         {
             var tmp = q.First();
             if (tmp != "(") throw new InvalidProgramException();
 
-            var subquery = Parser.ReadUntilCloseBracket();
-            using var p = new SqlParser(subquery) { Logger = Parser.Logger };
+            var subquery = parser.ReadUntilCloseBracket();
+            using var p = new SqlParser(subquery) { Logger = parser.Logger };
             var eq = p.ParseSelectQuery();
             eq.IsOneLineFormat = true;
             group.Add().SetOperator(@operator, suboperator).Exists(eq);
@@ -77,7 +69,7 @@ internal class RelationGroupParser
         }
         else
         {
-            group.Add().SetOperator(@operator, suboperator).Expression = LogicalExpressionParser.Parse(Parser);
+            group.Add().SetOperator(@operator, suboperator).Expression = LogicalExpressionParser.Parse(parser);
             return;
         }
     }

@@ -47,7 +47,7 @@ public static class FromClauseParser
             if (tp == RelationTypes.From || tp == RelationTypes.Cross) return t;
             if (parser.CurrentToken != "on") return t;
 
-            t.RelationClause = new RelationGroupParser(parser).Parse();
+            t.RelationClause = RelationGroupParser.Parse(parser);
             return t;
         };
 
