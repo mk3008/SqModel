@@ -23,9 +23,7 @@ public class ParseTableTest
     {
         /// inner join table_b as b on ...
         var sql = "from table_a as a";
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(sql);
 
         Assert.Equal("table_a", clause.TableName);
         Assert.Equal("a", clause.AliasName);
@@ -38,9 +36,8 @@ public class ParseTableTest
         /// inner join table_b as b on ...
         var text = @"from table_a as a
 inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(text);
+
         var sql = clause.ToQuery().CommandText;
 
         Assert.Equal(text, sql);
@@ -52,9 +49,7 @@ inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2
         /// inner join table_b as b on ...
         var sql = @"from table_a as a
 inner join table_b as b on a.column_1 = b.column_1 and a.column_2 = b.column_2";
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(sql);
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
@@ -69,9 +64,7 @@ inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2
 left join table_c as c on b.column_3 = c.column_3
 right join table_d as d on c.column_4 = c.column4
 cross join table_e as e";
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(sql);
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
@@ -84,9 +77,7 @@ cross join table_e as e";
     select *
     from table_a
 ) as a";
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(sql);
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
@@ -103,9 +94,7 @@ inner join (
     select *
     from table_b
 ) as b on a.column_1 = b.column_1";
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseTableClause();
+        var clause = FromClauseParser.Parse(sql);
 
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
@@ -115,11 +104,9 @@ inner join (
     {
         var sql = @"from table_a
 inner join table_b on table_a.column_1 = table_b.column_1";
+        var clause = FromClauseParser.Parse(sql);
 
-        using var p = new SqlParser(sql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var sq = p.ParseTableClause();
-        var text = sq.ToQuery().CommandText;
-        Assert.Equal(sql, sq.ToQuery().CommandText);
+        var text = clause.ToQuery().CommandText;
+        Assert.Equal(sql, clause.ToQuery().CommandText);
     }
 }

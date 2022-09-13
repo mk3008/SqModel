@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
-internal static class FromClauseParser
+public static class FromClauseParser
 {
     private static string StartToken = "from";
+
+    public static TableClause Parse(string text)
+    {
+        using var p = new SqlParser(text);
+        return Parse(p);
+    }
 
     public static TableClause Parse(SqlParser parser)
     {
