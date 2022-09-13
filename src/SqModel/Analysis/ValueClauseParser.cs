@@ -42,7 +42,7 @@ public static class ValueClauseParser
         }
         else if (parser.CurrentToken.ToLower() == "case")
         {
-            return parser.ParseCaseExpression();
+            return CaseExpressionParser.Parse(parser);
         }
 
         var tmp = q.First();

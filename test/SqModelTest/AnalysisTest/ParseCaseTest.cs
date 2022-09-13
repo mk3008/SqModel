@@ -23,7 +23,7 @@ public class ParseCaseTest
     public void CaseWhenTest()
     {
         using var p = new SqlParser(@"case when a.col = 1 then 1 when a.col = 2 then 2 else 3 end");
-        var q = p.ParseCaseExpression();
+        var q = CaseExpressionParser.Parse(p);
         var text = q.ToQuery().CommandText;
         var expect = @"case when a.col = 1 then 1 when a.col = 2 then 2 else 3 end";
         Assert.Equal(expect, text);
@@ -33,7 +33,7 @@ public class ParseCaseTest
     public void CaseTest()
     {
         using var p = new SqlParser(@"case a.col when 1 then 1 when 2 then 2 else 3 end");
-        var q = p.ParseCaseExpression();
+        var q = CaseExpressionParser.Parse(p);
         var text = q.ToQuery().CommandText;
         var expect = @"case a.col when 1 then 1 when 2 then 2 else 3 end";
         Assert.Equal(expect, text);
@@ -52,7 +52,7 @@ case a.col
     when 2 then 2
     else 3 
 end");
-        var q = p.ParseCaseExpression();
+        var q = CaseExpressionParser.Parse(p);
         var text = q.ToQuery().CommandText;
         var expect = @"case a.col when 1 then case b.col when 10 then 10 else 20 end when 2 then 2 else 3 end";
         Assert.Equal(expect, text);

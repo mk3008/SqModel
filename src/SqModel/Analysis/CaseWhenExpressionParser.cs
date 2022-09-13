@@ -8,22 +8,16 @@ using SqModel.Extension;
 
 namespace SqModel.Analysis;
 
-internal class CaseWhenExpressionParser
+internal static class CaseWhenExpressionParser
 {
-    public CaseWhenExpressionParser(SqlParser parser)
-    {
-        Parser = parser;
-    }
-
-    private SqlParser Parser { get; init; }
-
     private static List<string> splitTokens = new() { "when", "then", "else", "end" };
 
     private static List<string> breakTokens = new() { "", "end" };
 
-    private string ReadUntilSplitToken() => Parser.ReadUntilTokens(splitTokens, "case", "end");
+    private static string ReadUntilSplitToken(SqlParser parser)
+        => parser.ReadUntilTokens(splitTokens, "case", "end");
 
-    public CaseWhenExpression Parse()
+    public static CaseWhenExpression ParseExpression(SqlParser parser)
     {
         /*
          * case  
@@ -33,17 +27,17 @@ internal class CaseWhenExpressionParser
          *  end
          */
 
-        if (Parser.CurrentToken != "when") throw new InvalidProgramException();
+        if (parser.CurrentToken != "when") throw new InvalidProgramException();
 
         var c = new CaseWhenExpression();
-        var q = Parser.ReadTokensWithoutComment();
+        var q = parser.ReadTokensWithoutComment();
 
         var fn = () =>
         {
-            if (Parser.CurrentToken.ToLower() == "else")
+            if (parser.CurrentToken.ToLower() == "else")
             {
-                var value = ReadUntilSplitToken();
-                if (Parser.CurrentToken.ToLower() != "end") throw new InvalidProgramException();
+                var value = ReadUntilSplitToken(parser);
+                if (parser.CurrentToken.ToLower() != "end") throw new InvalidProgramException();
 
                 //set ReturnValue
                 var cv = new CaseWhenValuePair();
@@ -53,17 +47,17 @@ internal class CaseWhenExpressionParser
                 return;
             }
 
-            if (Parser.CurrentToken.ToLower() == "when")
+            if (parser.CurrentToken.ToLower() == "when")
             {
-                var condition = ReadUntilSplitToken();
-                if (Parser.CurrentToken.ToLower() != "then") throw new InvalidProgramException();
+                var condition = ReadUntilSplitToken(parser);
+                if (parser.CurrentToken.ToLower() != "then") throw new InvalidProgramException();
 
                 //set Condition
                 var cv = new CaseWhenValuePair();
                 cv.When(LogicalExpressionParser.Parse(condition));
 
                 //set ReturnValue
-                var valuetoken = ReadUntilSplitToken();
+                var valuetoken = ReadUntilSplitToken(parser);
                 cv.Then(ValueClauseParser.Parse(valuetoken));
 
                 c.Collection.Add(cv);
@@ -73,12 +67,12 @@ internal class CaseWhenExpressionParser
             throw new InvalidProgramException();
         };
 
-        while (Parser.CurrentToken.ToLower() != "end" && Parser.CurrentToken.IsNotEmpty())
+        while (parser.CurrentToken.ToLower() != "end" && parser.CurrentToken.IsNotEmpty())
         {
             fn();
         };
 
-        if (Parser.CurrentToken.ToLower() == "end") q.First();
+        if (parser.CurrentToken.ToLower() == "end") q.First();
         return c;
     }
 }
