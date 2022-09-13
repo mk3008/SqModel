@@ -8,13 +8,13 @@ namespace SqModel.Analysis;
 
 public partial class SqlParser
 {
-    public CommonTable ParseCommonTable(bool includeCurrentToken = false)
+    public CommonTable ParseCommonTable()
     {
         Logger?.Invoke($"{this.GetType().Name} start");
 
         var c = new CommonTable();
         var isSelect = false;
-        foreach (var token in ReadTokensWithoutComment(includeCurrentToken))
+        foreach (var token in ReadTokensWithoutComment())
         {
             Logger?.Invoke($"token : {token}");
             if (string.IsNullOrEmpty(c.Name))

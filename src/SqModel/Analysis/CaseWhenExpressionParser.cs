@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqModel.Expression;
+using SqModel.Extension;
 
 namespace SqModel.Analysis;
 
@@ -15,7 +16,9 @@ internal class CaseWhenExpressionParser
     }
 
     private SqlParser Parser { get; init; }
+
     private static List<string> splitTokens = new() { "when", "then", "else", "end" };
+
     private static List<string> breakTokens = new() { "", "end" };
 
     private string ReadUntilSplitToken() => Parser.ReadUntilTokens(splitTokens, "case", "end");
@@ -29,61 +32,53 @@ internal class CaseWhenExpressionParser
          *    else Value
          *  end
          */
+
+        if (Parser.CurrentToken != "when") throw new InvalidProgramException();
+
         var c = new CaseWhenExpression();
+        var q = Parser.ReadTokensWithoutComment();
 
-        var token = ReadUntilSplitToken();
-
-        while (true)
+        var fn = () =>
         {
-            if (Parser.CurrentToken.ToLower() == "when" || Parser.CurrentToken.ToLower() == "else")
+            if (Parser.CurrentToken.ToLower() == "else")
             {
-                token = ReadUntilSplitToken();
-                continue;
-            }
+                var value = ReadUntilSplitToken();
+                if (Parser.CurrentToken.ToLower() != "end") throw new InvalidProgramException();
 
-            if (Parser.CurrentToken.ToLower() == "then")
-            {
-                var cv = CreateCaseWhenValuePair(token);
-                c.Collection.Add(cv);
-                token = ReadUntilSplitToken();
-                continue;
-            }
-
-            if (Parser.CurrentToken.ToLower() == "end")
-            {
                 //set ReturnValue
-                var cv = CreateCaseWhenElseValue(token);
+                var cv = new CaseWhenValuePair();
+                using (var p = new SqlParser(value) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
+
                 c.Collection.Add(cv);
+                return;
             }
 
-            if (breakTokens.Contains(Parser.CurrentToken)) break;
+            if (Parser.CurrentToken.ToLower() == "when")
+            {
+                var condition = ReadUntilSplitToken();
+                if (Parser.CurrentToken.ToLower() != "then") throw new InvalidProgramException();
 
-            throw new SyntaxException("case when expression parse error.");
-        }
+                //set Condition
+                var cv = new CaseWhenValuePair();
+                using (var p = new SqlParser(condition) { Logger = Parser.Logger }) cv.When(p.ParseLogicalExpression());
 
-        Parser.ReadToken();
+                //set ReturnValue
+                var valuetoken = ReadUntilSplitToken();
+                using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
+
+                c.Collection.Add(cv);
+                return;
+            }
+
+            throw new InvalidProgramException();
+        };
+
+        while (Parser.CurrentToken.ToLower() != "end" && Parser.CurrentToken.IsNotEmpty())
+        {
+            fn();
+        };
+
+        if (Parser.CurrentToken.ToLower() == "end") q.First();
         return c;
-    }
-
-    private CaseWhenValuePair CreateCaseWhenValuePair(string token)
-    {
-        //set Condition
-        var cv = new CaseWhenValuePair();
-        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.When(p.ParseLogicalExpression());
-
-        //set ReturnValue
-        var valuetoken = ReadUntilSplitToken();
-        using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
-
-        return cv;
-    }
-
-    private CaseWhenValuePair CreateCaseWhenElseValue(string token)
-    {
-        //set ReturnValue
-        var cv = new CaseWhenValuePair();
-        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
-
-        return cv;
     }
 }

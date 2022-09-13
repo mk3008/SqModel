@@ -12,6 +12,27 @@ public class Query
     public string CommandText { get; set; } = string.Empty;
 
     public Dictionary<string, object> Parameters { get; set; } = new();
+
+    public string ToDebugString()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(CommandText);
+        sb.AppendLine();
+
+        if (Parameters.Any())
+        {
+            sb.Append("/*");
+            sb.AppendLine();
+            Parameters.ForEach(x =>
+            {
+                sb.Append($"  {x.Key} = {x.Value.ToString()}");
+                sb.AppendLine();
+            });
+            sb.Append("*/");
+        }
+        return sb.ToString();
+    }
 }
 
 internal static class QueryExtension

@@ -36,14 +36,14 @@ public class ParseTableTest
     public void JoinTable()
     {
         /// inner join table_b as b on ...
-        var sql = "inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2";
-        using var p = new SqlParser(sql);
+        var text = @"from table_a as a
+inner join table_b as b on a.column_1 = b.column_1 and a.column_2 and b.column_2";
+        using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var clause = p.ParseTableClause();
+        var sql = clause.ToQuery().CommandText;
 
-        Assert.Equal("table_b", clause.TableName);
-        Assert.Equal("b", clause.AliasName);
-        Assert.Equal(sql, clause.ToQuery().CommandText);
+        Assert.Equal(text, sql);
     }
 
     [Fact]

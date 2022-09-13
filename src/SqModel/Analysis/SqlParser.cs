@@ -76,7 +76,7 @@ public partial class SqlParser
         ";",
     };
 
-    private static string[] ColumnSplitTokens = new[] {
+    public static List<string> ColumnSplitTokens = new() {
         ",",
     };
 
@@ -94,7 +94,26 @@ public partial class SqlParser
         "as",
     };
 
-    private string[] ValueBreakTokens =
+    internal string[] AliasBreakTokens =
+        ColumnSplitTokens
+        .Union(FromTokens)
+        .Union(InnerJoinTokens)
+        .Union(LeftJoinTokens)
+        .Union(RightJoinTokens)
+        .Union(CrossJoinTokens)
+        .Union(WhereTokens)
+        .Union(QueryBreakTokens).ToArray();
+
+    internal string[] TableBreakTokens =
+        ColumnSplitTokens
+        .Union(InnerJoinTokens)
+        .Union(LeftJoinTokens)
+        .Union(RightJoinTokens)
+        .Union(CrossJoinTokens)
+        .Union(WhereTokens)
+        .Union(QueryBreakTokens).ToArray();
+
+    internal string[] ValueBreakTokens =
         ColumnSplitTokens
         .Union(FromTokens)
         .Union(InnerJoinTokens)

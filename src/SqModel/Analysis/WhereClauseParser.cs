@@ -4,46 +4,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
-internal class RelationGroupParser
+public static class WhereClauseParser
 {
-    public RelationGroupParser(SqlParser parser)
+    private static string StartToken = "where";
+
+    public static WhereClause Parse(string text)
     {
-        Parser = parser;
+        using var p = new SqlParser(text);
+        return Parse(p);
     }
 
-    private SqlParser Parser { get; init; }
-
-    private static string StartToken = "on";
-
-    public RelationGroup Parse()
+    public static WhereClause Parse(SqlParser parser)
     {
-        var group = new RelationGroup() { IsDecorateBracket = false };
+        var w = new WhereClause();
+        w.ConditionGroup = ParseConditionGroup(parser);
+        w.ConditionGroup.IsDecorateBracket = false;
+        w.ConditionGroup.IsOneLineFormat = false;
+        return w;
+    }
 
-        var q = Parser.ReadTokensWithoutComment();
-        var startToken = Parser.CurrentToken.IsNotEmpty() ? Parser.CurrentToken : q.First();
+    private static ConditionGroup ParseConditionGroup(SqlParser parser)
+    {
+        var group = new ConditionGroup();
+        var q = parser.ReadTokensWithoutComment();
+
+        var startToken = parser.CurrentToken.IsNotEmpty() ? parser.CurrentToken : q.First();
 
         if (startToken.ToLower() != StartToken) throw new InvalidProgramException($"First token must be '{StartToken}'.");
         q.First(); //skip start token token
 
-        AddRelation(group, string.Empty);
+        AddGroup(parser, group, string.Empty);
 
-        while (Parser.CurrentToken.IsLogicalOperator())
+        while (parser.CurrentToken.IsLogicalOperator())
         {
-            var @operator = Parser.CurrentToken;
-
+            var @operator = parser.CurrentToken;
             q.First();
-
-            AddRelation(group, @operator);
+            AddGroup(parser, group, @operator);
         }
         return group;
     }
 
-    public void AddRelation(RelationGroup group, string @operator)
+    private static void AddGroup(SqlParser Parser, ConditionGroup group, string @operator)
     {
         var suboperator = string.Empty;
 
@@ -59,8 +64,7 @@ internal class RelationGroupParser
         {
             var subquery = Parser.ReadUntilCloseBracket();
             using var p = new SqlParser(subquery) { Logger = Parser.Logger };
-            var xp = new RelationGroupParser(p);
-            xp.AddRelation(group, @operator);
+            AddGroup(p, group, @operator);
             return;
         }
         else if (Parser.CurrentToken.ToLower() == "exists")

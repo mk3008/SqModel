@@ -21,13 +21,12 @@ public class ParseWhereTest
     [Fact]
     public void Default()
     {
-        var condition = "1 = 1";
-        using var p = new SqlParser(condition);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseWhereClause();
+        var condition = "where a.column_1 = 1 or a.column_2 = 2";
+        var clause = WhereClauseParser.Parse(condition);
         var q = clause.ToQuery();
         var expect = @"where
-    1 = 1";
+    a.column_1 = 1
+    or a.column_2 = 2";
         Assert.Equal(expect, q.CommandText);
     }
 
@@ -35,10 +34,8 @@ public class ParseWhereTest
     [Fact]
     public void Exists()
     {
-        var condition = "exists (select * from table_b as b where b.id = a.id)";
-        using var p = new SqlParser(condition);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseWhereClause();
+        var condition = "where exists (select * from table_b as b where b.id = a.id)";
+        var clause = WhereClauseParser.Parse(condition);
         //clause.IsOneLineFormat = true;
         //clause.ConditionGroup.IsOneLineFormat = true;
         var q = clause.ToQuery();
@@ -50,10 +47,8 @@ public class ParseWhereTest
     [Fact]
     public void NotExists()
     {
-        var condition = "not exists (select * from table_b as b where b.id = a.id)";
-        using var p = new SqlParser(condition);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseWhereClause();
+        var condition = "where not exists (select * from table_b as b where b.id = a.id)";
+        var clause = WhereClauseParser.Parse(condition);
         var q = clause.ToQuery();
         var expect = @"where
     not exists (select * from table_b as b where b.id = a.id)";

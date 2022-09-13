@@ -22,6 +22,8 @@ public class StringsExpression : IValueClause
         Collection.ForEach(x => q = q.Merge(x.ToQuery(), " || "));
         return q;
     }
+
+    public string GetName() => string.Empty;
 }
 
 public static class StringsExpressionExtension

@@ -40,6 +40,25 @@ public class ParseCaseTest
     }
 
     [Fact]
+    public void NestTest()
+    {
+        using var p = new SqlParser(@"
+case a.col 
+    when 1 then 
+        case b.col 
+            when 10 then 10 
+            else 20
+        end
+    when 2 then 2
+    else 3 
+end");
+        var q = p.ParseCaseExpression();
+        var text = q.ToQuery().CommandText;
+        var expect = @"case a.col when 1 then case b.col when 10 then 10 else 20 end when 2 then 2 else 3 end";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void SelectTest()
     {
         using var p = new SqlParser(@"select case when a.col = 1 then 1 else 2 end as val from table_a as a");
@@ -61,27 +80,6 @@ case when a.col = 1 then 1 else 2 end = 1");
 from table_a as a
 where
     case when a.col = 1 then 1 else 2 end = 1";
-        Assert.Equal(expect, text);
-    }
-
-    [Fact]
-    public void Nest()
-    {
-        using var p = new SqlParser(@"select 
-case 
-    when 1 = 1 then case 
-                      when 1 = 1 then 1
-                      when 2 = 2 then 2 
-                      else 3 
-                    end
-    else 4
-end
-from table_a");
-        p.Logger = x => Output.WriteLine(x);
-        var q = p.ParseSelectQuery();
-        var text = q.ToQuery().CommandText;
-        var expect = @"select case when 1 = 1 then case when 1 = 1 then 1 when 2 = 2 then 2 else 3 end else 4 end
-from table_a";
         Assert.Equal(expect, text);
     }
 }

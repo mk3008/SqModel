@@ -24,7 +24,8 @@ public class SelectItem : IValueContainer, IQueryable
     {
         if (Command == null) throw new InvalidProgramException();
         var q = Command.ToQuery();
-        if (Name.IsNotEmpty()) q.AddToken($"as {Name}");
+
+        if (Name.IsNotEmpty() && Name != Command.GetName()) q.AddToken($"as {Name}");
 
         return q;
     }

@@ -10,111 +10,56 @@ namespace SqModel.Analysis;
 
 public partial class SqlParser
 {
-    public IValueClause ParseValueClause(bool includeCurrentToken = false)
+    public IValueClause ParseValueClause()
     {
         Logger?.Invoke($"{nameof(ParseValueClause)} start");
 
-        IValueClause? c = null;
         var cache = new List<string>();
+        var q = ReadTokensWithoutComment();
 
-        var isValue = false;
-        var table = string.Empty;
-        var value = string.Empty;
+        cache.Add(CurrentToken.IsNotEmpty() ? CurrentToken : q.First());
 
-        var maybeIineQuery = false;
-        var isInlineQuery = false;
-
-        var setTableToken = (string t) =>
+        if (CurrentToken == "(")
         {
-            table = cache.First();
-            cache.Clear();
-            isValue = true;
-        };
+            cache.Add(q.First()); // inner text
 
-        Func<IValueClause?> createCommandOrDefault = () =>
+            using var p = new SqlParser(CurrentToken) { Logger = Logger };
+            var f = p.ReadTokens().FirstOrDefault();
+            if (f?.ToLower() == "select")
+            {
+                var iq = p.ParseSelectQuery();
+                iq.IsOneLineFormat = true;
+                var item = new SelectQueryValue() { Query = iq };
+                q.First(); // skip inner text token
+                if (CurrentToken != ")") throw new SyntaxException("Value clause syntax error");
+                q.First(); // skip ')' text token
+                return item;
+            }
+            cache.Add(q.First()); // cache ')' token
+        }
+        else if (CurrentToken.ToLower() == "case")
         {
-            if (cache.Count == 0 || c != null) return null;
-            return new CommandValue() { CommandText = cache.ToString(" ") };
-        };
-
-        Func<string, IValueClause> createCommandValue = t =>
-        {
-            if (table.IsEmpty())
-            {
-                return new CommandValue() { CommandText = t };
-            }
-            else
-            {
-                return new ColumnValue() { Table = table, Column = t };
-            }
-        };
-
-        Func<string, IValueClause?> parseInlineQueryOrDefault = t =>
-        {
-            maybeIineQuery = false;
-
-            using (var parser = new SqlParser(t) { Logger = Logger })
-            {
-                var f = parser.ReadTokens().FirstOrDefault();
-                if (f?.ToLower() == "select") isInlineQuery = true;
-            }
-
-            if (!isInlineQuery)
-            {
-                cache.Add(t);
-                return null; ;
-            }
-
-            using var p = new SqlParser(t) { Logger = Logger };
-            var inq = p.ParseSelectQuery();
-            inq.IsOneLineFormat = true;
-            return new SelectQueryValue() { Query = inq };
-        };
-
-        var refreshInLineQueryFlag = (string t) => maybeIineQuery = (t == "(" && cache.Count == 1) ? true : false;
-
-        foreach (var token in ReadTokensWithoutComment(includeCurrentToken))
-        {
-            Logger?.Invoke($"token : {token}");
-
-            if (ValueBreakTokens.Where(x => x == token.ToLower()).Any()) break;
-
-            if (maybeIineQuery)
-            {
-                c = parseInlineQueryOrDefault(token);
-                if (c != null) break;
-                continue;
-            }
-
-            if (isInlineQuery && token == ")") continue;
-
-            if (token == "." && cache.Count == 1)
-            {
-                setTableToken(token);
-                continue;
-            }
-
-            if (token.ToLower() == "case")
-            {
-                c = ParseCaseExpression(true);
-                break;
-            }
-
-            if (isValue)
-            {
-                c = createCommandValue(token);
-                break;
-            }
-
-            if (!isInlineQuery) cache.Add(token);
-            refreshInLineQueryFlag(token);
+            return ParseCaseExpression();
         }
 
-        if (c == null) c = createCommandOrDefault();
-        if (c == null) throw new SyntaxException("command");
+        var tmp = q.First();
+        if (ValueBreakTokens.Contains(tmp)) return new CommandValue() { CommandText = cache.ToString(" ") };
+        cache.Add(tmp);
 
-        Logger?.Invoke($"{nameof(ParseValueClause)} end : {c.ToQuery().CommandText}");
+        if (CurrentToken == "." && cache.Count == 2)
+        {
+            var item = new ColumnValue() { Table = cache.First(), Column = q.First() };
+            q.First();
+            return item;
+        }
 
-        return c;
+        tmp = q.First();
+        while (tmp.IsNotEmpty() && !ValueBreakTokens.Contains(tmp))
+        {
+            cache.Add(tmp);
+            tmp = q.First();
+        }
+
+        return new CommandValue() { CommandText = cache.ToString(" ") };
     }
 }

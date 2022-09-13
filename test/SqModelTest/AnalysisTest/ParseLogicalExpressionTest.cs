@@ -9,9 +9,9 @@ using Xunit.Abstractions;
 
 namespace SqModelTest.AnalysisTest;
 
-public class ParseConditionTest
+public class ParseLogicalExpressionTest
 {
-    public ParseConditionTest(ITestOutputHelper output)
+    public ParseLogicalExpressionTest(ITestOutputHelper output)
     {
         Output = output;
     }

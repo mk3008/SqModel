@@ -15,7 +15,9 @@ internal class CaseExpressionParser
     }
 
     private SqlParser Parser { get; init; }
+
     private static List<string> splitTokens = new() { "when", "then", "else", "end" };
+
     private static List<string> breakTokens = new() { "", "end" };
 
     private string ReadUntilSplitToken() => Parser.ReadUntilTokens(splitTokens, "case", "end");

@@ -12,23 +12,32 @@ public partial class SqlParser
 {
     public string CurrentToken { get; private set; } = string.Empty;
 
-    public IEnumerable<string> ReadTokensWithoutComment(bool includeCurrentToken)
-    {
-        var tokens = (includeCurrentToken && !string.IsNullOrEmpty(CurrentToken)) ? new[] { CurrentToken } : Enumerable.Empty<string>();
-        return tokens.Union(ReadTokens()).Where(x => !x.StartsWith("--") && !x.StartsWith("/*"));
-    }
+    public IEnumerable<string> ReadTokensWithoutComment()
+        => ReadTokens().Where(x => !x.StartsWith("--") && !x.StartsWith("/*"));
 
-    public IEnumerable<string> ReadTokens(bool isSkipSpaceToken = true)
+    public IEnumerable<string> ReadTokens()
     {
         while (true)
         {
-            var token = ReadToken(isSkipSpaceToken);
-            if (string.IsNullOrEmpty(token)) break;
+            if (CurrentToken == "(")
+            {
+                CurrentToken = ReadUntilCloseBracket();
+                yield return CurrentToken;
+                continue;
+            }
+
+            var token = ReadToken();
+            if (string.IsNullOrEmpty(token))
+            {
+                yield return String.Empty;
+                break;
+            };
 
             if (token == "(")
             {
                 yield return token;
-                yield return ReadUntilCloseBracket();
+                CurrentToken = ReadUntilCloseBracket();
+                yield return CurrentToken;
                 continue;
             }
 

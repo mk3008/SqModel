@@ -29,6 +29,8 @@ public class CaseExpression : IValueClause
 
     public void AddParameter(string name, object value)
         => throw new NotSupportedException();
+
+    public string GetName() => string.Empty;
 }
 
 public static class CaseExpressionExtension

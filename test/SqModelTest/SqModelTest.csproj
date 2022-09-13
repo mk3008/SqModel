@@ -14,7 +14,6 @@
     <Compile Remove="SelectQueryCommonTableAliasTest.cs" />
     <Compile Remove="SelectQueryRelationTest.cs" />
     <Compile Remove="SelectQueryTest.cs" />
-    <Compile Remove="AnalysisTest\ParseTest.cs" />
     <Compile Remove="TableAliasTest.cs" />
     <Compile Remove="TableRelationTest.cs" />
     <Compile Remove="VirtualColumnTest.cs" />

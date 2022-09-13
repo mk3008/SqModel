@@ -23,6 +23,8 @@ public class CommandValue : IValueClause
         Parameters.Add(name, value);
     }
 
+    public string GetName() => string.Empty;
+
     public Query ToQuery()
     {
         var q = new Query() { CommandText = CommandText, Parameters = Parameters ?? new() };

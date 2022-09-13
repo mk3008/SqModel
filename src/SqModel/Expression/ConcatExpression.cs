@@ -23,6 +23,8 @@ public class ConcatExpression : IValueClause
         q.DecorateBracket().InsertToken("concat", "");
         return q;
     }
+
+    public string GetName() => string.Empty;
 }
 
 public static class ConcatExpressionExtension

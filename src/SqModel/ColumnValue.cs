@@ -26,4 +26,6 @@ public class ColumnValue : IValueClause
 
     public Query ToQuery()
         => new Query() { CommandText = $"{Table}.{Column}" }.InsertToken(Conjunction);
+
+    public string GetName() => Column;
 }

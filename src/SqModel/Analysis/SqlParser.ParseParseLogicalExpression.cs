@@ -10,22 +10,24 @@ namespace SqModel.Analysis;
 
 public partial class SqlParser
 {
-    public LogicalExpression ParseLogicalExpression(bool includeCurrentToken = false)
+    public LogicalExpression ParseLogicalExpression()
     {
         Logger?.Invoke($"{nameof(ParseLogicalExpression)}  start");
 
         var c = new LogicalExpression();
 
-        c.Left = ParseValueClause(includeCurrentToken);
+        c.Left = ParseValueClause();
         var sign = string.Empty;
-        if (CurrentToken.IsNotEmpty() && CurrentToken.First().IsSymbol())
+        if (CurrentToken.IsNotEmpty())
         {
             sign = CurrentToken;
+            ReadTokensWithoutComment().First();
         }
         else
         {
-            sign = ReadToken();
+            throw new InvalidProgramException();
         }
+
         c.Right = ParseValueClause();
         c.Right.Conjunction = sign;
 

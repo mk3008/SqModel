@@ -30,6 +30,7 @@ public partial class SqlParser
             if (token.ToLower() == leveldowntoken) level--;
             sb.Append(token);
         }
+
         return sb.ToString();
     }
 

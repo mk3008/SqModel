@@ -15,6 +15,8 @@ public class SelectQueryValue : IValueClause
     public void AddParameter(string name, object value)
         => throw new NotSupportedException();
 
+    public string GetName() => string.Empty;
+
     public Query ToQuery()
     {
         if (Query == null) throw new InvalidProgramException();
