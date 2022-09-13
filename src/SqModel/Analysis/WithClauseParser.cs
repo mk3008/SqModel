@@ -21,12 +21,12 @@ internal static class WithClauseParser
 
         var w = new WithClause();
 
-        w.CommonTableAliases.Add(ParseSelecItem(parser));
+        w.Collection.Add(ParseSelecItem(parser));
 
         while (parser.CurrentToken == ",")
         {
             q.First();//skip ',' token
-            w.CommonTableAliases.Add(ParseSelecItem(parser));
+            w.Collection.Add(ParseSelecItem(parser));
         }
 
         return w;

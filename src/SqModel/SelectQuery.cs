@@ -27,7 +27,7 @@ public partial class SelectQuery
     public WithClause GetAllWith()
     {
         var w = new WithClause();
-        GetCommonTableClauses().ToList().ForEach(x => w.CommonTableAliases.Add(x));
+        GetCommonTableClauses().ToList().ForEach(x => w.Collection.Add(x));
         return w;
     }
 

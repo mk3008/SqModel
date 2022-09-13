@@ -11,7 +11,7 @@ public static class SelectQueryWithExtension
     public static CommonTable With(this SelectQuery source, string name)
     {
         var c = new CommonTable() { Name = name };
-        source.With.CommonTableAliases.Add(c);
+        source.With.Collection.Add(c);
         return c;
     }
 

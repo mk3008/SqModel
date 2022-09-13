@@ -102,8 +102,8 @@ public class TableClause
     {
         foreach (var x in SubTableClauses) foreach (var item in x.GetCommonTableClauses()) yield return item;
 
-        var lst = SubSelectClause?.GetAllWith().CommonTableAliases.ToList();
-        if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().CommonTableAliases) yield return item;
+        var lst = SubSelectClause?.GetAllWith().Collection.ToList();
+        if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().Collection) yield return item;
     }
 }
 

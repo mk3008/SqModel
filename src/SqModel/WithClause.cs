@@ -9,28 +9,28 @@ namespace SqModel;
 
 public class WithClause
 {
-    public List<CommonTable> CommonTableAliases = new();
+    public List<CommonTable> Collection = new();
 
     public IEnumerable<CommonTable> GetCommonTableClauses()
     {
-        foreach (var y in CommonTableAliases)
+        foreach (var y in Collection)
         {
             if (y.Query == null) continue;
-            foreach (var item in y.Query.GetAllWith().CommonTableAliases) yield return item;
+            foreach (var item in y.Query.GetAllWith().Collection) yield return item;
         }
-        foreach (var item in CommonTableAliases) yield return item;
+        foreach (var item in Collection) yield return item;
     }
 
     internal CommonTable Add(SelectQuery selectQuery, string alias)
     {
         var c = new CommonTable() { Query = selectQuery, Name = alias };
-        CommonTableAliases.Add(c);
+        Collection.Add(c);
         return c;
     }
 
     public Query ToQuery()
     {
-        var q = CommonTableAliases.Select(x => x.ToQuery()).ToList().ToQuery(",\r\n");
+        var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery(",\r\n");
         if (q.CommandText != string.Empty) q.CommandText = $"with\r\n{q.CommandText}";
 
         return q;
