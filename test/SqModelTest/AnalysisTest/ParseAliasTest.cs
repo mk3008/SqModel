@@ -58,7 +58,7 @@ public class ParseAliasTest
         var text = "t.column as col";
         using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(p);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal("t.column", sql);
@@ -71,7 +71,7 @@ public class ParseAliasTest
         var text = "t.column col";
         using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(p);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal("t.column", sql);

@@ -23,9 +23,7 @@ public class ParseValueClauseTest
     public void Default()
     {
         var text = "t.column";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal(text, sql);
@@ -35,9 +33,7 @@ public class ParseValueClauseTest
     public void Value()
     {
         var text = "1";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal(text, sql);
@@ -47,9 +43,7 @@ public class ParseValueClauseTest
     public void Condition()
     {
         var text = "1 = 1";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal("1", sql);
@@ -59,9 +53,7 @@ public class ParseValueClauseTest
     public void Condition2()
     {
         var text = "1 + 1 = 2";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal("1 + 1", sql);
@@ -71,9 +63,7 @@ public class ParseValueClauseTest
     public void Expression()
     {
         var text = "(1 + 2) * 3.4";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal(text, sql);
@@ -83,9 +73,7 @@ public class ParseValueClauseTest
     public void CaseWhenExpression()
     {
         var text = "case when 1 = 1 then 1 else 2 end";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal(text, sql);
@@ -95,9 +83,7 @@ public class ParseValueClauseTest
     public void InlineQuery()
     {
         var text = "(select t.colmn from table as t)";
-        using var p = new SqlParser(text);
-        p.Logger = (x) => Output.WriteLine(x);
-        var val = p.ParseValueClause();
+        var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
         Assert.Equal(text, sql);

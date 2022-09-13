@@ -21,7 +21,7 @@ public static class LogicalExpressionParser
 
         var c = new LogicalExpression();
 
-        c.Left = parser.ParseValueClause();
+        c.Left = ValueClauseParser.Parse(parser);
         var sign = string.Empty;
         if (parser.CurrentToken.IsNotEmpty())
         {
@@ -33,7 +33,7 @@ public static class LogicalExpressionParser
             throw new SyntaxException("LogicalExpression syntax error.");
         }
 
-        c.Right = parser.ParseValueClause();
+        c.Right = ValueClauseParser.Parse(parser);
         c.Right.Conjunction = sign;
 
         return c;

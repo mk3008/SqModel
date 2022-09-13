@@ -41,7 +41,7 @@ internal static class SelectClauseParser
     public static SelectItem ParseSelecItem(SqlParser parser)
     {
         var c = new SelectItem();
-        c.Command = parser.ParseValueClause();
+        c.Command = ValueClauseParser.Parse(parser);
 
         if (!parser.AliasBreakTokens.Contains(parser.CurrentToken))
         {

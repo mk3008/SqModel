@@ -74,19 +74,18 @@ internal class CaseExpressionParser
         var text = $"{Parser.CurrentToken}{Parser.ReadUntilTokens(new() { "when" })}";
         using var p = new SqlParser(text) { Logger = Parser.Logger };
         if (Parser.CurrentToken != "when") throw new InvalidOperationException();
-        return p.ParseValueClause();
+        return ValueClauseParser.Parse(p);
     }
 
     private CaseValuePair CreateCaseValuePair(string token)
     {
         //set ConditionValue
         var cv = new CaseValuePair();
-        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.When(p.ParseValueClause());
+        cv.When(ValueClauseParser.Parse(token));
 
         //set ReturnValue
         var valuetoken = ReadUntilSplitToken();
-        using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
-
+        cv.Then(ValueClauseParser.Parse(valuetoken));
         return cv;
     }
 
@@ -94,8 +93,7 @@ internal class CaseExpressionParser
     {
         //set ReturnValue
         var cv = new CaseValuePair();
-        using (var p = new SqlParser(token) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
-
+        cv.Then(ValueClauseParser.Parse(token));
         return cv;
     }
 }
