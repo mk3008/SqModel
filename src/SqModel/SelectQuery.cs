@@ -65,7 +65,7 @@ public partial class SelectQuery
         }
 
         sb.Append($"{selectQ.CommandText}");
-        sb.Append($"{splitter}{fromQ.CommandText}");
+        if (fromQ.IsNotEmpty()) sb.Append($"{splitter}{fromQ.CommandText}");
         if (whereQ.IsNotEmpty()) sb.Append($"{splitter}{whereQ.CommandText}");
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };

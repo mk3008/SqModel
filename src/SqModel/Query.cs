@@ -17,9 +17,8 @@ public class Query
     {
         var sb = new StringBuilder();
 
-        sb.Append(CommandText);
-        sb.AppendLine();
-
+        sb.AppendLine(";");
+        sb.AppendLine("--sql");
         if (Parameters.Any())
         {
             sb.Append("/*");
@@ -30,7 +29,12 @@ public class Query
                 sb.AppendLine();
             });
             sb.Append("*/");
+            sb.AppendLine();
         }
+        sb.Append(CommandText);
+        sb.AppendLine();
+        sb.Append(";");
+
         return sb.ToString();
     }
 }
