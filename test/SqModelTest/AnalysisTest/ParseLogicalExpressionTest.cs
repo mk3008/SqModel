@@ -23,9 +23,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = "a.id1 = b.id2";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
 
         Assert.Equal(relationSql, clause.ToQuery().CommandText);
     }
@@ -35,9 +33,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = "a.id1 = (1+2) * 3";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
 
         Assert.Equal(relationSql, clause.ToQuery().CommandText);
     }
@@ -47,9 +43,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 = (select x.id from table_x as x)";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -60,9 +54,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 >= 10";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -73,9 +65,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 is null";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -86,9 +76,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 is not null";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal(relationSql, text);
@@ -99,9 +87,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 is null and a.id1 is not null";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal("a.id1 is null", text);
@@ -112,9 +98,7 @@ public class ParseLogicalExpressionTest
     {
         /// inner join table_b as b on ...
         var relationSql = @"a.id1 is not null and a.id1 is not null";
-        using var p = new SqlParser(relationSql);
-        p.Logger = (x) => Output.WriteLine(x);
-        var clause = p.ParseLogicalExpression();
+        var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
         Assert.Equal("a.id1 is not null", text);

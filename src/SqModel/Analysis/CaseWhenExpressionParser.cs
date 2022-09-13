@@ -47,7 +47,10 @@ internal class CaseWhenExpressionParser
 
                 //set ReturnValue
                 var cv = new CaseWhenValuePair();
-                using (var p = new SqlParser(value) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
+                using (var p = new SqlParser(value) { Logger = Parser.Logger })
+                {
+                    cv.Then(p.ParseValueClause());
+                }
 
                 c.Collection.Add(cv);
                 return;
@@ -60,11 +63,17 @@ internal class CaseWhenExpressionParser
 
                 //set Condition
                 var cv = new CaseWhenValuePair();
-                using (var p = new SqlParser(condition) { Logger = Parser.Logger }) cv.When(p.ParseLogicalExpression());
+                using (var p = new SqlParser(condition) { Logger = Parser.Logger })
+                {
+                    cv.When(LogicalExpressionParser.Parse(p));
+                }
 
                 //set ReturnValue
                 var valuetoken = ReadUntilSplitToken();
-                using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger }) cv.Then(p.ParseValueClause());
+                using (var p = new SqlParser(valuetoken) { Logger = Parser.Logger })
+                {
+                    cv.Then(p.ParseValueClause());
+                }
 
                 c.Collection.Add(cv);
                 return;

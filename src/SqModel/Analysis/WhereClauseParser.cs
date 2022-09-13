@@ -81,7 +81,7 @@ public static class WhereClauseParser
         }
         else
         {
-            group.Add().SetOperator(@operator, suboperator).Expression = Parser.ParseLogicalExpression();
+            group.Add().SetOperator(@operator, suboperator).Expression = LogicalExpressionParser.Parse(Parser);
             return;
         }
     }
