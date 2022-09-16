@@ -5,45 +5,49 @@ You can also parse handwritten Sql.
 ## Demo
 You can compose your select query like this:
 ```cs
+//using SqModel;
 var sq = new SelectQuery();
-var ta = sq.From("table_a", "a");
-var tb = ta.LeftJoin("table_b", "b").On("id", "table_a_id");
+var a = sq.From("table_a").As("a");
+var b = a.LeftJoin("table_b").As("b").On("id", "table_a_id");
 
-sq.Select(ta, "id");
-sq.Select(tb, "table_a_id", "a_id");
+sq.Select(a, "id").As("a_id");
+sq.Select(b, "table_a_id").As("b_id");
 
-sq.Where().Value(ta, "id").Equal(":id").AddParameter(":id", 1);
-sq.Where().Value(tb, "table_a_id").IsNull();
+sq.Where.Add().Column(a, "id").Equal(":id").Parameter(":id", 1);
+sq.Where.Add().Column(b, "table_a_id").IsNull();
+sq.Where.Add().Column(b, "is_visible").True();
 
-var q = sq.ToQuery();
+var sql = sq.ToQuery().CommandText;
+```
 
-/*
-select a.id, b.table_a_id as a_id
+```sql
+select a.id as a_id, b.table_a_id as b_id
 from table_a as a
 left join table_b as b on a.id = b.table_a_id
 where
-a.id = :id --1
-and b.table_a_id is null
-*/
-Console.WriteLine(q.CommandText);
+    a.id = :id
+    and b.table_a_id is null
+    and b.is_visible = true
 ```
 
 It is also possible to parse handwritten Select queries into the SqModel class.
 
 ```cs
-using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
-var q = p.ParseSelectQuery();
-var text = q.ToQuery().CommandText;
-var expect = @"select a.column_1 as col1, a.column_2 as col2
-from table_a as a";
-Assert.Equal(expect, text);
+//using SqModel;
+//using SqModel.Analysis;
+var sq = SqlParser.Parse(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
+var b = sq.FromClause.LeftJoin("table_b").As("b").On("id", "table_a_id");
+sq.Where.Add().Column(b, "table_a_id").IsNull();
 
-Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
-Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
-Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+var sql = sq.ToQuery().CommandText;
+```
 
-Assert.Equal("table_a", q.FromClause.TableName);
-Assert.Equal("a", q.FromClause.AliasName);
+```sql
+select a.column_1 as col1, a.column_2 as col2
+from table_a as a
+left join table_b as b on a.id = b.table_a_id
+where
+    b.table_a_id is null
 ```
 
 ## Feature
@@ -73,334 +77,330 @@ https://www.nuget.org/packages/SqModel.Dapper
 https://www.nuget.org/packages/SqModel/
 
 ## Sample
-### Single table selection
-```cs
-    [Fact]
-    public void TableNameAlias()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(table_a, "*");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.*
-from table_a as a";
-
-        Assert.Equal(expect, text);
-    }
-```
-
-### Get columns
-```cs
-    [Fact]
-    public void SelectColumnWithAlias()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(table_a, "column_x", "x");
-
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.column_x as x
-from table_a as a";
-
-        Assert.Equal(expect, text);
-    }
-```
-
 ### Parameter query using variables
 ```cs
-    [Fact]
-    public void SelectVariable()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(":val", "value").AddParameter(":val", 1);
+[Fact]
+public void SelectVariable()
+{
+    var sq = new SelectQuery();
+    sq.Select(":val").As("value").Parameter(":val", 1);
 
-        var actual = q.ToQuery();
-        var text = actual.CommandText;
-        var expect = @"select :val as value
-from table_a as a";
+    var q = sq.ToQuery();
+    var text = q.CommandText;
 
-        Assert.Equal(expect, text);
-        Assert.Equal(1, actual.Parameters[":val"]);
-    }
+    Assert.Equal("select :val as value", text);
+    Assert.Equal(1, q.Parameters[":val"]);
+}
 ```
 
 ### Table join(version 0.4 or later)
 ```cs
-    [Fact]
-    public void Default()
-    {
-        var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
-        var tb = ta.InnerJoin("table_b", "b").On("table_a_id");
-        tb.InnerJoin("table_c", "c").On("table_b_id", "TABLE_B_ID");
+[Fact]
+public void TableJoin()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+    var b = a.InnerJoin("table_b").As("b").On("table_a_id");
+    var c = b.LeftJoin("table_c").As("c").On("table_b_id", "table_b_id");
+    var d = b.RightJoin("table_d").As("d").On("table_b_id", "TABLE_B_ID");
+    var e = b.CrossJoin("table_e").As("e");
 
-        q.SelectAll();
+    sq.SelectAll();
 
-        var text = q.ToQuery().CommandText;
-        var expect = @"select *
+    var q = sq.ToQuery().CommandText;
+    var expect = @"select *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
-inner join table_c as c on b.table_b_id = c.TABLE_B_ID";
+left join table_c as c on b.table_b_id = c.table_b_id
+right join table_d as d on b.table_b_id = d.TABLE_B_ID
+cross join table_e as e";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ```
 
 ### Subquery
 ```cs
-    [Fact]
-    public void Default()
+[Fact]
+public void SubQuery()
+{
+    var sq = new SelectQuery();
+    sq.From(x =>
     {
-        var q = new SelectQuery();
-        q.From(x =>
-        {
-            x.From("table_a", "a");
-            x.SelectAll();
-        }, "b");
-        q.SelectAll();
+        x.From("table_a").As("a");
+        x.SelectAll();
+    }).As("aa");
+    sq.SelectAll();
 
-        var text = q.ToQuery().CommandText;
-        var expect = @"select *
+    var q = sq.ToQuery().CommandText;
+    var expect = @"select *
 from (
-    select *
-    from table_a as a
-) as b";
+select *
+from table_a as a
+) as aa";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ```
 
 ### Extraction condition(version 0.4 or later)
 ```cs
-    [Fact]
-    public void Default()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a");
-        q.Select(table_a, "*");
-        q.Where().Value(table_a, "id").Equal(":id").AddParameter(":id", 1);
+[Fact]
+public void Condition()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+    sq.SelectAll();
+    sq.Where.Add().Column(a, "id").Equal(":id1").Parameter(":id", 1);
+    sq.Where.Add().Column("a", "id").Equal(":id2").Parameter(":id", 2);
+    sq.Where.Add().Column(a, "id").Equal(10);
+    sq.Where.Add().Column(a, "id").IsNull();
+    sq.Where.Add().Column(a, "id").IsNotNull();
+    sq.Where.Add().Column(a, "id").True();
+    sq.Where.Add().Column(a, "id").False();
+    sq.Where.Add().Column(a, "id").Right = new CommandValue() { Conjunction = ">=", CommandText = "10" };
 
-        var acutal = q.ToQuery();
-        var expect = @"select table_a.*
-from table_a
+    var q = sq.ToQuery();
+    var expect = @"select *
+from table_a as a
 where
-    table_a.id = :id";
+a.id = :id1
+and a.id = :id2
+and a.id = 10
+and a.id is null
+and a.id is not null
+and a.id = true
+and a.id = false
+and a.id >= 10";
 
-        Assert.Equal(expect, acutal.CommandText);
-        Assert.Single(acutal.Parameters);
-        Assert.Equal(1, acutal.Parameters[":id"]);
-    }
+    Assert.Equal(expect, q.CommandText);
+}
 ```
 
 ### Extraction condition(group)(version 0.4 or later)
 ```cs
-    [Fact]
-    public void OperatorOr()
+[Fact]
+public void ConditionGroup()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+    sq.SelectAll();
+    sq.Where.AddGroup(x =>
     {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a");
-        q.Select(table_a, "*");
-        q.Where().Group(x =>
-        {
-            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
-        });
+        x.Add().Or().Column(a, "id").Equal(1);
+        x.Add().Or().Column(a, "id").Equal(2);
+    });
+    sq.Where.Add().Column(a, "id").Equal(3);
 
-        var acutal = q.ToQuery();
-        var expect = @"select table_a.*
-from table_a
+    var q = sq.ToQuery();
+    var expect = @"select *
+from table_a as a
 where
-    (table_a.id = :id1 or table_a.id = :id2)";
+(a.id = 1 or a.id = 2)
+and a.id = 3";
 
-        Assert.Equal(expect, acutal.CommandText);
-        Assert.Equal(2, acutal.Parameters.Count);
-        Assert.Equal(1, acutal.Parameters[":id1"]);
-        Assert.Equal(2, acutal.Parameters[":id2"]);
-    }
+    Assert.Equal(expect, q.CommandText);
+}
 ```
 
 ### Use only extraction conditions(version 0.4 or later)
 ```cs
-    [Fact]
-    public void WhereOnly()
+[Fact]
+public void ExistsNotExists()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+    sq.SelectAll();
+    sq.Where.Add().Exists(x =>
     {
-        var q = new SelectQuery();
-        q.Where().Group(x =>
-        {
-            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
-        });
+        var b = x.From("table_b").As("b");
+        x.SelectAll();
+        x.Where.Add().Column(b, "id").Equal(a, "id");
+    });
+    sq.Where.Add().Not().Exists(x =>
+    {
+        var c = x.From("table_c").As("c");
+        x.SelectAll();
+        x.Where.Add().Column(c, "id").Equal(a, "id");
+    });
 
-        q.Where().Value("table_a", "id").Equal("table_b", "id");
-        q.Where().Value("table_a", "id").Equal(":sub_id").AddParameter(":sub_id", 2);
-        q.Where().Value("table_a", "id").IsNull();
-        q.Where().Value("table_a", "id").IsNotNull();
+    var q = sq.ToQuery();
+    var expect = @"select *
+from table_a as a
+where
+exists (select * from table_b as b where b.id = a.id)
+and not exists (select * from table_c as c where c.id = a.id)";
 
-        q.Where().Group(x =>
-        {
-            x.Where().Or.Value("table_a.id").Equal(":id1").AddParameter(":id1", 1);
-            x.Where().Or.Value("table_a.id").Equal(":id2").AddParameter(":id2", 2);
-        });
-
-        q.Where().Exists(() =>
-        {
-            var x = new SelectQuery();
-            x.From("table_x", "x");
-            x.SelectAll();
-            x.Where().Value("x.id").Equal("table_a.id");
-            return x;
-        });
-
-        q.Where().Not.Exists(() =>
-        {
-            var x = new SelectQuery();
-            x.From("table_x", "x");
-            x.SelectAll();
-            x.Where().Value("x.id").Equal("table_a.id");
-            return x;
-        });
-
-        var acutal = q.WhereClause.ToQuery();
-        var expect = @"where
-    (table_a.id = :id1 or table_a.id = :id2)
-    and table_a.id = table_b.id
-    and table_a.id = :sub_id
-    and table_a.id is null
-    and table_a.id is not null
-    and (table_a.id = :id1 or table_a.id = :id2)
-    and exists (
-        select *
-        from table_x as x
-        where
-            x.id = table_a.id
-    )
-    and not exists (
-        select *
-        from table_x as x
-        where
-            x.id = table_a.id
-    )";
-
-        Assert.Equal(expect, acutal.CommandText);
-        Assert.Equal(3, acutal.Parameters.Count);
-        Assert.Equal(1, acutal.Parameters[":id1"]);
-        Assert.Equal(2, acutal.Parameters[":id2"]);
-        Assert.Equal(2, acutal.Parameters[":sub_id"]);
-    }
+    Assert.Equal(expect, q.CommandText);
+}
 ```
 
 ### CTE
 ```cs
-    [Fact]
-    public void Default()
+[Fact]
+public void CommonTable()
+{
+    var sq = new SelectQuery();
+    var cta = sq.With.Add(x =>
     {
-        var q = new SelectQuery();
-        var ta = q.With(x =>
-        {
-            x.From("table_a");
-            x.SelectAll();
-        }, "a");
+        x.From("table_a");
+        x.SelectAll();
+    }).As("a");
 
-        q.From(ta);
-        q.SelectAll();
+    var ctb = sq.With.Add(x =>
+    {
+        x.From("table_b");
+        x.SelectAll();
+    }).As("b");
 
-        var text = q.ToQuery().CommandText;
-        var expect = @"with
+    var a = sq.From(cta);
+    a.InnerJoin(ctb).On("id");
+    sq.SelectAll();
+
+    var q = sq.ToQuery().CommandText;
+    var expect = @"with
 a as (
-    select *
-    from table_a
+select *
+from table_a
+),
+b as (
+select *
+from table_b
 )
 select *
-from a";
+from a
+inner join b on a.id = b.id";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ```
 
 ### Table creation query
 ```cs
-    [Fact]
-    public void Default()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a");
-        q.Select(table_a, "*");
+[Fact]
+public void CreateTable()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a");
+    sq.Select(a, "*");
 
-        var tq = new CreateTableQuery() { SelectQuery = q, TableName = "tmp" };
+    var tq = new CreateTableQuery() { SelectQuery = sq, TableName = "tmp" };
 
-        var text = tq.ToQuery().CommandText;
-        var expect = @"create table tmp
+    var q = tq.ToQuery().CommandText;
+    var expect = @"create table tmp
 as
 select table_a.*
 from table_a";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ```
 
 ### View creation query
 ```cs
-    [Fact]
-    public void Default()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a");
-        q.Select(table_a, "*");
+[Fact]
+public void CreateView()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a");
+    sq.Select(a, "*");
 
-        var tq = new CreateViewQuery() { SelectQuery = q, ViewName = "tmp" };
+    var tq = new CreateViewQuery() { SelectQuery = sq, ViewName = "tmp" };
 
-        var text = tq.ToQuery().CommandText;
-        var expect = @"create view tmp
+    var q = tq.ToQuery().CommandText;
+    var expect = @"create view tmp
 as
 select table_a.*
 from table_a";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ```
 
 ### Insert query
 ```cs
-    [Fact]
-    public void ColumnNameAlias()
-    {
-        var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(table_a, "id", "index_value");
+[Fact]
+public void InsertQuery()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+    sq.Select(a, "id").As("index_value");
 
-        var tq = new InsertQuery() { SelectQuery = q, TableName = "table_b" };
+    var tq = new InsertQuery() { SelectQuery = sq, TableName = "table_b" };
 
-        var text = tq.ToQuery().CommandText;
-        var expect = @"insert into table_b(index_value)
+    var q = tq.ToQuery().CommandText;
+    var expect = @"insert into table_b(index_value)
 select a.id as index_value
 from table_a as a";
 
-        Assert.Equal(expect, text);
-    }
+    Assert.Equal(expect, q);
+}
 ````
 
 ### Parse(version 0.4 or later)
 You can parse handwritten SQL and use it as SqModel.
 Table joins and inline queries can be parsed, but there are patterns that cannot be parsed (ex.group by, order by).
 
-```c
-    [Fact]
-    public void Simple()
+```cs
+[Fact]
+public void ParseHandwrittenSql()
+{
+    var sq = SqlParser.Parse(@"select a.column_1 as col1, b.column_2 as col2 from table_a as a inner join table_b as b on a.id = b.id");
+    var q = sq.ToQuery().CommandText;
+    var expect = @"select a.column_1 as col1, b.column_2 as col2
+from table_a as a
+inner join table_b as b on a.id = b.id";
+    Assert.Equal(expect, q);
+}
+```
+
+### CaseExpression(version 0.4 or later)
+```cs
+[Fact]
+public void DefaultCaseWhen()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+
+    sq.Select.Add().CaseWhen(x =>
     {
-        using var p = new Parser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
-        var q = p.ParseSelectQuery();
-        var text = q.ToQuery().CommandText;
-        var expect = @"select a.column_1 as col1, a.column_2 as col2
+        x.Add().When(w => w.Value("a").Equal(1)).Then(10);
+        x.Add().When(w => w.Column("a", "id").Equal(2)).Then(20);
+        x.Add().When(w => w.Column(a, "id").Equal(3)).Then(30);
+        x.Add().WhenGroup(g =>
+        {
+            g.Add().Column("a", "id").Equal(1);
+            g.Add().Or().Column("b", "id").Equal(2);
+        }).Then(40);
+    }).As("case_1");
+
+    var q = sq.ToQuery().CommandText;
+    var expect = @"select case when a = 1 then 10 when a.id = 2 then 20 when a.id = 3 then 30 when (a.id = 1 or b.id = 2) then 40 end as case_1
 from table_a as a";
-        Assert.Equal(expect, text);
 
-        Assert.Equal("a", q.SelectClause.ColumnClauses[0].TableName);
-        Assert.Equal("column_1", q.SelectClause.ColumnClauses[0].Value);
-        Assert.Equal("col1", q.SelectClause.ColumnClauses[0].AliasName);
+    Assert.Equal(expect, q);
+}
 
-        Assert.Equal("table_a", q.FromClause.TableName);
-        Assert.Equal("a", q.FromClause.AliasName);
-    }
+[Fact]
+public void DefaultCase()
+{
+    var sq = new SelectQuery();
+    var a = sq.From("table_a").As("a");
+
+    sq.Select.Add().Case("1", x =>
+    {
+        x.Add().When("a").Then(10);
+        x.Add().When("a", "id").Then(20);
+        x.Add().When(a, "id").Then(30);
+        x.Add().When(1).Then(30);
+        x.Add().When(1).ThenNull();
+        x.Add().Else(100);
+    }).As("case_2");
+
+    var q = sq.ToQuery().CommandText;
+    var expect = @"select case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
+from table_a as a";
+
+    Assert.Equal(expect, q);
+}
 ```
