@@ -48,4 +48,14 @@ public static class IValueContainerExtension
         action(c);
         return source;
     }
+
+    public static IValueContainer Concat(this IValueContainer source, string func, string split, Action<ConcatExpression> action)
+    {
+        var c = new ConcatExpression();
+        source.Command = c;
+        c.FunctionToken = func;
+        c.SplitToken = split;
+        action(c);
+        return source;
+    }
 }

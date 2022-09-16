@@ -22,3 +22,12 @@ public class CommonTable : IQueryable
         return q;
     }
 }
+
+public static class CommonTableExtension
+{
+    public static CommonTable As(this CommonTable source, string name)
+    {
+        source.Name = name;
+        return source;
+    }
+}

@@ -36,3 +36,15 @@ public class WithClause
         return q;
     }
 }
+
+public static class WithClauseExtension
+{
+    public static CommonTable Add(this WithClause source, Action<SelectQuery> action)
+    {
+        var sq = new SelectQuery();
+        action(sq);
+        var c = new CommonTable() { Query = sq };
+        source.Collection.Add(c);
+        return c;
+    }
+}

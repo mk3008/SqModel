@@ -15,8 +15,10 @@ public class LogicalExpression : ILogicalExpression
 
     public virtual Query ToQuery()
     {
-        if (Left == null || Right == null) throw new InvalidProgramException();
+        if (Left == null) throw new InvalidProgramException("Left property is null.");
         var q = Left.ToQuery();
+
+        if (Right == null) return q;
         return q.Merge(Right.ToQuery());
     }
 }

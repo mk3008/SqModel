@@ -11,6 +11,10 @@ public class ConcatExpression : IValueClause
 {
     public List<ValueContainer> Collection { get; } = new();
 
+    public string FunctionToken { get; set; } = "concat";
+
+    public string SplitToken { get; set; } = ",";
+
     public string Conjunction { get; set; } = String.Empty;
 
     public void AddParameter(string name, object value)
@@ -19,8 +23,8 @@ public class ConcatExpression : IValueClause
     public Query ToQuery()
     {
         var q = new Query();
-        Collection.ForEach(x => q = q.Merge(x.ToQuery(), ", "));
-        q.DecorateBracket().InsertToken("concat", "");
+        Collection.ForEach(x => q = q.Merge(x.ToQuery(), SplitToken));
+        q.DecorateBracket().InsertToken(FunctionToken, "");
         return q;
     }
 
