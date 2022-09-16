@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqModel;
+using SqModel.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class SelectQuery
+public partial class SelectQuery
 {
     public TableClause FromClause { get; set; } = new();
 
     public SelectClause SelectClause { get; set; } = new();
 
+    public SelectClause Select => SelectClause;
+
     public WithClause With { get; set; } = new();
 
-    public IEnumerable<CommonTableClause> GetCommonTableClauses()
+    public IEnumerable<CommonTable> GetCommonTableClauses()
     {
         foreach (var item in FromClause.GetCommonTableClauses()) yield return item;
         foreach (var item in With.GetCommonTableClauses()) yield return item;
@@ -23,23 +27,24 @@ public class SelectQuery
     public WithClause GetAllWith()
     {
         var w = new WithClause();
-        GetCommonTableClauses().ToList().ForEach(x => w.CommonTableAliases.Add(x));
+        GetCommonTableClauses().ToList().ForEach(x => w.Collection.Add(x));
         return w;
     }
 
     public WhereClause WhereClause = new();
 
-    public OperatorContainer Where() => WhereClause.Container.Where();
+    public ConditionGroup Where => WhereClause.ConditionGroup;
 
-    public Query ToQuery() => ToQueryCore(true);
+    public bool IsOneLineFormat { get; set; } = false;
 
-    public Query ToSubQuery() => ToQueryCore(false);
+    public bool IsincludeCte { get; set; } = true;
 
-    public Query ToInlineQuery() => ToQueryCore(false, " ");
-
-    private Query ToQueryCore(bool includeCte, string splitter = "\r\n")
+    public virtual Query ToQuery()
     {
-        var withQ = (includeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
+        var splitter = IsOneLineFormat ? " " : "\r\n";
+        WhereClause.IsOneLineFormat = IsOneLineFormat;
+
+        var withQ = (IsincludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
@@ -60,9 +65,46 @@ public class SelectQuery
         }
 
         sb.Append($"{selectQ.CommandText}");
-        sb.Append($"{splitter}{fromQ.CommandText}");
+        if (fromQ.IsNotEmpty()) sb.Append($"{splitter}{fromQ.CommandText}");
         if (whereQ.IsNotEmpty()) sb.Append($"{splitter}{whereQ.CommandText}");
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
+    }
+
+    public SelectQuery PushToCommonTable(string alias)
+    {
+        var q = new SelectQuery();
+        q.With.Add(this, alias);
+        return q;
+    }
+
+    public CommonTable SearchCommonTable(string alias)
+        => GetCommonTableClauses().Where(x => x.Name == alias).First();
+}
+
+public static class SelectQueryExtension
+{
+    public static Query ToCreateTableQuery(this SelectQuery source, string tablename, bool istemporary = true)
+    {
+        var q = source.ToQuery();
+        var tmp = (istemporary) ? "temporary " : "";
+        q.CommandText = $"create {tmp}table {tablename}\r\nas\r\n{q.CommandText}";
+        return q;
+    }
+
+    public static SelectQuery Distinct(this SelectQuery source, bool isdistinct = true)
+    {
+        source.SelectClause.IsDistinct = isdistinct;
+        return source;
+    }
+
+    public static Query ToInsertQuery(this SelectQuery source, string tablename)
+    {
+        var q = source.ToQuery();
+        var cols = source.SelectClause.GetColumnNames();
+        var coltext = $"({cols.ToString(", ")})";
+
+        q.CommandText = $"insert into {tablename}{coltext}\r\n{q.CommandText}";
+        return q;
     }
 }

@@ -1,5 +1,4 @@
-﻿using SqModel.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,25 +6,23 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class ValueContainer
+public class ValueContainer : IValueContainer
 {
-    public ValueClause? Source { get; set; } = null;
+    public IValueClause? Command { get; set; }
 
-    public ValueConjunction? ValueConjunction { get; set; } = null;
-
-    public SelectQuery? ExistsQuery { get; set; } = null;
-
-    public Query ToQuery()
+    public string ColumnName
     {
-        if (ExistsQuery != null) return ExistsQuery.ToQuery().InsertIndent().DecorateBracket("\r\n").InsertToken("exists");
+        set { return; }
+    }
 
-        if (Source != null && ValueConjunction != null)
-        {
-            var sq = Source.ToQuery();
-            var ds = ValueConjunction.ToQuery();
-            sq = sq.Merge(ds, $" {ValueConjunction.Sign} ");
-            return sq;
-        }
-        return new Query();
+    public string Name
+    {
+        set { return; }
+    }
+
+    public virtual Query ToQuery()
+    {
+        if (Command == null) throw new InvalidProgramException();
+        return Command.ToQuery();
     }
 }

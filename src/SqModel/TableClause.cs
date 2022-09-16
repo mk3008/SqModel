@@ -1,4 +1,7 @@
-﻿namespace SqModel;
+﻿using SqModel;
+using SqModel.Extension;
+
+namespace SqModel;
 
 public class TableClause
 {
@@ -24,7 +27,7 @@ public class TableClause
 
     public RelationTypes RelationType { get; set; } = RelationTypes.Undefined;
 
-    public string TableName { get; set; } = String.Empty;
+    public string TableName { get; set; } = string.Empty;
 
     public SelectQuery? SubSelectClause { get; set; } = null;
 
@@ -32,15 +35,15 @@ public class TableClause
 
     public string SourceAlias { get; set; } = string.Empty;
 
-    public OperatorContainer RelationConditionClause { get; set; } = new RelationContainer() { IsRoot = true };
+    public RelationGroup RelationClause { get; set; } = new RelationGroup() { IsDecorateBracket = false };
 
-    public RelationContainer Where() => (RelationContainer)RelationConditionClause.Where();
+    public RelationGroup On => RelationClause;
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 
-    public string GetName() => (AliasName != String.Empty) ? AliasName : TableName;
+    public string GetName() => AliasName != string.Empty ? AliasName : TableName;
 
-    public string GetAliasCommand() => (TableName != GetName() || SubSelectClause != null) ? $" as {GetName()}" : String.Empty;
+    public string GetAliasCommand() => TableName != GetName() || SubSelectClause != null ? $" as {GetName()}" : string.Empty;
 
     public Query ToQuery()
     {
@@ -77,7 +80,8 @@ public class TableClause
         {
             if (SubSelectClause != null)
             {
-                var sq = SubSelectClause.ToSubQuery();
+                SubSelectClause.IsincludeCte = false;
+                var sq = SubSelectClause.ToQuery();
                 var text = $"{join}(\r\n{sq.CommandText.InsertIndent()}\r\n){GetAliasCommand()}";
                 return new Query() { CommandText = text, Parameters = sq.Parameters };
             }
@@ -91,24 +95,147 @@ public class TableClause
         var q = fnQuery();
         if (RelationType == RelationTypes.From || RelationType == RelationTypes.Cross) return q;
 
-        return q.Merge(RelationConditionClause.ToQuery(), " on ");
+        return q.Merge(RelationClause.ToQuery(), " on ");
     }
 
-    public IEnumerable<CommonTableClause> GetCommonTableClauses()
+    public IEnumerable<CommonTable> GetCommonTableClauses()
     {
         foreach (var x in SubTableClauses) foreach (var item in x.GetCommonTableClauses()) yield return item;
 
-        var lst = SubSelectClause?.GetAllWith().CommonTableAliases.ToList();
-        if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().CommonTableAliases) yield return item;
+        var lst = SubSelectClause?.GetAllWith().Collection.ToList();
+        if (SubSelectClause != null) foreach (var item in SubSelectClause.GetAllWith().Collection) yield return item;
     }
 }
 
-public enum RelationTypes
+public static class TableClauseExtension
 {
-    Undefined = 0,
-    From = 1,
-    Inner = 2,
-    Left = 3,
-    Right = 4,
-    Cross = 5,
+    public static TableClause Join(this TableClause source, string tableName, string aliasName, RelationTypes type)
+        => source.Join(new TableClause(tableName, aliasName), type);
+
+    public static TableClause Join(this TableClause source, SelectQuery subSelectClause, string aliasName, RelationTypes type)
+        => source.Join(new TableClause(subSelectClause, aliasName), type);
+
+    public static TableClause Join(this TableClause source, TableClause destination, RelationTypes type)
+    {
+        destination.RelationClause.LeftTable = source.AliasName;
+        destination.RelationClause.RightTable = destination.AliasName;
+        destination.RelationType = type;
+        source.SubTableClauses.Add(destination);
+        return destination;
+    }
+
+    public static TableClause InnerJoin(this TableClause source, string tableName)
+        => source.Join(tableName, tableName, RelationTypes.Inner);
+
+    public static TableClause InnerJoin(this TableClause source, TableClause destination)
+        => source.Join(destination, RelationTypes.Inner);
+
+    public static TableClause InnerJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Inner);
+
+    public static TableClause InnerJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Inner);
+
+    public static TableClause InnerJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Inner);
+
+    public static TableClause InnerJoin(this TableClause source, Action<SelectQuery> action)
+    {
+        var subSelectClause = new SelectQuery();
+        action(subSelectClause);
+        return source.Join(subSelectClause, "", RelationTypes.Inner);
+    }
+
+    public static TableClause LeftJoin(this TableClause source, string tableName)
+        => source.Join(tableName, tableName, RelationTypes.Left);
+
+    public static TableClause LeftJoin(this TableClause source, TableClause destination)
+        => source.Join(destination, RelationTypes.Left);
+
+    public static TableClause LeftJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Left);
+
+    public static TableClause LeftJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Left);
+
+    public static TableClause LeftJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Left);
+
+    public static TableClause LeftJoin(this TableClause source, Action<SelectQuery> action)
+    {
+        var subSelectClause = new SelectQuery();
+        action(subSelectClause);
+        return source.Join(subSelectClause, "", RelationTypes.Left);
+    }
+
+    public static TableClause RightJoin(this TableClause source, string tableName)
+        => source.Join(tableName, tableName, RelationTypes.Right);
+
+    public static TableClause RightJoin(this TableClause source, TableClause destination)
+        => source.Join(destination, RelationTypes.Right);
+
+    public static TableClause RightJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Right);
+
+    public static TableClause RightJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Right);
+
+    public static TableClause RightJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Right);
+
+    public static TableClause RightJoin(this TableClause source, Action<SelectQuery> action)
+    {
+        var subSelectClause = new SelectQuery();
+        action(subSelectClause);
+        return source.Join(subSelectClause, "", RelationTypes.Right);
+    }
+
+    public static TableClause CrossJoin(this TableClause source, string tableName)
+        => source.Join(tableName, tableName, RelationTypes.Cross);
+
+    public static TableClause CrossJoin(this TableClause source, TableClause destination)
+        => source.Join(destination, RelationTypes.Cross);
+
+    public static TableClause CrossJoin(this TableClause source, SelectQuery subSelectClause)
+        => source.Join(subSelectClause, "", RelationTypes.Cross);
+
+    public static TableClause CrossJoin(this TableClause source, CommonTable ct)
+        => source.Join(ct.Name, ct.Name, RelationTypes.Cross);
+
+    public static TableClause CrossJoin(this TableClause source, Func<SelectQuery> fn)
+        => source.Join(fn(), "", RelationTypes.Cross);
+
+    public static TableClause CrossJoin(this TableClause source, Action<SelectQuery> action)
+    {
+        var subSelectClause = new SelectQuery();
+        action(subSelectClause);
+        return source.Join(subSelectClause, "", RelationTypes.Cross);
+    }
+
+    public static TableClause As(this TableClause source, string aliasName)
+    {
+        source.AliasName = aliasName;
+        source.RelationClause.RightTable = source.AliasName;
+        return source;
+    }
+
+    public static TableClause On(this TableClause source, string column)
+        => source.On(column, column);
+
+    public static TableClause On(this TableClause source, string sourcecolumn, string destinationcolumn)
+    {
+        var st = source.RelationClause.LeftTable;
+        var dt = source.RelationClause.RightTable;
+        source.On.Add().Column(st, sourcecolumn).Equal(dt, destinationcolumn);
+        return source;
+    }
+
+    public static TableClause On(this TableClause source, Action<RelationGroup> fn)
+    {
+        var r = source.RelationClause;
+        var g = new RelationGroup() { LeftTable = r.LeftTable, RightTable = r.RightTable };
+        source.RelationClause.Collection.Add(g);
+        fn(g);
+        return source;
+    }
 }

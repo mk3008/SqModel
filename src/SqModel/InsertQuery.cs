@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqModel.Extension;
 
 namespace SqModel;
 
@@ -18,7 +19,7 @@ public class InsertQuery
         var cols = SelectQuery.SelectClause.GetColumnNames();
 
         //If you are using wildcards, omit the column clause.
-        var coltext = (cols.Where(x => x == string.Empty).Any()) ? "" : $"({cols.ToString(", ")})";
+        var coltext = !cols.Any() ? "" : $"({cols.ToString(", ")})";
 
         q.CommandText = $"insert into {TableName}{coltext}\r\n{q.CommandText}";
         return q;

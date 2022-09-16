@@ -10,9 +10,9 @@ public class SelectRelationTable
     public void Default()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
-        var tb = ta.InnerJoin("table_b", "b").On("table_a_id");
-        tb.InnerJoin("table_c", "c").On("table_b_id", "TABLE_B_ID");
+        var ta = q.From("table_a").As("a");
+        var tb = ta.InnerJoin("table_b").As("b").On("table_a_id");
+        tb.InnerJoin("table_c").As("c").On("table_b_id", "TABLE_B_ID");
 
         q.SelectAll();
 
@@ -29,8 +29,8 @@ inner join table_c as c on b.table_b_id = c.TABLE_B_ID";
     public void CrossJoin()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
-        ta.CrossJoin("table_b", "b");
+        var ta = q.From("table_a").As("a");
+        ta.CrossJoin("table_b").As("b");
 
         q.SelectAll();
 
@@ -46,25 +46,24 @@ cross join table_b as b";
     public void Conditions()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
-        ta.InnerJoin("table_b", "b").On(x =>
-        {
-            x.Where().Equal("id");
-            x.Where().Equal("a_id", "b_id");
-            x.Where().Group(y =>
-            {
-                y.Where().Or.Equal("id3");
-                y.Where().Or.Equal("id4");
-            });
-            x.Where().Value("x", "id5").Equal("y", "id6");
-        });
+        var ta = q.From("table_a").As("a");
+        var tb = ta.InnerJoin("table_b").As("b").On(x =>
+           {
+               x.Add().Value(10).Equal(10);
+               x.Add().Column("a", "a_id").Equal("b", "b_id");
+               x.AddGroup(y =>
+               {
+                   y.Add().Value(10).Equal(10);
+                   y.Add().Or().Column("a", "a_id").Equal("b", "b_id");
+               });
+           });
 
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
         var expect = @"select *
 from table_a as a
-inner join table_b as b on a.id = b.id and a.a_id = b.b_id and (a.id3 = b.id3 or a.id4 = b.id4) and x.id5 = y.id6";
+inner join table_b as b on (10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id = b.b_id))";
 
         Assert.Equal(expect, text);
     }
@@ -73,12 +72,12 @@ inner join table_b as b on a.id = b.id and a.a_id = b.b_id and (a.id3 = b.id3 or
     public void Relations()
     {
         var q = new SelectQuery();
-        var ta = q.From("table_a", "a");
-        var tb = ta.InnerJoin("table_b", "b").On("table_a_id");
-        var tc = ta.LeftJoin("table_c", "c").On("table_a_id");
-        var td = tc.LeftJoin("table_d", "d").On("table_c_id");
-        var te = ta.RightJoin("table_e", "e").On("table_a_id");
-        ta.CrossJoin("table_f", "f");
+        var ta = q.From("table_a").As("a");
+        var tb = ta.InnerJoin("table_b").As("b").On("table_a_id");
+        var tc = ta.LeftJoin("table_c").As("c").On("table_a_id");
+        var td = tc.LeftJoin("table_d").As("d").On("table_c_id");
+        var te = ta.RightJoin("table_e").As("e").On("table_a_id");
+        ta.CrossJoin("table_f").As("f");
 
         q.SelectAll();
 

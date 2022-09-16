@@ -23,7 +23,7 @@ from table_a";
     public void TableNameAlias()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "*");
 
         var text = q.ToQuery().CommandText;
@@ -37,7 +37,7 @@ from table_a as a";
     public void SelectColumn()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
         q.Select(table_a, "column_x");
 
         var text = q.ToQuery().CommandText;
@@ -51,8 +51,8 @@ from table_a as a";
     public void SelectColumnWithAlias()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(table_a, "column_x", "x");
+        var table_a = q.From("table_a").As("a");
+        q.Select(table_a, "column_x").As("x");
 
         var text = q.ToQuery().CommandText;
         var expect = @"select a.column_x as x
@@ -65,8 +65,8 @@ from table_a as a";
     public void SelectStaticValue()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select("'test'", "test");
+        var table_a = q.From("table_a").As("a");
+        q.Select("'test'").As("test");
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
@@ -80,8 +80,8 @@ from table_a as a";
     public void SelectVariable()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
-        q.Select(":val", "value").AddParameter(":val", 1);
+        var table_a = q.From("table_a").As("a");
+        q.Select(":val").As("value").Parameter(":val", 1);
 
         var actual = q.ToQuery();
         var text = actual.CommandText;
@@ -96,10 +96,10 @@ from table_a as a";
     public void SelectColumns()
     {
         var q = new SelectQuery();
-        var table_a = q.From("table_a", "a");
+        var table_a = q.From("table_a").As("a");
 
-        q.Select(table_a, "column_x", "x");
-        q.Select(":val", "value").AddParameter(":val", 1);
+        q.Select(table_a, "column_x").As("x");
+        q.Select(":val").Parameter(":val", 1).As("value");
 
         var actual = q.ToQuery();
         var text = actual.CommandText;

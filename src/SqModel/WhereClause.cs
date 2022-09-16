@@ -3,20 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqModel;
+using SqModel.Extension;
 
 namespace SqModel;
 
 public class WhereClause
 {
-    public OperatorContainer Container { get; set; } = new() { Splitter = "\r\n", IsRoot = true };
+    public ConditionGroup ConditionGroup { get; set; } = new() { IsOneLineFormat = false, IsDecorateBracket = false };
 
-    public string Splitter { get; set; } = "\r\n";
+    public bool IsOneLineFormat { get; set; } = false;
 
     public Query ToQuery()
     {
-        var q = Container.ToQuery();
+        var q = new Query();
+        q = ConditionGroup.ToQuery();
         if (q.IsEmpty()) return q;
-        q.CommandText = $"where{Splitter}{q.CommandText.InsertIndent()}";
+
+        if (IsOneLineFormat)
+        {
+            q.CommandText = $"where {q.CommandText}";
+        }
+        else
+        {
+            q.CommandText = $"where\r\n{q.CommandText.InsertIndent()}";
+        }
         return q;
     }
 }

@@ -6,16 +6,31 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public static class ValueBuilder
+internal static class ValueBuilder
 {
-    public static ValueClause ToValue(TableClause table, string column)
-    => new ValueClause() { TableName = table.AliasName, Value = column };
-    public static ValueClause ToValue(string table, string column)
-        => new ValueClause() { TableName = table, Value = column };
-    public static ValueClause ToValue(string column)
-        => new ValueClause() { Value = column };
-    public static ValueClause GetNullValue()
-        => new ValueClause() { Value = "null" };
-    public static ValueClause GetNotNullValue()
-        => new ValueClause() { Value = "not null" };
+    public static IValueClause Create(TableClause table, string column)
+        => new ColumnValue() { Table = table.AliasName, Column = column };
+
+    public static IValueClause Create(string table, string column)
+        => new ColumnValue() { Table = table, Column = column };
+
+    public static IValueClause Create(bool value)
+    {
+        if (value) return new CommandValue() { CommandText = "true" };
+        return new CommandValue() { CommandText = "false" };
+    }
+
+    public static IValueClause Create(object commandtext)
+    {
+        var val = commandtext?.ToString();
+        if (val == null) throw new InvalidProgramException();
+        var c = new CommandValue() { CommandText = val };
+        return c;
+    }
+
+    public static IValueClause GetNullValue()
+        => new CommandValue() { CommandText = "null" };
+
+    public static IValueClause GetNotNullValue()
+        => new CommandValue() { CommandText = "not null" };
 }
