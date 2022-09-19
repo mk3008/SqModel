@@ -8,9 +8,16 @@ using SqModel.Extension;
 
 namespace SqModel;
 
-public class OrderClause
+public class NamelessItems
 {
-    public List<OrderItem> Collection { get; set; } = new();
+    public NamelessItems(string token)
+    {
+        Token = token;
+    }
+
+    private string Token { get; init; }
+
+    public List<NamelessItem> Collection { get; set; } = new();
 
     public bool IsOneLineFormat { get; set; } = true;
 
@@ -21,23 +28,23 @@ public class OrderClause
         if (IsOneLineFormat)
         {
             var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery(", ");
-            q.CommandText = $"order by {q.CommandText}";
+            q.CommandText = $"{Token} {q.CommandText}";
             return q;
         }
         else
         {
             var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery("\r\n, ").InsertIndent();
-            q.CommandText = $"order by\r\n{q.CommandText}";
+            q.CommandText = $"{Token}\r\n{q.CommandText}";
             return q;
         }
     }
 }
 
-public static class OrdertClauseExtension
+public static class NamelessItemsExtension
 {
-    public static OrderItem Add(this OrderClause source)
+    public static NamelessItem Add(this NamelessItems source)
     {
-        var c = new OrderItem();
+        var c = new NamelessItem();
         source.Collection.Add(c);
         return c;
     }

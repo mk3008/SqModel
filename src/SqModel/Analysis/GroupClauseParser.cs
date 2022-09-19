@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
-public static class OrderClauseParser
+public static class GroupClauseParser
 {
-    private static string StartToken = "order by";
+    private static string StartToken = "group by";
 
     public static NamelessItems Parse(string text)
     {

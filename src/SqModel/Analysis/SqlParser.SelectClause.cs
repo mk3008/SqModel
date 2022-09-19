@@ -34,6 +34,10 @@ public partial class SqlParser
         {
             sq.WhereClause = WhereClauseParser.Parse(this);
         };
+        if (CurrentToken.ToLower() == "group by")
+        {
+            sq.OrderClause = GroupClauseParser.Parse(this);
+        };
         if (CurrentToken.ToLower() == "order by")
         {
             sq.OrderClause = OrderClauseParser.Parse(this);

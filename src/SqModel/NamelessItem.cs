@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqModel;
 
-public class OrderItem : IValueContainer
+public class NamelessItem : IValueContainer
 {
     public IValueClause? Command { get; set; }
 
