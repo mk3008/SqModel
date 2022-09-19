@@ -41,4 +41,32 @@ group by a.id, 1, a.name";
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
     }
+
+    [Fact]
+    public void SumTest()
+    {
+        /// inner join table_b as b on ...
+        var sql = @"select sum(a.price) as price
+from table_a
+where
+    1 = 1
+group by a.id, 1, a.name";
+        var sq = SqlParser.Parse(sql);
+
+        Assert.Equal(sql, sq.ToQuery().CommandText);
+    }
+
+    [Fact]
+    public void CountTest()
+    {
+        /// inner join table_b as b on ...
+        var sql = @"select count(*) as cnt
+from table_a
+where
+    1 = 1
+group by a.id, 1, a.name";
+        var sq = SqlParser.Parse(sql);
+
+        Assert.Equal(sql, sq.ToQuery().CommandText);
+    }
 }
