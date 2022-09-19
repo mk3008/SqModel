@@ -71,6 +71,11 @@ public partial class SqlParser
         "where",
     };
 
+    public static string[] OrderTokens = new[]
+    {
+        "order by",
+    };
+
     public static string[] QueryBreakTokens = new[]
     {
         ";",
@@ -102,6 +107,7 @@ public partial class SqlParser
         .Union(RightJoinTokens)
         .Union(CrossJoinTokens)
         .Union(WhereTokens)
+        .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
     internal string[] TableBreakTokens =
@@ -111,6 +117,7 @@ public partial class SqlParser
         .Union(RightJoinTokens)
         .Union(CrossJoinTokens)
         .Union(WhereTokens)
+        .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
     internal string[] ValueBreakTokens =
@@ -121,6 +128,7 @@ public partial class SqlParser
         .Union(RightJoinTokens)
         .Union(CrossJoinTokens)
         .Union(WhereTokens)
+        .Union(OrderTokens)
         .Union(QueryBreakTokens)
         .Union(SignTokens)
         .Union(LogicalOperatorTokens)
@@ -132,6 +140,7 @@ public partial class SqlParser
         .Union(RightJoinTokens)
         .Union(CrossJoinTokens)
         .Union(WhereTokens)
+        .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
     public char Read()
