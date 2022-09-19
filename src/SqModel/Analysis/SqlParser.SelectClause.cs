@@ -20,7 +20,7 @@ public partial class SqlParser
 
         if (CurrentToken.ToLower() == "with")
         {
-            sq.With = WithClauseParser.Parse(this);
+            sq.WithClause = WithClauseParser.Parse(this);
         }
         if (CurrentToken.ToLower() == "select")
         {
@@ -33,6 +33,10 @@ public partial class SqlParser
         if (CurrentToken.ToLower() == "where")
         {
             sq.WhereClause = WhereClauseParser.Parse(this);
+        };
+        if (CurrentToken.ToLower() == "order by")
+        {
+            sq.OrderClause = OrderClauseParser.Parse(this);
         };
 
         return sq;

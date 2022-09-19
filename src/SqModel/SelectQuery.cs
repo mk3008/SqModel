@@ -16,7 +16,9 @@ public partial class SelectQuery
 
     public SelectClause Select => SelectClause;
 
-    public WithClause With { get; set; } = new();
+    public WithClause WithClause { get; set; } = new();
+
+    public WithClause With => WithClause;
 
     public IEnumerable<CommonTable> GetCommonTableClauses()
     {
@@ -31,7 +33,11 @@ public partial class SelectQuery
         return w;
     }
 
-    public WhereClause WhereClause = new();
+    public WhereClause WhereClause { get; set; } = new();
+
+    public OrderClause OrderClause { get; set; } = new();
+
+    public OrderClause OrderBy => OrderClause;
 
     public ConditionGroup Where => WhereClause.ConditionGroup;
 
@@ -48,6 +54,7 @@ public partial class SelectQuery
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
+        var orderQ = OrderClause.ToQuery();//ex. order by a.id
 
         //parameter
         var prms = new Dictionary<string, object>();
@@ -55,6 +62,7 @@ public partial class SelectQuery
         prms.Merge(selectQ.Parameters);
         if (withQ != null) prms.Merge(withQ.Parameters);
         prms.Merge(whereQ.Parameters);
+        prms.Merge(orderQ.Parameters);
 
         //command text
         var sb = new StringBuilder();
@@ -67,6 +75,7 @@ public partial class SelectQuery
         sb.Append($"{selectQ.CommandText}");
         if (fromQ.IsNotEmpty()) sb.Append($"{splitter}{fromQ.CommandText}");
         if (whereQ.IsNotEmpty()) sb.Append($"{splitter}{whereQ.CommandText}");
+        if (orderQ.IsNotEmpty()) sb.Append($"{splitter}{orderQ.CommandText}");
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }
