@@ -13,7 +13,7 @@ public class ExistsExpression : ILogicalExpression
     public Query ToQuery()
     {
         if (Query == null) throw new InvalidProgramException();
-        Query.IsincludeCte = false;
+        Query.IsIncludeCte = false;
         //Query.IsOneLineFormat = true;
         return Query.ToQuery().DecorateBracket().InsertToken("exists");
     }

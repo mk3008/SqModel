@@ -17,7 +17,7 @@ public class CommonTable : IQueryable
 
     public Query ToQuery()
     {
-        Query.IsincludeCte = false;
+        Query.IsIncludeCte = false;
         var q = Query.ToQuery();
 
         if (Keywords.Any())

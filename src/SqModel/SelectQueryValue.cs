@@ -20,7 +20,7 @@ public class SelectQueryValue : IValueClause
     public Query ToQuery()
     {
         if (Query == null) throw new InvalidProgramException();
-        Query.IsincludeCte = false;
+        Query.IsIncludeCte = false;
         return Query.ToQuery().DecorateBracket().InsertToken(Conjunction);
     }
 }

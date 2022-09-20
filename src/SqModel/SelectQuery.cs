@@ -30,6 +30,12 @@ public partial class SelectQuery
     {
         var w = new WithClause();
         GetCommonTableClauses().ToList().ForEach(x => w.Collection.Add(x));
+
+        if (UnionClause != null)
+        {
+            w.Collection.AddRange(UnionClause.SelectQuery.GetAllWith().Collection);
+        }
+
         return w;
     }
 
@@ -45,26 +51,31 @@ public partial class SelectQuery
 
     public ConditionGroup Having => HavingClause.ConditionGroup;
 
+    public UnionClause? UnionClause { get; set; } = null;
+
     public NamelessItemClause OrderClause { get; set; } = new("order by");
 
     public NamelessItemClause OrderBy => OrderClause;
 
     public bool IsOneLineFormat { get; set; } = false;
 
-    public bool IsincludeCte { get; set; } = true;
+    public bool IsIncludeCte { get; set; } = true;
 
-    public virtual Query ToQuery()
+    public bool IsIncludeOrder { get; set; } = true;
+
+    public Query ToQuery()
     {
         var splitter = IsOneLineFormat ? " " : "\r\n";
         WhereClause.IsOneLineFormat = IsOneLineFormat;
 
-        var withQ = (IsincludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
+        var withQ = (IsIncludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
         var groupQ = GroupClause.ToQuery();//ex. group by a.id
         var havingQ = HavingClause.ToQuery();//ex. having sum(a.value) = 10
-        var orderQ = OrderClause.ToQuery();//ex. order by a.id
+        var unionQ = UnionClause?.ToQuery();//ex. union select...
+        var orderQ = (IsIncludeOrder) ? OrderClause.ToQuery() : null; //ex. order by a.id
 
         //command text
         var sb = new StringBuilder();
@@ -88,6 +99,7 @@ public partial class SelectQuery
         append(whereQ);
         append(groupQ);
         append(havingQ);
+        append(unionQ);
         append(orderQ);
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
