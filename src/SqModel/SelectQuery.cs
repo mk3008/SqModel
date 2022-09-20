@@ -33,13 +33,21 @@ public partial class SelectQuery
         return w;
     }
 
-    public WhereClause WhereClause { get; set; } = new();
-
-    public OrderClause OrderClause { get; set; } = new();
-
-    public OrderClause OrderBy => OrderClause;
+    public ConditionClause WhereClause { get; set; } = new("where");
 
     public ConditionGroup Where => WhereClause.ConditionGroup;
+
+    public NamelessItemClause GroupClause { get; set; } = new("group by");
+
+    public NamelessItemClause GroupBy => GroupClause;
+
+    public ConditionClause HavingClause { get; set; } = new("having");
+
+    public ConditionGroup Having => HavingClause.ConditionGroup;
+
+    public NamelessItemClause OrderClause { get; set; } = new("order by");
+
+    public NamelessItemClause OrderBy => OrderClause;
 
     public bool IsOneLineFormat { get; set; } = false;
 
@@ -54,28 +62,33 @@ public partial class SelectQuery
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
+        var groupQ = GroupClause.ToQuery();//ex. group by a.id
+        var havingQ = HavingClause.ToQuery();//ex. having sum(a.value) = 10
         var orderQ = OrderClause.ToQuery();//ex. order by a.id
-
-        //parameter
-        var prms = new Dictionary<string, object>();
-        prms.Merge(fromQ.Parameters);
-        prms.Merge(selectQ.Parameters);
-        if (withQ != null) prms.Merge(withQ.Parameters);
-        prms.Merge(whereQ.Parameters);
-        prms.Merge(orderQ.Parameters);
 
         //command text
         var sb = new StringBuilder();
-        if (withQ != null && withQ.IsNotEmpty())
-        {
-            sb.Append(withQ.CommandText);
-            sb.Append(splitter);
-        }
+        //parameter
+        var prms = new Dictionary<string, object>();
 
-        sb.Append($"{selectQ.CommandText}");
-        if (fromQ.IsNotEmpty()) sb.Append($"{splitter}{fromQ.CommandText}");
-        if (whereQ.IsNotEmpty()) sb.Append($"{splitter}{whereQ.CommandText}");
-        if (orderQ.IsNotEmpty()) sb.Append($"{splitter}{orderQ.CommandText}");
+        var append = (Query? query) =>
+        {
+            if (query == null) return;
+            prms.Merge(query.Parameters);
+            if (query.IsNotEmpty())
+            {
+                if (sb.Length != 0) sb.Append(splitter);
+                sb.Append($"{query.CommandText}");
+            }
+        };
+
+        append(withQ);
+        append(selectQ);
+        append(fromQ);
+        append(whereQ);
+        append(groupQ);
+        append(havingQ);
+        append(orderQ);
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }

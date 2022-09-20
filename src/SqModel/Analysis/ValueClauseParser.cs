@@ -46,7 +46,7 @@ public static class ValueClauseParser
         }
 
         var tmp = q.First();
-        if (parser.ValueBreakTokens.Contains(tmp)) return new CommandValue() { CommandText = cache.ToString(" ") };
+        if (tmp.IsEmpty() || parser.ValueBreakTokens.Contains(tmp)) return ToCommandValue(cache);
         cache.Add(tmp);
 
         if (parser.CurrentToken == "." && cache.Count == 2)
@@ -63,6 +63,31 @@ public static class ValueClauseParser
             tmp = q.First();
         }
 
-        return new CommandValue() { CommandText = cache.ToString(" ") };
+        return ToCommandValue(cache);
+    }
+
+    private static CommandValue ToCommandValue(List<string> cache)
+    {
+        var c = new CommandValue();
+        var sb = new StringBuilder();
+        var prev = string.Empty;
+        cache.ForEach(x =>
+        {
+            if (x == "." || x == "(" || x == ")" || sb.Length == 0)
+            {
+                sb.Append(x);
+            }
+            else if (prev == "." || prev == "(")
+            {
+                sb.Append(x);
+            }
+            else
+            {
+                sb.Append($" {x}");
+            }
+            prev = x;
+        });
+        c.CommandText = sb.ToString();
+        return c;
     }
 }
