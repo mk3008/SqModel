@@ -9,13 +9,13 @@ namespace SqModel.Analysis;
 
 public static class NamelessItemsParser
 {
-    public static NamelessItems Parse(string text, string starttoken)
+    public static NamelessItemClause Parse(string text, string starttoken)
     {
         using var p = new SqlParser(text);
         return Parse(p, starttoken);
     }
 
-    public static NamelessItems Parse(SqlParser parser, string starttoken)
+    public static NamelessItemClause Parse(SqlParser parser, string starttoken)
     {
         var q = parser.ReadTokensWithoutComment();
         var startToken = parser.CurrentToken.IsNotEmpty() ? parser.CurrentToken : q.First();
@@ -23,7 +23,7 @@ public static class NamelessItemsParser
         if (startToken.ToLower() != starttoken) throw new SyntaxException($"First token must be '{starttoken}'.");
         q.First(); //skip start token token
 
-        var oc = new NamelessItems(starttoken);
+        var oc = new NamelessItemClause(starttoken);
 
         oc.Collection.Add(ParseOrderItem(parser));
 

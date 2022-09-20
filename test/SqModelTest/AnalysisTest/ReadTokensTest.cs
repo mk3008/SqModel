@@ -214,4 +214,30 @@ public class ReadTokensTest
         Assert.Equal("lineend", lst[2]);
         Assert.Equal("", lst[3]);
     }
+
+    [Fact]
+    public void OrderBy()
+    {
+        var text = "order by";
+        using var p = new SqlParser(text);
+        p.Logger = (x) => Output.WriteLine(x);
+        var lst = p.ReadTokens().ToList();
+
+        Assert.Equal(2, lst.Count);
+        Assert.Equal("order by", lst[0]);
+        Assert.Equal("", lst[1]);
+    }
+
+    [Fact]
+    public void GroupBy()
+    {
+        var text = "group by";
+        using var p = new SqlParser(text);
+        p.Logger = (x) => Output.WriteLine(x);
+        var lst = p.ReadTokens().ToList();
+
+        Assert.Equal(2, lst.Count);
+        Assert.Equal("group by", lst[0]);
+        Assert.Equal("", lst[1]);
+    }
 }

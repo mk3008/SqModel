@@ -33,7 +33,7 @@ public class ParseGroupTest
     {
         /// inner join table_b as b on ...
         var sql = @"select 1
-from table_a
+from table_a as a
 where
     1 = 1
 group by a.id, 1, a.name";
@@ -47,7 +47,7 @@ group by a.id, 1, a.name";
     {
         /// inner join table_b as b on ...
         var sql = @"select sum(a.price) as price
-from table_a
+from table_a as a
 where
     1 = 1
 group by a.id, 1, a.name";
@@ -61,12 +61,28 @@ group by a.id, 1, a.name";
     {
         /// inner join table_b as b on ...
         var sql = @"select count(*) as cnt
-from table_a
+from table_a as a
 where
     1 = 1
 group by a.id, 1, a.name";
         var sq = SqlParser.Parse(sql);
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
+    }
+
+    [Fact]
+    public void HavingTest()
+    {
+        /// inner join table_b as b on ...
+        var sql = @"select a.id
+from table_a as a
+where
+    1 = 1
+group by a.id, 1, a.name
+having
+    sum(price) = 10";
+        var sq = SqlParser.Parse(sql);
+        var q = sq.ToQuery();
+        Assert.Equal(sql, q.CommandText);
     }
 }

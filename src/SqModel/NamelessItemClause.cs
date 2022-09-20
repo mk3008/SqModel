@@ -8,9 +8,9 @@ using SqModel.Extension;
 
 namespace SqModel;
 
-public class NamelessItems
+public class NamelessItemClause
 {
-    public NamelessItems(string token)
+    public NamelessItemClause(string token)
     {
         Token = token;
     }
@@ -42,7 +42,7 @@ public class NamelessItems
 
 public static class NamelessItemsExtension
 {
-    public static NamelessItem Add(this NamelessItems source)
+    public static NamelessItem Add(this NamelessItemClause source)
     {
         var c = new NamelessItem();
         source.Collection.Add(c);

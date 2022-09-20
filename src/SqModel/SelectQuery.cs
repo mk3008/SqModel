@@ -33,17 +33,21 @@ public partial class SelectQuery
         return w;
     }
 
-    public WhereClause WhereClause { get; set; } = new();
-
-    public NamelessItems GroupClause { get; set; } = new("group by");
-
-    public NamelessItems GroupBy => GroupClause;
-
-    public NamelessItems OrderClause { get; set; } = new("order by");
-
-    public NamelessItems OrderBy => OrderClause;
+    public ConditionClause WhereClause { get; set; } = new("where");
 
     public ConditionGroup Where => WhereClause.ConditionGroup;
+
+    public NamelessItemClause GroupClause { get; set; } = new("group by");
+
+    public NamelessItemClause GroupBy => GroupClause;
+
+    public ConditionClause HavingClause { get; set; } = new("having");
+
+    public ConditionGroup Having => HavingClause.ConditionGroup;
+
+    public NamelessItemClause OrderClause { get; set; } = new("order by");
+
+    public NamelessItemClause OrderBy => OrderClause;
 
     public bool IsOneLineFormat { get; set; } = false;
 
@@ -58,7 +62,8 @@ public partial class SelectQuery
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b
         var fromQ = FromClause.ToQuery(); //ex. from table_a as a inner join table_b as b on a.id = b.id
         var whereQ = WhereClause.ToQuery();//ex. where a.id = 1
-        var groupQ = GroupClause.ToQuery();//ex. gtoup by a.id
+        var groupQ = GroupClause.ToQuery();//ex. group by a.id
+        var havingQ = HavingClause.ToQuery();//ex. having sum(a.value) = 10
         var orderQ = OrderClause.ToQuery();//ex. order by a.id
 
         //command text
@@ -82,6 +87,7 @@ public partial class SelectQuery
         append(fromQ);
         append(whereQ);
         append(groupQ);
+        append(havingQ);
         append(orderQ);
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };

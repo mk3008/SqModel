@@ -8,8 +8,15 @@ using SqModel.Extension;
 
 namespace SqModel;
 
-public class WhereClause
+public class ConditionClause
 {
+    public ConditionClause(string token)
+    {
+        Token = token;
+    }
+
+    public string Token { get; init; }
+
     public ConditionGroup ConditionGroup { get; set; } = new() { IsOneLineFormat = false, IsDecorateBracket = false };
 
     public bool IsOneLineFormat { get; set; } = false;
@@ -22,11 +29,11 @@ public class WhereClause
 
         if (IsOneLineFormat)
         {
-            q.CommandText = $"where {q.CommandText}";
+            q.CommandText = $"{Token} {q.CommandText}";
         }
         else
         {
-            q.CommandText = $"where\r\n{q.CommandText.InsertIndent()}";
+            q.CommandText = $"{Token}\r\n{q.CommandText.InsertIndent()}";
         }
         return q;
     }

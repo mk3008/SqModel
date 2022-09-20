@@ -36,7 +36,11 @@ public partial class SqlParser
         };
         if (CurrentToken.ToLower() == "group by")
         {
-            sq.OrderClause = GroupClauseParser.Parse(this);
+            sq.GroupClause = GroupClauseParser.Parse(this);
+        };
+        if (CurrentToken.ToLower() == "having")
+        {
+            sq.HavingClause = HavingClauseParser.Parse(this);
         };
         if (CurrentToken.ToLower() == "order by")
         {

@@ -11,12 +11,12 @@ public static class GroupClauseParser
 {
     private static string StartToken = "group by";
 
-    public static NamelessItems Parse(string text)
+    public static NamelessItemClause Parse(string text)
     {
         using var p = new SqlParser(text);
         return Parse(p);
     }
 
-    public static NamelessItems Parse(SqlParser parser)
+    public static NamelessItemClause Parse(SqlParser parser)
         => NamelessItemsParser.Parse(parser, StartToken);
 }

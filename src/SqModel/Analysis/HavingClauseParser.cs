@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
-public static class WhereClauseParser
+public static class HavingClauseParser
 {
-    private static string StartToken = "where";
+    private static string StartToken = "having";
 
     public static ConditionClause Parse(string text)
     {
