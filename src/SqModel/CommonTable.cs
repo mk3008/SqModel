@@ -11,13 +11,23 @@ public class CommonTable : IQueryable
 {
     public SelectQuery Query { get; set; } = new();
 
+    public List<string> Keywords { get; set; } = new();
+
     public string Name { get; set; } = string.Empty;
 
     public Query ToQuery()
     {
         Query.IsincludeCte = false;
         var q = Query.ToQuery();
-        q.CommandText = $"{Name} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
+
+        if (Keywords.Any())
+        {
+            q.CommandText = $"{Name} as {Keywords.ToString(" ")} (\r\n{q.CommandText.InsertIndent()}\r\n)";
+        }
+        else
+        {
+            q.CommandText = $"{Name} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
+        }
 
         return q;
     }

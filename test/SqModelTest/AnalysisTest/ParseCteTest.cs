@@ -40,4 +40,23 @@ inner join b on a.column_1 = b.column_1";
 
         Assert.Equal(sql, text);
     }
+
+    [Fact]
+    public void NotMaterialized()
+    {
+        var sql = @"with
+a as not materialized (
+    select *
+    from table_a
+)
+select *
+from a";
+
+        using var p = new SqlParser(sql);
+        p.Logger = (x) => Output.WriteLine(x);
+        var sq = p.ParseSelectQuery();
+        var text = sq.ToQuery().CommandText;
+
+        Assert.Equal(sql, text);
+    }
 }
