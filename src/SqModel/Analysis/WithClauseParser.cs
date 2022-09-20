@@ -42,7 +42,11 @@ internal static class WithClauseParser
         q.First();
         if (parser.CurrentToken.ToLower() == "as") q.First(); // skip 'as' token
 
-        if (parser.CurrentToken != "(") throw new SyntaxException("with clauese syntax error.");
+        while (parser.CurrentToken != "(")
+        {
+            c.Keywords.Add(parser.CurrentToken);
+            q.First();
+        }
         q.First(); // skip '(' token
 
         c.Query = SqlParser.Parse(parser.CurrentToken);
