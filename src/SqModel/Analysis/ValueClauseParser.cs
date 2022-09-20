@@ -45,9 +45,10 @@ public static class ValueClauseParser
             return CaseExpressionParser.Parse(parser);
         }
 
-        var tmp = q.First();
-        if (tmp.IsEmpty() || parser.ValueBreakTokens.Contains(tmp)) return ToCommandValue(cache);
-        cache.Add(tmp);
+        q.First();
+        if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken)) return ToCommandValue(cache);
+
+        cache.Add(parser.CurrentToken);
 
         if (parser.CurrentToken == "." && cache.Count == 2)
         {
@@ -56,14 +57,41 @@ public static class ValueClauseParser
             return item;
         }
 
-        tmp = q.First();
-        while (tmp.IsNotEmpty() && !parser.ValueBreakTokens.Contains(tmp))
-        {
-            cache.Add(tmp);
-            tmp = q.First();
-        }
+        cache.AddRange(ReadUntilValueBreak(parser));
 
         return ToCommandValue(cache);
+    }
+
+    private static List<string> ReadUntilValueBreak(SqlParser parser)
+    {
+        var q = parser.ReadTokensWithoutComment();
+        var lst = new List<string>();
+
+        var readBracket = () =>
+        {
+            q.First(); //inner text
+            if (parser.CurrentToken.IsNotEmpty()) lst.Add(parser.CurrentToken);
+            q.First();//close 
+            lst.Add(parser.CurrentToken);
+        };
+
+        if (parser.CurrentToken == "(") readBracket();
+
+        q.First();
+        while (parser.CurrentToken.IsNotEmpty() && !parser.ValueBreakTokens.Contains(parser.CurrentToken))
+        {
+            if (parser.CurrentToken == "(")
+            {
+                lst.Add(parser.CurrentToken);
+                readBracket();
+            }
+            else
+            {
+                lst.Add(parser.CurrentToken);
+            }
+            q.First();
+        }
+        return lst;
     }
 
     private static CommandValue ToCommandValue(List<string> cache)
