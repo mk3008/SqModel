@@ -42,6 +42,10 @@ public partial class SqlParser
         {
             sq.HavingClause = HavingClauseParser.Parse(this);
         };
+        if (CurrentToken.ToLower() == "union")
+        {
+            sq.UnionClause = UnionClauseParser.Parse(this);
+        };
         if (CurrentToken.ToLower() == "order by")
         {
             sq.OrderClause = OrderClauseParser.Parse(this);

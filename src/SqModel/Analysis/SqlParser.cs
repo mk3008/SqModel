@@ -81,6 +81,11 @@ public partial class SqlParser
         "having",
     };
 
+    public static string[] UnionTokens = new[]
+    {
+        "union",
+    };
+
     public static string[] OrderTokens = new[]
     {
         "order by",
@@ -119,6 +124,7 @@ public partial class SqlParser
         .Union(WhereTokens)
         .Union(GroupTokens)
         .Union(HavingTokens)
+        .Union(UnionTokens)
         .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
@@ -131,6 +137,7 @@ public partial class SqlParser
         .Union(WhereTokens)
         .Union(GroupTokens)
         .Union(HavingTokens)
+        .Union(UnionTokens)
         .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
@@ -144,6 +151,7 @@ public partial class SqlParser
         .Union(WhereTokens)
         .Union(GroupTokens)
         .Union(HavingTokens)
+        .Union(UnionTokens)
         .Union(OrderTokens)
         .Union(QueryBreakTokens)
         .Union(SignTokens)
@@ -158,6 +166,7 @@ public partial class SqlParser
         .Union(WhereTokens)
         .Union(GroupTokens)
         .Union(HavingTokens)
+        .Union(UnionTokens)
         .Union(OrderTokens)
         .Union(QueryBreakTokens).ToArray();
 
