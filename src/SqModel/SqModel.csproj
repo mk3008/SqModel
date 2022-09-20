@@ -1,41 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Copyright>mk3008</Copyright>
-    <PackageProjectUrl>https://github.com/mk3008/SqModel</PackageProjectUrl>
-    <AssemblyVersion></AssemblyVersion>
-    <FileVersion></FileVersion>
-    <Version>0.4.0</Version>
-    <PackageTags>Sql;QueryBuilder;</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Description>Select query builder.</Description>
-    <RepositoryUrl>https://github.com/mk3008/SqModel.git</RepositoryUrl>
-    <Authors>mk3008net</Authors>
-    <Company />
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Copyright>mk3008</Copyright>
+		<PackageProjectUrl>https://github.com/mk3008/SqModel</PackageProjectUrl>
+		<AssemblyVersion></AssemblyVersion>
+		<FileVersion></FileVersion>
+		<Version>0.5.0</Version>
+		<PackageTags>Sql;QueryBuilder;SqlParser;</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>Select query builder.</Description>
+		<RepositoryUrl>https://github.com/mk3008/SqModel.git</RepositoryUrl>
+		<Authors>mk3008net</Authors>
+		<Company />
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Column.cs" />
-    <Compile Remove="ConditionGroupClause.cs" />
-    <Compile Remove="ConditionGroupClause.Where.cs" />
-    <Compile Remove="IValueSettable.cs" />
-    <Compile Remove="JoinColumnRelationClause.cs" />
-    <Compile Remove="Table.cs" />
-    <Compile Remove="TableClause.old.cs" />
-    <Compile Remove="VirtualColumn.cs" />
-    <Compile Remove="VirtualTable.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Column.cs" />
+		<Compile Remove="ConditionGroupClause.cs" />
+		<Compile Remove="ConditionGroupClause.Where.cs" />
+		<Compile Remove="IValueSettable.cs" />
+		<Compile Remove="JoinColumnRelationClause.cs" />
+		<Compile Remove="Table.cs" />
+		<Compile Remove="TableClause.old.cs" />
+		<Compile Remove="VirtualColumn.cs" />
+		<Compile Remove="VirtualTable.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
