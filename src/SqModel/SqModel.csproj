@@ -8,7 +8,7 @@
 		<PackageProjectUrl>https://github.com/mk3008/SqModel</PackageProjectUrl>
 		<AssemblyVersion></AssemblyVersion>
 		<FileVersion></FileVersion>
-		<Version>0.5.0</Version>
+		<Version>0.5.1</Version>
 		<PackageTags>Sql;QueryBuilder;SqlParser;</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Description>Select query builder.</Description>

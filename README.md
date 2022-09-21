@@ -21,7 +21,9 @@ var sql = sq.ToQuery().CommandText;
 ```
 
 ```sql
-select a.id as a_id, b.table_a_id as b_id
+select 
+    a.id as a_id
+    , b.table_a_id as b_id
 from table_a as a
 left join table_b as b on a.id = b.table_a_id
 where
@@ -43,7 +45,9 @@ var sql = sq.ToQuery().CommandText;
 ```
 
 ```sql
-select a.column_1 as col1, a.column_2 as col2
+select
+    a.column_1 as col1
+    , a.column_2 as col2
 from table_a as a
 left join table_b as b on a.id = b.table_a_id
 where
@@ -108,7 +112,8 @@ public void TableJoin()
     sq.SelectAll();
 
     var q = sq.ToQuery().CommandText;
-    var expect = @"select *
+    var expect = @"select
+    *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
 left join table_c as c on b.table_b_id = c.table_b_id
@@ -133,9 +138,11 @@ public void SubQuery()
     sq.SelectAll();
 
     var q = sq.ToQuery().CommandText;
-    var expect = @"select *
+    var expect = @"select
+    *
 from (
-select *
+select
+    *
 from table_a as a
 ) as aa";
 
@@ -161,17 +168,18 @@ public void Condition()
     sq.Where.Add().Column(a, "id").Right = new CommandValue() { Conjunction = ">=", CommandText = "10" };
 
     var q = sq.ToQuery();
-    var expect = @"select *
+    var expect = @"select
+    *
 from table_a as a
 where
-a.id = :id1
-and a.id = :id2
-and a.id = 10
-and a.id is null
-and a.id is not null
-and a.id = true
-and a.id = false
-and a.id >= 10";
+    a.id = :id1
+    and a.id = :id2
+    and a.id = 10
+    and a.id is null
+    and a.id is not null
+    and a.id = true
+    and a.id = false
+    and a.id >= 10";
 
     Assert.Equal(expect, q.CommandText);
 }
@@ -193,11 +201,12 @@ public void ConditionGroup()
     sq.Where.Add().Column(a, "id").Equal(3);
 
     var q = sq.ToQuery();
-    var expect = @"select *
+    var expect = @"select
+    *
 from table_a as a
 where
-(a.id = 1 or a.id = 2)
-and a.id = 3";
+    (a.id = 1 or a.id = 2)
+    and a.id = 3";
 
     Assert.Equal(expect, q.CommandText);
 }
@@ -225,11 +234,12 @@ public void ExistsNotExists()
     });
 
     var q = sq.ToQuery();
-    var expect = @"select *
+    var expect = @"select
+    *
 from table_a as a
 where
-exists (select * from table_b as b where b.id = a.id)
-and not exists (select * from table_c as c where c.id = a.id)";
+    exists (select * from table_b as b where b.id = a.id)
+    and not exists (select * from table_c as c where c.id = a.id)";
 
     Assert.Equal(expect, q.CommandText);
 }
@@ -260,14 +270,17 @@ public void CommonTable()
     var q = sq.ToQuery().CommandText;
     var expect = @"with
 a as (
-select *
-from table_a
+    select
+        *
+    from table_a
 ),
 b as (
-select *
-from table_b
+    select
+        *
+    from table_b
 )
-select *
+select
+    *
 from a
 inner join b on a.id = b.id";
 
@@ -289,7 +302,8 @@ public void CreateTable()
     var q = tq.ToQuery().CommandText;
     var expect = @"create table tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
     Assert.Equal(expect, q);
@@ -310,7 +324,8 @@ public void CreateView()
     var q = tq.ToQuery().CommandText;
     var expect = @"create view tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
     Assert.Equal(expect, q);
@@ -330,7 +345,8 @@ public void InsertQuery()
 
     var q = tq.ToQuery().CommandText;
     var expect = @"insert into table_b(index_value)
-select a.id as index_value
+select
+    a.id as index_value
 from table_a as a";
 
     Assert.Equal(expect, q);
@@ -347,7 +363,9 @@ public void ParseHandwrittenSql()
 {
     var sq = SqlParser.Parse(@"select a.column_1 as col1, b.column_2 as col2 from table_a as a inner join table_b as b on a.id = b.id");
     var q = sq.ToQuery().CommandText;
-    var expect = @"select a.column_1 as col1, b.column_2 as col2
+    var expect = @"select
+    a.column_1 as col1
+    , b.column_2 as col2
 from table_a as a
 inner join table_b as b on a.id = b.id";
     Assert.Equal(expect, q);
@@ -375,7 +393,8 @@ public void DefaultCaseWhen()
     }).As("case_1");
 
     var q = sq.ToQuery().CommandText;
-    var expect = @"select case when a = 1 then 10 when a.id = 2 then 20 when a.id = 3 then 30 when (a.id = 1 or b.id = 2) then 40 end as case_1
+    var expect = @"select
+    case when a = 1 then 10 when a.id = 2 then 20 when a.id = 3 then 30 when (a.id = 1 or b.id = 2) then 40 end as case_1
 from table_a as a";
 
     Assert.Equal(expect, q);
@@ -398,7 +417,8 @@ public void DefaultCase()
     }).As("case_2");
 
     var q = sq.ToQuery().CommandText;
-    var expect = @"select case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
+    var expect = @"select
+    case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
 from table_a as a";
 
     Assert.Equal(expect, q);
