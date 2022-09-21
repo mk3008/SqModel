@@ -70,6 +70,16 @@ public class ParseValueClauseTest
     }
 
     [Fact]
+    public void ExpressionUseColumn()
+    {
+        var text = "a.value * 3.4";
+        var val = ValueClauseParser.Parse(text);
+        var sql = val.ToQuery().CommandText;
+
+        Assert.Equal(text, sql);
+    }
+
+    [Fact]
     public void CaseWhenExpression()
     {
         var text = "case when 1 = 1 then 1 else 2 end";

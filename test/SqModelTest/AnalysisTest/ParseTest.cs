@@ -63,6 +63,34 @@ from table_a as a";
     }
 
     [Fact]
+    public void Expression()
+    {
+        using var p = new SqlParser(@"select
+    1.23 * a.col1
+    , 1.23 * a.col1 c
+    , 1.23 * a.col1 as c
+    , a.col1 * 1.23
+    , a.col1 * 1.23 c
+    , a.col1 * 1.23 as c
+    , trunc(a.col1 * a.col2 * a.col3) as val
+from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    1.23 * a.col1
+    , 1.23 * a.col1 as c
+    , 1.23 * a.col1 as c
+    , a.col1 * 1.23
+    , a.col1 * 1.23 as c
+    , a.col1 * 1.23 as c
+    , trunc(a.col1 * a.col2 * a.col3) as val
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Full()
     {
         using var p = new SqlParser(@"select

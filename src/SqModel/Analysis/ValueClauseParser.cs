@@ -50,17 +50,40 @@ public static class ValueClauseParser
 
         cache.Add(parser.CurrentToken);
 
-        if (parser.CurrentToken == "." && cache.Count == 2)
+        if (parser.CurrentToken == "." && cache.Count == 2 && cache.First().IsLetter())
         {
-            var item = new ColumnValue() { Table = cache.First(), Column = q.First() };
             q.First();
-            return item;
+            cache.Add(parser.CurrentToken);
+            var col = parser.CurrentToken;
+            q.First();
+
+            if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken))
+            {
+                cache.Add(parser.CurrentToken);
+                cache.AddRange(ReadUntilValueBreak(parser));
+                return ToCommandValue(cache);
+            }
+            else
+            {
+                var item = new ColumnValue() { Table = cache.First(), Column = col };
+                return item;
+            }
         }
+
+
         if (parser.CurrentToken == ".*" && cache.Count == 2)
         {
             var item = new ColumnValue() { Table = cache.First(), Column = "*" };
             q.First();
             return item;
+        }
+
+        if (parser.CurrentToken == "(")
+        {
+            q.First(); //inner text
+            if (parser.CurrentToken.IsNotEmpty()) cache.Add(parser.CurrentToken);
+            q.First(); //close 
+            cache.Add(parser.CurrentToken);
         }
 
         cache.AddRange(ReadUntilValueBreak(parser));
@@ -75,26 +98,54 @@ public static class ValueClauseParser
 
         var readBracket = () =>
         {
+            lst.Add(parser.CurrentToken); //open
             q.First(); //inner text
             if (parser.CurrentToken.IsNotEmpty()) lst.Add(parser.CurrentToken);
-            q.First();//close 
+            q.First(); //close 
             lst.Add(parser.CurrentToken);
         };
 
-        if (parser.CurrentToken == "(") readBracket();
+        var readArithmetic = () =>
+        {
+            lst.Add(parser.CurrentToken); //ArithmeticOperator
+            q.First();
+            lst.Add(parser.CurrentToken);
+        };
 
-        q.First();
-        while (parser.CurrentToken.IsNotEmpty() && !parser.ValueBreakTokens.Contains(parser.CurrentToken))
+        var readDot = () =>
+        {
+            lst.Add(parser.CurrentToken); //dot
+            q.First();
+            lst.Add(parser.CurrentToken);
+        };
+
+        var logic = () =>
         {
             if (parser.CurrentToken == "(")
             {
-                lst.Add(parser.CurrentToken);
                 readBracket();
+            }
+            else if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken))
+            {
+                readArithmetic();
+            }
+            else if (parser.CurrentToken == ".")
+            {
+                readDot();
             }
             else
             {
                 lst.Add(parser.CurrentToken);
             }
+        };
+
+        q.First();
+        //logic();
+        while (parser.CurrentToken.IsNotEmpty() && !parser.ValueBreakTokens.Contains(parser.CurrentToken))
+        {
+            if (parser.CurrentToken.IsLetter() && !parser.PeekOrDefault().IsSymbol()) break;
+
+            logic();
             q.First();
         }
         return lst;
