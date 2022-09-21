@@ -8,6 +8,13 @@ namespace SqModel.Extension;
 
 internal static class IEnumerableExtension
 {
+    public static bool Contains(this IEnumerable<char> source, string? value)
+    {
+        if (value == null || value.IsEmpty()) return false;
+        if (value.Length != 1) return false;
+        return source.Contains(value.First());
+    }
+
     public static string ToString<T>(this IEnumerable<T> source, string separator)
     {
         var sb = new StringBuilder();
