@@ -21,10 +21,12 @@ public class CteQuery
         var text = q.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select *
+    select
+        *
     from table_a
 )
-select *
+select
+    *
 from a";
 
         Assert.Equal(expect, text);
@@ -59,18 +61,22 @@ from a";
         var text = q.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select *
+    select
+        *
     from table_a
 ),
 b as (
-    select *
+    select
+        *
     from table_b
 ),
 c as (
-    select *
+    select
+        *
     from table_c
 )
-select *
+select
+    *
 from a
 inner join b on a.table_a_id = b.table_a_id
 inner join c on b.table_b_id = c.table_b_id";
@@ -93,10 +99,12 @@ inner join c on b.table_b_id = c.table_b_id";
         var text = q.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select *
+    select
+        *
     from table_a
 )
-select *
+select
+    *
 from a";
 
         Assert.Equal(expect, text);

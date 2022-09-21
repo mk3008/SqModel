@@ -17,7 +17,8 @@ public class SelectRelationTable
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
 inner join table_c as c on b.table_b_id = c.TABLE_B_ID";
@@ -35,7 +36,8 @@ inner join table_c as c on b.table_b_id = c.TABLE_B_ID";
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 cross join table_b as b";
 
@@ -61,7 +63,8 @@ cross join table_b as b";
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 inner join table_b as b on (10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id = b.b_id))";
 
@@ -82,7 +85,8 @@ inner join table_b as b on (10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id =
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
 left join table_c as c on a.table_a_id = c.table_a_id

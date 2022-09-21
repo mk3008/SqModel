@@ -22,11 +22,14 @@ public class ParseUnionTest
     [Fact]
     public void Default()
     {
-        var sql = @"select 1
+        var sql = @"select
+    1
 union all
-select 2
+select
+    2
 union
-select *
+select
+    *
 from table_a";
         var clause = SqlParser.Parse(sql);
 

@@ -15,7 +15,8 @@ public class WhereQuery
         q.Where.Add().Column(table_a, "id").Equal(":id").Parameter(":id", 1);
 
         var acutal = q.ToQuery();
-        var expect = @"select table_a.*
+        var expect = @"select
+    table_a.*
 from table_a
 where
     table_a.id = :id";
@@ -34,7 +35,8 @@ where
         q.Where.Add().Value("table_a.id").NotEqual(":id").Parameter(":id", 1);
 
         var acutal = q.ToQuery();
-        var expect = @"select table_a.*
+        var expect = @"select
+    table_a.*
 from table_a
 where
     table_a.id <> :id";
@@ -54,7 +56,8 @@ where
         q.Where.Add().Value("table_a.sub_id").Equal(":sub_id").Parameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
-        var expect = @"select table_a.*
+        var expect = @"select
+    table_a.*
 from table_a
 where
     table_a.id = :id
@@ -79,7 +82,8 @@ where
         });
 
         var acutal = q.ToQuery();
-        var expect = @"select table_a.*
+        var expect = @"select
+    table_a.*
 from table_a
 where
     (table_a.id = :id1 or table_a.id = :id2)";
@@ -105,7 +109,8 @@ where
         q.Where.Add().Value("table_a.sub_id").Equal(":sub_id").Parameter(":sub_id", 2);
 
         var acutal = q.ToQuery();
-        var expect = @"select table_a.*
+        var expect = @"select
+    table_a.*
 from table_a
 where
     (table_a.id = :id1 or table_a.id = :id2)

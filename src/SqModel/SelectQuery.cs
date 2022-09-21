@@ -31,7 +31,7 @@ public partial class SelectQuery
         var w = new WithClause();
         GetCommonTableClauses().ToList().ForEach(x => w.Collection.Add(x));
 
-        if (UnionClause != null)
+        if (UnionClause != null && UnionClause.SelectQuery != null)
         {
             w.Collection.AddRange(UnionClause.SelectQuery.GetAllWith().Collection);
         }
@@ -66,6 +66,7 @@ public partial class SelectQuery
     public Query ToQuery()
     {
         var splitter = IsOneLineFormat ? " " : "\r\n";
+        SelectClause.IsOneLineFormat = IsOneLineFormat;
         WhereClause.IsOneLineFormat = IsOneLineFormat;
 
         var withQ = (IsIncludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)

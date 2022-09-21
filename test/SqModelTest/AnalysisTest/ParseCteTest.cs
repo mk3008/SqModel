@@ -22,14 +22,17 @@ public class ParseCteTest
     {
         var sql = @"with
 a as (
-    select *
+    select
+        *
     from table_a
 ),
 b as (
-    select *
+    select
+        *
     from table_b
 )
-select *
+select
+    *
 from a
 inner join b on a.column_1 = b.column_1";
 
@@ -46,10 +49,12 @@ inner join b on a.column_1 = b.column_1";
     {
         var sql = @"with
 a as not materialized (
-    select *
+    select
+        *
     from table_a
 )
-select *
+select
+    *
 from a";
 
         using var p = new SqlParser(sql);

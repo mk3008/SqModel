@@ -15,7 +15,8 @@ public class DistinctQuery
         q.Distinct();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select distinct a.name
+        var expect = @"select distinct
+    a.name
 from table_a as a";
 
         Assert.Equal(expect, text);
@@ -31,7 +32,8 @@ from table_a as a";
         q.Distinct(false);
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.name
+        var expect = @"select
+    a.name
 from table_a as a";
 
         Assert.Equal(expect, text);
@@ -50,9 +52,11 @@ from table_a as a";
         q.Select(x, "*");
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select x.*
+        var expect = @"select
+    x.*
 from (
-    select distinct a.name
+    select distinct
+        a.name
     from table_a as a
 ) as x";
 

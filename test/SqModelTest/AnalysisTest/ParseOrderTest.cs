@@ -32,7 +32,8 @@ public class ParseOrderTest
     public void Default()
     {
         /// inner join table_b as b on ...
-        var sql = @"select *
+        var sql = @"select
+    *
 from table_a
 where
     1 = 1

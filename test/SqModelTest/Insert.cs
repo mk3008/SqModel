@@ -21,7 +21,8 @@ public class Insert
 
         var text = tq.ToQuery().CommandText;
         var expect = @"insert into table_b(id)
-select a.id
+select
+    a.id
 from table_a as a";
 
         Assert.Equal(expect, text);
@@ -38,7 +39,8 @@ from table_a as a";
 
         var text = tq.ToQuery().CommandText;
         var expect = @"insert into table_b
-select a.*
+select
+    a.*
 from table_a as a";
 
         Assert.Equal(expect, text);
@@ -55,7 +57,8 @@ from table_a as a";
 
         var text = tq.ToQuery().CommandText;
         var expect = @"insert into table_b(index_value)
-select a.id as index_value
+select
+    a.id as index_value
 from table_a as a";
 
         Assert.Equal(expect, text);
