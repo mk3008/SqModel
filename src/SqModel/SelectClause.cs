@@ -18,13 +18,24 @@ public class SelectClause
 
     public List<SelectItem> Collection { get; set; } = new();
 
+    public bool IsOneLineFormat { get; set; } = true;
+
     public Query ToQuery()
     {
-        var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery(", ");
-        var distinct = IsDistinct ? "distinct " : "";
-        q.CommandText = $"select {distinct}{q.CommandText}";
+        var distinct = IsDistinct ? " distinct" : "";
 
-        return q;
+        if (IsOneLineFormat)
+        {
+            var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery(", ");
+            q.CommandText = $"select{distinct} {q.CommandText}";
+            return q;
+        }
+        else
+        {
+            var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery("\r\n, ").InsertIndent();
+            q.CommandText = $"select{distinct}\r\n{q.CommandText}";
+            return q;
+        }
     }
 }
 

@@ -32,7 +32,8 @@ public class ParseGroupTest
     public void Default()
     {
         /// inner join table_b as b on ...
-        var sql = @"select 1
+        var sql = @"select
+    1
 from table_a as a
 where
     1 = 1
@@ -46,7 +47,8 @@ group by a.id, 1, a.name";
     public void SumTest()
     {
         /// inner join table_b as b on ...
-        var sql = @"select sum(a.price) as price
+        var sql = @"select
+    sum(a.price) as price
 from table_a as a
 where
     1 = 1
@@ -60,7 +62,8 @@ group by a.id, 1, a.name";
     public void CountTest()
     {
         /// inner join table_b as b on ...
-        var sql = @"select count(*) as cnt
+        var sql = @"select
+    count(*) as cnt
 from table_a as a
 where
     1 = 1
@@ -74,7 +77,8 @@ group by a.id, 1, a.name";
     public void HavingTest()
     {
         /// inner join table_b as b on ...
-        var sql = @"select a.id
+        var sql = @"select
+    a.id
 from table_a as a
 where
     1 = 1

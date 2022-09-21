@@ -30,7 +30,8 @@ public class SelectCaseWhen
         }).As("case_1");
 
         var q = sq.ToQuery().CommandText;
-        var expect = @"select case when a = 1 then 10 when a.id = 2 then 20 when a.id = 3 then 30 when (a.id = 1 or b.id = 2) then 40 end as case_1
+        var expect = @"select
+    case when a = 1 then 10 when a.id = 2 then 20 when a.id = 3 then 30 when (a.id = 1 or b.id = 2) then 40 end as case_1
 from table_a as a";
 
         Assert.Equal(expect, q);
@@ -53,7 +54,8 @@ from table_a as a";
         }).As("case_2");
 
         var q = sq.ToQuery().CommandText;
-        var expect = @"select case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
+        var expect = @"select
+    case 1 when a then 10 when a.id then 20 when a.id then 30 when 1 then 30 when 1 then null else 100 end as case_2
 from table_a as a";
 
         Assert.Equal(expect, q);

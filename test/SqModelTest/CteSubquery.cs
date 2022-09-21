@@ -28,10 +28,12 @@ public class CteSubquery
         var text = commonA.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select table_a.*
+    select
+        table_a.*
     from table_a
 )
-select a.*
+select
+    a.*
 from a";
 
         Assert.Equal(expect, text);
@@ -49,12 +51,15 @@ from a";
         var text = q.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select table_a.*
+    select
+        table_a.*
     from table_a
 )
-select y.*
+select
+    y.*
 from (
-    select a.*
+    select
+        a.*
     from a
 ) as y";
 
@@ -73,12 +78,15 @@ from (
         var text = commonY.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select table_a.*
+    select
+        table_a.*
     from table_a
 )
-select a.*
+select
+    a.*
 from (
-    select a.*
+    select
+        a.*
     from a
 ) as a";
 
@@ -93,17 +101,21 @@ from (
         text = q2.ToQuery().CommandText;
         expect = @"with
 a as (
-    select table_a.*
+    select
+        table_a.*
     from table_a
 ),
 y as (
-    select a.*
+    select
+        a.*
     from (
-        select a.*
+        select
+            a.*
         from a
     ) as a
 )
-select y.*
+select
+    y.*
 from y";
         Assert.Equal(expect, text);
     }

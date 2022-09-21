@@ -69,7 +69,8 @@ where
         var q = sq.ToQuery();
         var text = q.CommandText;
 
-        Assert.Equal("select :val as value", text);
+        Assert.Equal(@"select
+    :val as value", text);
         Assert.Equal(1, q.Parameters[":val"]);
     }
 
@@ -86,7 +87,8 @@ where
         sq.SelectAll();
 
         var q = sq.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 inner join table_b as b on a.table_a_id = b.table_a_id
 left join table_c as c on b.table_b_id = c.table_b_id
@@ -108,9 +110,11 @@ cross join table_e as e";
         sq.SelectAll();
 
         var q = sq.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from (
-    select *
+    select
+        *
     from table_a as a
 ) as aa";
 
@@ -133,7 +137,8 @@ from (
         sq.Where.Add().Column(a, "id").Right = new CommandValue() { Conjunction = ">=", CommandText = "10" };
 
         var q = sq.ToQuery();
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 where
     a.id = :id1
@@ -162,7 +167,8 @@ where
         sq.Where.Add().Column(a, "id").Equal(3);
 
         var q = sq.ToQuery();
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 where
     (a.id = 1 or a.id = 2)
@@ -191,7 +197,8 @@ where
         });
 
         var q = sq.ToQuery();
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 where
     exists (select * from table_b as b where b.id = a.id)
@@ -223,14 +230,17 @@ where
         var q = sq.ToQuery().CommandText;
         var expect = @"with
 a as (
-    select *
+    select
+        *
     from table_a
 ),
 b as (
-    select *
+    select
+        *
     from table_b
 )
-select *
+select
+    *
 from a
 inner join b on a.id = b.id";
 
@@ -249,7 +259,8 @@ inner join b on a.id = b.id";
         var q = tq.ToQuery().CommandText;
         var expect = @"create table tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
         Assert.Equal(expect, q);
@@ -267,7 +278,8 @@ from table_a";
         var q = tq.ToQuery().CommandText;
         var expect = @"create view tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
         Assert.Equal(expect, q);
@@ -284,7 +296,8 @@ from table_a";
 
         var q = tq.ToQuery().CommandText;
         var expect = @"insert into table_b(index_value)
-select a.id as index_value
+select
+    a.id as index_value
 from table_a as a";
 
         Assert.Equal(expect, q);
@@ -295,7 +308,9 @@ from table_a as a";
     {
         var sq = SqlParser.Parse(@"select a.column_1 as col1, b.column_2 as col2 from table_a as a inner join table_b as b on a.id = b.id");
         var q = sq.ToQuery().CommandText;
-        var expect = @"select a.column_1 as col1, b.column_2 as col2
+        var expect = @"select
+    a.column_1 as col1
+    , b.column_2 as col2
 from table_a as a
 inner join table_b as b on a.id = b.id";
         Assert.Equal(expect, q);

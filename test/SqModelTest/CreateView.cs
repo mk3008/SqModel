@@ -22,7 +22,8 @@ public class CreateView
         var text = tq.ToQuery().CommandText;
         var expect = @"create view tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
         Assert.Equal(expect, text);
@@ -40,7 +41,8 @@ from table_a";
         var text = tq.ToQuery().CommandText;
         var expect = @"create temporary view tmp
 as
-select table_a.*
+select
+    table_a.*
 from table_a";
 
         Assert.Equal(expect, text);

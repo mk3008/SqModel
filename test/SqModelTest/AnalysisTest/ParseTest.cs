@@ -27,7 +27,9 @@ public class ParseTest
 
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.column_1 as col1, a.column_2 as col2
+        var expect = @"select
+    a.column_1 as col1
+    , a.column_2 as col2
 from table_a as a";
         Assert.Equal(expect, text);
     }
@@ -35,12 +37,13 @@ from table_a as a";
     [Fact]
     public void Simple2()
     {
-        using var p = new SqlParser(@"select (select b.value from b) as b_value from table_a as a");
+        using var p = new SqlParser(@"select(select b.value from b) as b_value from table_a as a");
         p.Logger = (x) => Output.WriteLine(x);
 
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
-        var expect = @"select (select b.value from b) as b_value
+        var expect = @"select
+    (select b.value from b) as b_value
 from table_a as a";
         Assert.Equal(expect, text);
     }
@@ -68,7 +71,12 @@ where
         var q = p.ParseSelectQuery();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select a.column_1 as col1, a.column_2 as col2, ((1+2) * 3) as col3, (select b.value from b) as b_value, ' comment('')comment ' as comment
+        var expect = @"select
+    a.column_1 as col1
+    , a.column_2 as col2
+    , ((1+2) * 3) as col3
+    , (select b.value from b) as b_value
+    , ' comment('')comment ' as comment
 from table_a as a
 inner join table_c as c on a.column_1 = c.column_1
 left join table_d as d on a.column_2 = d.column_2 and a.column_3 = d.column_3

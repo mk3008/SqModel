@@ -17,9 +17,11 @@ public class SelectSubquery
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from (
-    select *
+    select
+        *
     from table_a as a
 ) as b";
 
@@ -44,13 +46,16 @@ from (
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from (
-    select *
+    select
+        *
     from table_a1 as a1
 ) as b1
 inner join (
-    select *
+    select
+        *
     from table_a2 as a2
 ) as b2 on b1.id = b2.id";
 
@@ -78,13 +83,17 @@ inner join (
         q.SelectAll();
 
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from (
-    select *
+    select
+        *
     from (
-        select *
+        select
+            *
         from (
-            select *
+            select
+                *
             from table_z as z
         ) as y
     ) as x
@@ -109,11 +118,14 @@ from (
         q3.SelectAll();
 
         var text = q3.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from (
-    select *
+    select
+        *
     from (
-        select *
+        select
+            *
         from table_a as a
     ) as b
 ) as c";

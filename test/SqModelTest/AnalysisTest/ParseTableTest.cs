@@ -74,7 +74,8 @@ cross join table_e as e";
     {
         /// inner join table_b as b on ...
         var sql = @"from (
-    select *
+    select
+        *
     from table_a
 ) as a";
         var clause = FromClauseParser.Parse(sql);
@@ -87,11 +88,13 @@ cross join table_e as e";
     {
         /// inner join table_b as b on ...
         var sql = @"from (
-    select *
+    select
+        *
     from table_a
 ) as a
 inner join (
-    select *
+    select
+        *
     from table_b
 ) as b on a.column_1 = b.column_1";
         var clause = FromClauseParser.Parse(sql);

@@ -64,7 +64,8 @@ end");
         using var p = new SqlParser(@"select case when a.col = 1 then 1 else 2 end as val from table_a as a");
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
-        var expect = @"select case when a.col = 1 then 1 else 2 end as val
+        var expect = @"select
+    case when a.col = 1 then 1 else 2 end as val
 from table_a as a";
         Assert.Equal(expect, text);
     }
@@ -76,7 +77,8 @@ from table_a as a";
 case when a.col = 1 then 1 else 2 end = 1");
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
-        var expect = @"select *
+        var expect = @"select
+    *
 from table_a as a
 where
     case when a.col = 1 then 1 else 2 end = 1";
