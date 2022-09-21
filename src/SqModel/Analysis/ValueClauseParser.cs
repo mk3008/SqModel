@@ -56,6 +56,12 @@ public static class ValueClauseParser
             q.First();
             return item;
         }
+        if (parser.CurrentToken == ".*" && cache.Count == 2)
+        {
+            var item = new ColumnValue() { Table = cache.First(), Column = "*" };
+            q.First();
+            return item;
+        }
 
         cache.AddRange(ReadUntilValueBreak(parser));
 

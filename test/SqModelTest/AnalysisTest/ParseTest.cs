@@ -20,6 +20,20 @@ public class ParseTest
     private readonly ITestOutputHelper Output;
 
     [Fact]
+    public void Default()
+    {
+        using var p = new SqlParser(@"select a.* from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.*
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Simple()
     {
         using var p = new SqlParser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
