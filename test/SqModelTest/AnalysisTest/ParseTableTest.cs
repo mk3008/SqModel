@@ -112,4 +112,14 @@ inner join table_b on table_a.column_1 = table_b.column_1";
         var text = clause.ToQuery().CommandText;
         Assert.Equal(sql, clause.ToQuery().CommandText);
     }
+
+    [Fact]
+    public void Schema()
+    {
+        var sql = @"from schema.table as t";
+        var clause = FromClauseParser.Parse(sql);
+
+        var text = clause.ToQuery().CommandText;
+        Assert.Equal(sql, clause.ToQuery().CommandText);
+    }
 }

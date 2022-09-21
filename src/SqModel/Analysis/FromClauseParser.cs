@@ -77,8 +77,21 @@ public static class FromClauseParser
             var t = new TableClause() { RelationType = tp };
             t.RelationClause.IsDecorateBracket = false;
 
-            t.TableName = token;
+            var sb = new StringBuilder();
+
+            sb.Append(token);
+
             q.First();
+
+            while (parser.CurrentToken == ".")
+            {
+                sb.Append(parser.CurrentToken);
+                q.First();
+                sb.Append(parser.CurrentToken);
+                q.First();
+            }
+
+            t.TableName = sb.ToString();
 
             if (!parser.TableBreakTokens.Contains(parser.CurrentToken) && parser.CurrentToken.ToLower() != "on")
             {
