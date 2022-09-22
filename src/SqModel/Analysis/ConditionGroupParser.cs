@@ -45,9 +45,22 @@ internal class ConditionGroupParser
 
         if (Parser.CurrentToken == "(")
         {
-            var subquery = Parser.ReadUntilCloseBracket();
-            using var p = new SqlParser(subquery) { Logger = Parser.Logger };
-            AddGroup(p, group, @operator);
+            var g = new ConditionGroup() { Operator = @operator , SubOperator = suboperator};
+            var inner = q.First(); // inner text
+            q.First(); // ')'
+            q.First(); // next
+
+            using var p = new SqlParser(inner) { Logger = Parser.Logger };
+            group.Collection.Add(g);
+
+            AddGroup(p, g, @operator);
+            while (p.CurrentToken.IsLogicalOperator())
+            {
+                var op = p.CurrentToken;
+                p.ReadTokensWithoutComment().First();
+                AddGroup(p, g, op);
+            }
+
             return;
         }
         else if (Parser.CurrentToken.ToLower() == "exists")
@@ -55,7 +68,10 @@ internal class ConditionGroupParser
             var tmp = q.First();
             if (tmp != "(") throw new InvalidProgramException();
 
-            var subquery = Parser.ReadUntilCloseBracket();
+            var subquery = q.First(); // inner text
+            q.First(); // ')'
+            q.First(); // next
+
             using var p = new SqlParser(subquery) { Logger = Parser.Logger };
             var eq = p.ParseSelectQuery();
             eq.IsOneLineFormat = true;

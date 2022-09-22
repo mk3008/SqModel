@@ -54,4 +54,16 @@ public class ParseWhereTest
     not exists (select * from table_b as b where b.id = a.id)";
         Assert.Equal(expect, q.CommandText);
     }
+
+    [Fact]
+    public void Group()
+    {
+        var condition = "where (a.id = 1 or a.id = 2) and (a.value = 1 or (a.id = 3 and a.id = 4))";
+        var clause = WhereClauseParser.Parse(condition);
+        var q = clause.ToQuery();
+        var expect = @"where
+    (a.id = 1 or a.id = 2)
+    and (a.value = 1 or (a.id = 3 and a.id = 4))";
+        Assert.Equal(expect, q.CommandText);
+    }
 }
