@@ -21,7 +21,7 @@ public partial class SqlParser
         {
             if (CurrentToken == "(")
             {
-                CurrentToken = ReadUntilCloseBracket();
+                CurrentToken = ReadWordUntilCloseBracket();
                 yield return CurrentToken;
                 continue;
             }
@@ -36,7 +36,7 @@ public partial class SqlParser
             if (token == "(")
             {
                 yield return token;
-                CurrentToken = ReadUntilCloseBracket();
+                CurrentToken = ReadWordUntilCloseBracket();
                 yield return CurrentToken;
                 continue;
             }
@@ -56,8 +56,8 @@ public partial class SqlParser
             if (string.IsNullOrEmpty(token)) return string.Empty;
 
             if (token == "'") token += ReadWhileQuoteToken();
-            else if (token == "--") token += ReadUntilCrLf();
-            else if (token == "/*") token += ReadWhileBlockCommentToken();
+            else if (token == "--") token += ReadWordCrLfEnd();
+            else if (token == "/*") token += ReadWordBlockCommentEnd();
             else if (token.ToLower() == "inner" || token.ToLower() == "cross")
             {
                 ReadWhileSpace();
@@ -92,32 +92,176 @@ public partial class SqlParser
         return CurrentToken;
     }
 
+
+    private string ReadWordUntilCloseBracket()
+    {
+        var s = new StringBuilder();
+
+        var level = 1;
+
+        while (true)
+        {
+            var c = PeekOrDefault();
+            if (c == null) break;
+            if (c == ')' && level == 1) break;
+
+            var w = ReadWord();
+            if (w.IsEmpty()) break;
+            if (w == "--")
+            {
+                ReadWordCrLfEnd();
+                continue;
+            }
+            if (w == "/*")
+            {
+                ReadWordBlockCommentEnd();
+                continue;
+            }
+            if (w == "(") level++;
+            if (w == ")") level--;
+            s.Append(w);
+        };
+        return s.ToString();
+    }
+
+    private string ReadWordCrLfEnd()
+    {
+        var s = new StringBuilder();
+        var w = ReadWord();
+
+        while (w.IsNotEmpty())
+        {
+            s.Append(w);
+            if (w == "\r" || w == "\r\n" || w == "\n") break;
+            w = ReadWord();
+        }
+        return s.ToString();
+    }
+
+    private string ReadWordBlockCommentEnd()
+    {
+        var s = new StringBuilder();
+        var level = 1;
+
+        while (level != 0)
+        {
+            var w = ReadWord();
+            s.Append(w);
+            if (w.IsEmpty()) break;
+            if (w == "/*") level++;
+            if (w == "*/") level--;
+        };
+        return s.ToString();
+    }
+
     public string ReadWord()
     {
         var cache = new StringBuilder();
-        var isSymbolToken = false;
 
-        var cn = PeekOrDefault();
-        while (cn != null)
+        var nextchar = PeekOrDefault();
+        if (nextchar == null) return cache.ToString();
+
+        if (nextchar == '(' || nextchar == ')')
         {
-            if (isSymbolToken || cn.IsSymbol() && cache.Length == 0)
-            {
-                isSymbolToken = true;
-                cache.Append(Read());
-                if (cache.Length == 1 && "()".Any(cache.ToString().First())) break;
-                if (cache.Length == 2 && (cache.ToString() == "--" || cache.ToString() == "/*")) break;
-                cn = PeekOrDefault();
-                if (!cn.IsSymbol()) break;
-                continue;
-            }
-
             cache.Append(Read());
-            if (cn.IsSpace()) break;
-
-            cn = PeekOrDefault();
-            if (cn.IsSymbol() || cn.IsSpace()) break;
+            return cache.ToString();
         }
 
+        if (nextchar == '/')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '*') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '*')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '/') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '-')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '-') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '!')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '=') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '>')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '=') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '<')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '=' || nextchar == '>') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '\n')
+        {
+            cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar == '\r')
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+            if (nextchar == '\n') cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar.IsSymbol())
+        {
+            cache.Append(Read());
+            return cache.ToString();
+        }
+
+        if (nextchar.IsSpace())
+        {
+            while (nextchar.IsSpace())
+            {
+                cache.Append(Read());
+                nextchar = PeekOrDefault();
+            }
+            return cache.ToString();
+        };
+
+        if (nextchar.IsNumeric())
+        {
+            var hasdot = false;
+            while (nextchar.IsNumeric() || (hasdot == false && nextchar == '.'))
+            {
+                if (nextchar == '.') hasdot = true;
+                cache.Append(Read());
+                nextchar = PeekOrDefault();
+            }
+            return cache.ToString();
+        };
+
+        while (!nextchar.IsSymbol() && !nextchar.IsSpace() && nextchar != null)
+        {
+            cache.Append(Read());
+            nextchar = PeekOrDefault();
+        }
         return cache.ToString();
     }
 }

@@ -21,4 +21,7 @@ internal static class charExtension
 
     public static bool IsSymbol(this char? source)
         => source == null ? false : source.Value.IsSymbol();
+
+    public static bool IsNumeric(this char? source)
+        => source == null ? false : "0123456789".Any(source.Value);
 }

@@ -64,16 +64,32 @@ public class ReadTokensTest
     [Fact]
     public void Symbol()
     {
-        var text = ". .. ...";
+        var text = "< > <= >= <> !=";
         using var p = new SqlParser(text);
         p.Logger = (x) => Output.WriteLine(x);
         var lst = p.ReadTokens().ToList();
 
-        Assert.Equal(4, lst.Count);
-        Assert.Equal(".", lst[0]);
-        Assert.Equal("..", lst[1]);
-        Assert.Equal("...", lst[2]);
-        Assert.Equal("", lst[3]);
+        Assert.Equal(7, lst.Count);
+        Assert.Equal("<", lst[0]);
+        Assert.Equal(">", lst[1]);
+        Assert.Equal("<=", lst[2]);
+        Assert.Equal(">=", lst[3]);
+        Assert.Equal("<>", lst[4]);
+        Assert.Equal("!=", lst[5]);
+        Assert.Equal("", lst[6]);
+    }
+
+    [Fact]
+    public void Numeric()
+    {
+        var text = "1.23";
+        using var p = new SqlParser(text);
+        p.Logger = (x) => Output.WriteLine(x);
+        var lst = p.ReadTokens().ToList();
+
+        Assert.Equal(2, lst.Count);
+        Assert.Equal("1.23", lst[0]);
+        Assert.Equal("", lst[1]);
     }
 
     [Fact]
@@ -165,7 +181,7 @@ public class ReadTokensTest
 
         Assert.Equal(4, lst.Count);
         Assert.Equal("start", lst[0]);
-        Assert.Equal("-- comment text", lst[1]);
+        Assert.Equal("-- comment text\r\n", lst[1]);
         Assert.Equal("end", lst[2]);
         Assert.Equal("", lst[3]);
     }
@@ -210,7 +226,7 @@ public class ReadTokensTest
 
         Assert.Equal(4, lst.Count);
         Assert.Equal("start", lst[0]);
-        Assert.Equal("--/* comment */blockend", lst[1]);
+        Assert.Equal("--/* comment */blockend\r\n", lst[1]);
         Assert.Equal("lineend", lst[2]);
         Assert.Equal("", lst[3]);
     }

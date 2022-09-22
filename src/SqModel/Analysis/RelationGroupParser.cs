@@ -50,7 +50,10 @@ internal static class RelationGroupParser
 
         if (parser.CurrentToken == "(")
         {
-            var subquery = parser.ReadUntilCloseBracket();
+            var subquery = q.First(); //inner text
+            q.First(); // ')'
+            q.First(); // next
+
             using var p = new SqlParser(subquery) { Logger = parser.Logger };
             AddRelation(p, group, @operator);
             return;
@@ -60,7 +63,10 @@ internal static class RelationGroupParser
             var tmp = q.First();
             if (tmp != "(") throw new InvalidProgramException();
 
-            var subquery = parser.ReadUntilCloseBracket();
+            var subquery = q.First(); //inner text
+            q.First(); // ')'
+            q.First(); // next
+
             using var p = new SqlParser(subquery) { Logger = parser.Logger };
             var eq = p.ParseSelectQuery();
             eq.IsOneLineFormat = true;
