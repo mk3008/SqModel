@@ -12,7 +12,7 @@ public partial class SelectQuery
 {
     public TableClause FromClause { get; set; } = new();
 
-    public SelectClause? SelectClause { get; set; } = new();
+    public SelectClause? SelectClause { get; set; }
 
     public SelectClause Select => GetSelectClause();
 

@@ -20,15 +20,17 @@ public class CommonTable : IQueryable
     public Query ToQuery()
     {
         Query.IsIncludeCte = false;
+
         var q = Query.ToQuery();
+        var cols = (!ColumnNames.Any()) ? String.Empty : $"({ColumnNames.ToString(", ")})";
 
         if (Keywords.Any())
         {
-            q.CommandText = $"{Name} as {Keywords.ToString(" ")} (\r\n{q.CommandText.InsertIndent()}\r\n)";
+            q.CommandText = $"{Name}{cols} as {Keywords.ToString(" ")} (\r\n{q.CommandText.InsertIndent()}\r\n)";
         }
         else
         {
-            q.CommandText = $"{Name} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
+            q.CommandText = $"{Name}{cols} as (\r\n{q.CommandText.InsertIndent()}\r\n)";
         }
 
         return q;

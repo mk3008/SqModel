@@ -40,6 +40,17 @@ internal static class WithClauseParser
 
         c.Name = parser.CurrentToken;
         q.First();
+
+        if (parser.CurrentToken == "(")
+        {
+            q.First();
+            var items = NamelessItemsParser.Parse(parser.CurrentToken);
+            c.ColumnNames = items.Collection.Select(x => x.ToQuery().CommandText).ToList();
+            q.First();
+            if (parser.CurrentToken != ")") throw new InvalidProgramException();
+            q.First();
+        }
+
         if (parser.CurrentToken.ToLower() == "as") q.First(); // skip 'as' token
 
         while (parser.CurrentToken != "(")
