@@ -43,7 +43,18 @@ public class TableClause
 
     public string GetName() => AliasName != string.Empty ? AliasName : TableName;
 
-    public string GetAliasCommand() => TableName != GetName() || SubSelectClause != null ? $" as {GetName()}" : string.Empty;
+    public string GetAliasCommand()
+    {
+        var cols = (!ColumnNames.Any()) ? String.Empty : $"({ColumnNames.ToString(", ")})";
+
+        if (TableName != GetName() || SubSelectClause != null || cols.IsNotEmpty())
+        {
+            return $" as {GetName()}{cols}";
+        }
+        return string.Empty;
+    }
+
+    public List<string> ColumnNames { get; set; } = new();
 
     public Query ToQuery()
     {

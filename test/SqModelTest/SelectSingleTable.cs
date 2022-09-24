@@ -1,4 +1,5 @@
 using SqModel;
+using SqModel.Analysis;
 using Xunit;
 
 namespace SqModelTest;
@@ -116,5 +117,22 @@ from table_a as a";
 
         Assert.Equal(expect, text);
         Assert.Equal(1, actual.Parameters[":val"]);
+    }
+
+
+    [Fact]
+    public void ValuesTest()
+    {
+        var sql = @"select
+    *
+from (
+    values
+        (1, 2, 3)
+        , (4, 5, 6)
+) as v(c1, c2, c3)";
+        var sq = SqlParser.Parse(sql);
+        var q = sq.ToQuery();
+
+        Assert.Equal(sql, q.CommandText);
     }
 }

@@ -18,6 +18,12 @@ public partial class SqlParser
         var q = ReadTokensWithoutComment();
         if (CurrentToken.IsEmpty()) q.First();// read first token
 
+        if (CurrentToken.ToLower() == "values")
+        {
+            sq.ValuesClause = ValuesClauseParser.Parse(this);
+            return sq;
+        }
+
         if (CurrentToken.ToLower() == "with")
         {
             sq.WithClause = WithClauseParser.Parse(this);

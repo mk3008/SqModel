@@ -28,13 +28,13 @@ public class NamelessItemClause
         if (IsOneLineFormat)
         {
             var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery(", ");
-            q.CommandText = $"{Token} {q.CommandText}";
+            if (Token.IsNotEmpty()) q.CommandText = $"{Token} {q.CommandText}";
             return q;
         }
         else
         {
             var q = Collection.Select(x => x.ToQuery()).ToList().ToQuery("\r\n, ").InsertIndent();
-            q.CommandText = $"{Token}\r\n{q.CommandText}";
+            if (Token.IsNotEmpty()) q.CommandText = $"{Token}\r\n{q.CommandText}";
             return q;
         }
     }

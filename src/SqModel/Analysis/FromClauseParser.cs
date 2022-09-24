@@ -69,6 +69,16 @@ public static class FromClauseParser
 
             t.AliasName = parser.ParseAlias();
 
+            if (parser.CurrentToken == "(")
+            {
+                q.First();
+                var items = NamelessItemsParser.Parse(parser.CurrentToken);
+                t.ColumnNames = items.Collection.Select(x => x.ToQuery().CommandText).ToList();
+                q.First();
+                if (parser.CurrentToken != ")") throw new InvalidProgramException();
+                q.First();
+            }
+
             setRelation(t);
             return t;
         }
