@@ -45,6 +45,8 @@ public class TableClause
 
     public string GetAliasCommand() => TableName != GetName() || SubSelectClause != null ? $" as {GetName()}" : string.Empty;
 
+    public List<string> ColumnNames { get; set; } = new();
+
     public Query ToQuery()
     {
         var q = ToCurrentQuery();

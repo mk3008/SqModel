@@ -15,6 +15,8 @@ public class CommonTable : IQueryable
 
     public string Name { get; set; } = string.Empty;
 
+    public List<string> ColumnNames { get; set; } = new();
+
     public Query ToQuery()
     {
         Query.IsIncludeCte = false;

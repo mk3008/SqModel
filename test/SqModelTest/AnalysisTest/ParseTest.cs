@@ -129,7 +129,7 @@ where
 
         Assert.Equal(expect, text);
 
-        Assert.Equal(5, q.SelectClause.Collection.Count);
+        Assert.Equal(5, q.Select.Collection.Count);
 
         ////ColumnClauses(Column)
         //Assert.Equal("a", q.SelectClause.Collection[0].TableName);

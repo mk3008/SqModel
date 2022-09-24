@@ -12,9 +12,25 @@ public partial class SelectQuery
 {
     public TableClause FromClause { get; set; } = new();
 
-    public SelectClause SelectClause { get; set; } = new();
+    public SelectClause? SelectClause { get; set; } = new();
 
-    public SelectClause Select => SelectClause;
+    public SelectClause Select => GetSelectClause();
+
+    private SelectClause GetSelectClause()
+    {
+        SelectClause ??= new();
+        return SelectClause;
+    }
+
+    public ValuesClause? ValuesClause { get; set; } = null;
+
+    public ValuesClause Values => GetValueClause();
+
+    private ValuesClause GetValueClause()
+    {
+        ValuesClause ??= new();
+        return ValuesClause;
+    }
 
     public WithClause WithClause { get; set; } = new();
 
@@ -66,6 +82,13 @@ public partial class SelectQuery
     public Query ToQuery()
     {
         var splitter = IsOneLineFormat ? " " : "\r\n";
+
+        if (ValuesClause == null && SelectClause == null) throw new InvalidProgramException();
+        if (ValuesClause != null && SelectClause != null) throw new InvalidProgramException();
+
+        if (ValuesClause != null) return ValuesClause.ToQuery();
+
+        if (SelectClause == null) throw new InvalidProgramException("Select clause is null");
         SelectClause.IsOneLineFormat = IsOneLineFormat;
         WhereClause.IsOneLineFormat = IsOneLineFormat;
 
@@ -129,14 +152,14 @@ public static class SelectQueryExtension
 
     public static SelectQuery Distinct(this SelectQuery source, bool isdistinct = true)
     {
-        source.SelectClause.IsDistinct = isdistinct;
+        source.Select.IsDistinct = isdistinct;
         return source;
     }
 
     public static Query ToInsertQuery(this SelectQuery source, string tablename)
     {
         var q = source.ToQuery();
-        var cols = source.SelectClause.GetColumnNames();
+        var cols = source.Select.GetColumnNames();
         var coltext = $"({cols.ToString(", ")})";
 
         q.CommandText = $"insert into {tablename}{coltext}\r\n{q.CommandText}";
