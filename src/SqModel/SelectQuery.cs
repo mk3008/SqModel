@@ -91,6 +91,8 @@ public partial class SelectQuery
         if (SelectClause == null) throw new InvalidProgramException("Select clause is null");
         SelectClause.IsOneLineFormat = IsOneLineFormat;
         WhereClause.IsOneLineFormat = IsOneLineFormat;
+        OrderClause.IsOneLineFormat = IsOneLineFormat;
+        GroupClause.IsOneLineFormat = IsOneLineFormat;
 
         var withQ = (IsIncludeCte) ? GetAllWith().ToQuery() : null; //ex. with a as (...)
         var selectQ = SelectClause.ToQuery(); //ex. select column_a, column_b

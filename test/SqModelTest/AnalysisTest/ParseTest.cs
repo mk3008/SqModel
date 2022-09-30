@@ -63,6 +63,45 @@ from table_a as a";
     }
 
     [Fact]
+    public void OrderBy()
+    {
+        using var p = new SqlParser(@"select a.id, a.name, a.price from a order by a.id, a.name, a.price");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.id
+    , a.name
+    , a.price
+from a
+order by
+    a.id
+    , a.name
+    , a.price";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void GroupBy()
+    {
+        using var p = new SqlParser(@"select a.id, a.sub_id, sum(a.price) as price from a group by a.id, a.sub_id");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.id
+    , a.sub_id
+    , sum(a.price) as price
+from a
+group by
+    a.id
+    , a.sub_id";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Expression()
     {
         using var p = new SqlParser(@"select

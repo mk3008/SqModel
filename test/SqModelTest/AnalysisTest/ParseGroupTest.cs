@@ -37,7 +37,10 @@ public class ParseGroupTest
 from table_a as a
 where
     1 = 1
-group by a.id, 1, a.name";
+group by
+    a.id
+    , 1
+    , a.name";
         var sq = SqlParser.Parse(sql);
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
@@ -52,7 +55,10 @@ group by a.id, 1, a.name";
 from table_a as a
 where
     1 = 1
-group by a.id, 1, a.name";
+group by
+    a.id
+    , 1
+    , a.name";
         var sq = SqlParser.Parse(sql);
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
@@ -67,7 +73,10 @@ group by a.id, 1, a.name";
 from table_a as a
 where
     1 = 1
-group by a.id, 1, a.name";
+group by
+    a.id
+    , 1
+    , a.name";
         var sq = SqlParser.Parse(sql);
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
@@ -82,7 +91,10 @@ group by a.id, 1, a.name";
 from table_a as a
 where
     1 = 1
-group by a.id, 1, a.name
+group by
+    a.id
+    , 1
+    , a.name
 having
     sum(price) = 10";
         var sq = SqlParser.Parse(sql);
