@@ -37,7 +37,10 @@ public class ParseOrderTest
 from table_a
 where
     1 = 1
-order by a.id, 1, a.name";
+order by
+    a.id
+    , 1
+    , a.name";
         var sq = SqlParser.Parse(sql);
 
         Assert.Equal(sql, sq.ToQuery().CommandText);
