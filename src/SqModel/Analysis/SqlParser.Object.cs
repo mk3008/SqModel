@@ -29,4 +29,22 @@ public partial class SqlParser
 
         return sq;
     }
+
+    public static SelectQuery Parse<T>(Func<string, string>? nameconverter = null, Func<PropertyInfo, bool>? propfilter = null)
+    {
+        var conv = nameconverter;
+        conv ??= x => x.ToLower();
+
+        var filter = propfilter;
+        filter ??= _ => true;
+
+        var sq = new SelectQuery();
+        var t = sq.From(conv(typeof(T).Name)).As("t");
+        typeof(T).GetProperties().Where(x => filter(x)).ToList().ForEach(x =>
+        {
+            sq.Select.Add().Column(t, conv(x.Name)).As(x.Name.ToLower());
+        });
+
+        return sq;
+    }
 }
