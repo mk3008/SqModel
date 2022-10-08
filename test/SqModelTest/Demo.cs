@@ -64,7 +64,7 @@ where
     public void SelectVariable()
     {
         var sq = new SelectQuery();
-        sq.Select(":val").As("value").Parameter(":val", 1);
+        sq.Select(":val").As("value").AddParameter(":val", 1);
 
         var q = sq.ToQuery();
         var text = q.CommandText;

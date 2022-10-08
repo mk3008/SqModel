@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ public class Query
 {
     public string CommandText { get; set; } = string.Empty;
 
-    public Dictionary<string, object> Parameters { get; set; } = new();
+    public Dictionary<string, object?> Parameters { get; set; } = new();
 
     public string ToDebugString()
     {
@@ -25,7 +26,9 @@ public class Query
             sb.AppendLine();
             Parameters.ForEach(x =>
             {
-                sb.Append($"  {x.Key} = {x.Value.ToString()}");
+                var v = x.Value?.ToString();
+                v ??= "[NULL]";
+                sb.Append($"  {x.Key} = {v}");
                 sb.AppendLine();
             });
             sb.Append("*/");
@@ -47,7 +50,7 @@ internal static class QueryExtension
         if (source.CommandText.IsEmpty()) text = query.CommandText;
         else if (query.CommandText.IsNotEmpty()) text += $"{separator}{query.CommandText}";
 
-        var prm = new Dictionary<string, object>();
+        var prm = new Dictionary<string, object?>();
         prm.Merge(source.Parameters);
         prm.Merge(query.Parameters);
 
@@ -57,7 +60,7 @@ internal static class QueryExtension
     public static Query ToQuery(this List<Query> source, string separator)
     {
         var text = source.Select(x => x.CommandText).ToList().ToString(separator);
-        var prm = new Dictionary<string, object>();
+        var prm = new Dictionary<string, object?>();
         source.ForEach(x => prm.Merge(x.Parameters));
 
         return new Query() { CommandText = text, Parameters = prm };

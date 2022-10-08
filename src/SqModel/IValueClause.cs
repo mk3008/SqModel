@@ -10,7 +10,7 @@ public interface IValueClause : IQueryable
 {
     string Conjunction { get; set; }
 
-    void AddParameter(string name, object value);
+    void AddParameter(string name, object? value);
 
     string GetName();
 }

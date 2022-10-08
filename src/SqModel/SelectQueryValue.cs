@@ -12,7 +12,7 @@ public class SelectQueryValue : IValueClause
 
     public string Conjunction { get; set; } = string.Empty;
 
-    public void AddParameter(string name, object value)
+    public void AddParameter(string name, object? value)
         => throw new NotSupportedException();
 
     public string GetName() => string.Empty;
