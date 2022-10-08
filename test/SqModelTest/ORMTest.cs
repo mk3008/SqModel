@@ -113,4 +113,19 @@ where
         Assert.Equal("test", q.Parameters[":modelname"]);
         Assert.Equal(10, q.Parameters[":price"]);
     }
+
+    [Fact]
+    public void ObjectSelectQueryTest()
+    {
+        var sq = SqlParser.Parse<Model>();
+
+        var q = sq.ToQuery();
+        var sql = @"select
+    t.modelid
+    , t.modelname
+    , t.price
+from model as t";
+
+        Assert.Equal(sql, q.CommandText);
+    }
 }
