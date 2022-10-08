@@ -13,11 +13,11 @@ public class CommandValue : IValueClause
     /// </summary>
     public string CommandText { get; set; } = string.Empty;
 
-    public Dictionary<string, object>? Parameters { get; set; } = null;
+    public Dictionary<string, object?>? Parameters { get; set; } = null;
 
     public string Conjunction { get; set; } = string.Empty;
 
-    public void AddParameter(string name, object value)
+    public void AddParameter(string name, object? value)
     {
         Parameters ??= new();
         Parameters.Add(name, value);

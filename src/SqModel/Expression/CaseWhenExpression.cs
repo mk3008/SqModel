@@ -24,7 +24,7 @@ public class CaseWhenExpression : IValueClause
         return q;
     }
 
-    public void AddParameter(string name, object value)
+    public void AddParameter(string name, object? value)
         => throw new NotSupportedException();
 
     public string GetName() => string.Empty;

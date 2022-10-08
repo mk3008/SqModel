@@ -49,10 +49,10 @@ public class SelectColumn
 
         q.Select.Add().Value("a.table_a_id").As("id");
         q.Select.Add().Value(10).As("id");
-        q.Select.Add().Value(":val1 + :val2").As("id").Parameter(":val1", 10).Parameter(":val2", 20);
+        q.Select.Add().Value(":val1 + :val2").As("id").AddParameter(":val1", 10).AddParameter(":val2", 20);
 
         //brief
-        q.Select(":val1 + :val2").As("id").Parameter(":val1", 10).Parameter(":val2", 20);
+        q.Select(":val1 + :val2").As("id").AddParameter(":val1", 10).AddParameter(":val2", 20);
 
         q.Select.Add().InlineQuery(x =>
         {

@@ -124,12 +124,12 @@ from y";
     public void Valiable()
     {
         var q1 = CreateCommonQuery("table_a", "a");
-        q1.Select(":val1").As("value1").Parameter(":val1", 1);
+        q1.Select(":val1").As("value1").AddParameter(":val1", 1);
 
         var q2 = new SelectQuery();
         var y = q2.From(q1).As("y");
         q2.Select(y, "*");
-        q2.Select(":val2").As("value2").Parameter(":val2", 2);
+        q2.Select(":val2").As("value2").AddParameter(":val2", 2);
 
         var prm = q2.ToQuery().Parameters;
 

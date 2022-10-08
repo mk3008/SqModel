@@ -45,7 +45,11 @@ public static class IValueContainerExtension
         return source;
     }
 
-    public static IValueContainer Parameter(this IValueContainer source, string name, object value)
+    [Obsolete("use AddParameter")]
+    public static IValueContainer Parameter(this IValueContainer source, string name, object? value)
+        => AddParameter(source, name, value);
+
+    public static IValueContainer AddParameter(this IValueContainer source, string name, object? value)
     {
         if (source.Command == null) throw new InvalidProgramException();
         source.Command.AddParameter(name, value);
