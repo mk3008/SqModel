@@ -6,11 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SqModelTest;
 
 public class SelectColumn
 {
+    public SelectColumn(ITestOutputHelper output)
+    {
+        Output = output;
+    }
+
+    private readonly ITestOutputHelper Output;
+
     [Fact]
     public void Default()
     {
@@ -85,5 +93,7 @@ public class SelectColumn
         //        Assert.Equal(expect, acutal.CommandText);
         //        Assert.Single(acutal.Parameters);
         //        Assert.Equal(1, acutal.Parameters[":id"]);
+
+        q.GetSelectItems().ForEach(x => Output.WriteLine(x.Name));
     }
 }

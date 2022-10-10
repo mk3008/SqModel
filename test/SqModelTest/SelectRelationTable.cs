@@ -1,11 +1,19 @@
 using SqModel;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SqModelTest;
 
 public class SelectRelationTable
 {
+    public SelectRelationTable(ITestOutputHelper output)
+    {
+        Output = output;
+    }
+
+    private readonly ITestOutputHelper Output;
+
     [Fact]
     public void Default()
     {
@@ -95,5 +103,7 @@ right join table_e as e on a.table_a_id = e.table_a_id
 cross join table_f as f";
 
         Assert.Equal(expect, text);
+
+        q.GetTableClauses().ForEach(x => Output.WriteLine(x.AliasName));
     }
 }
