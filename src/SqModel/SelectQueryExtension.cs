@@ -31,6 +31,15 @@ public static class SelectQueryExtension
 
     public static Query ToInsertQuery(this SelectQuery source, string tablename, List<string> keys)
     {
+        if (source.FromClause.TableName == String.Empty)
+        {
+            return ToInsertFromValue(source, tablename, keys);
+        }
+        return ToInsertFromQuery(source, tablename, keys);
+    }
+
+    private static Query ToInsertFromQuery(this SelectQuery source, string tablename, List<string> keys)
+    {
         var filter = (string s) => keys.Contains(s);
 
         var sq = new SelectQuery();
@@ -49,7 +58,29 @@ public static class SelectQueryExtension
         return q;
     }
 
+    private static Query ToInsertFromValue(this SelectQuery source, string tablename, List<string> keys)
+    {
+        var filter = (string s) => keys.Contains(s);
+
+        source.Select.Collection.Where(x => filter(x.Name)).ToList().ForEach(x => source.Select.Collection.Remove(x));
+
+        var q = source.ToQuery();
+        var coltext = $"({source.Select.GetColumnNames().ToString(", ")})";
+
+        q.CommandText = $"insert into {tablename}{coltext}\r\n{q.CommandText}";
+        return q;
+    }
+
     public static Query ToUpdateQuery(this SelectQuery source, string tablename, List<string> keys)
+    {
+        if (source.FromClause.TableName == String.Empty)
+        {
+            return ToUpdateFromValue(source, tablename, keys);
+        }
+        return ToUpdateFromQuery(source, tablename, keys);
+    }
+
+    private static Query ToUpdateFromQuery(this SelectQuery source, string tablename, List<string> keys)
     {
         var t = "t";
         var cols = source.Select.GetColumnNames();
@@ -77,6 +108,41 @@ set
 {whereQ.CommandText}";
 
         q.Parameters = q.Parameters.Merge(fromQ.Parameters).Merge(whereQ.Parameters);
+
+        return q;
+    }
+
+    public static Query ToUpdateFromValue(this SelectQuery source, string tablename, List<string> keys)
+    {
+        var filter = (string s) => keys.Contains(s);
+        var alias = "t";
+
+        var q = new Query();
+        q.Parameters = source.ToQuery().Parameters;
+
+        var values = source.Select.Collection.Where(x => !filter(x.Name)).ToList();
+        var ids = source.Select.Collection.Where(x => filter(x.Name)).ToList();
+
+        //set
+        var lst = new List<string>();
+        values.ForEach(x =>
+        {
+            if (x.Command == null) throw new Exception();
+            lst.Add($"{x.Name} = {x.Command.ToQuery().CommandText}");
+        });
+
+        var wq = new SelectQuery();
+        var t = wq.From("tablename").As(alias);
+        ids.ForEach(x =>
+        {
+            if (x.Command == null) throw new Exception();
+            wq.Where.Add().Column(t, x.Name).Equal(x.Command.ToQuery().CommandText);
+        });
+
+        q.CommandText = $@"update {tablename} as {alias}
+set
+    {lst.ToString("\r\n    , ")}
+{wq.WhereClause.ToQuery().CommandText}";
 
         return q;
     }
