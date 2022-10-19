@@ -29,17 +29,15 @@ public static class SelectQueryExtension
         return source;
     }
 
-    public static Query ToInsertQuery(this SelectQuery source, string tablename, List<string>? ignorecols = null)
+    public static Query ToInsertQuery(this SelectQuery source, string tablename, List<string> keys)
     {
-        var filter = (string x) =>
-        {
-            if (ignorecols == null) return true;
-            return !ignorecols.Contains(x);
-        };
+        var filter = (string s) => keys.Contains(s);
 
         var sq = new SelectQuery();
         var d = sq.From(source).As("d");
-        source.Select.GetColumnNames().Where(x => filter(x)).ToList().ForEach(x =>
+        source.Select.Collection.Where(x => filter(x.Name)).ToList().ForEach(x => source.Select.Collection.Remove(x));
+
+        source.Select.GetColumnNames().ForEach(x =>
         {
             sq.Select.Add().Column(d, x);
         });

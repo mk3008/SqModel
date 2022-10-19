@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Extension;
 
-internal static class stringExtension
+public static class stringExtension
 {
     public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
@@ -73,5 +73,16 @@ internal static class stringExtension
         if (source.Length == 0) return false;
         var c = source.ToCharArray().First();
         return SqlParser.LetterChars.Where(x => x == c).Any();
+    }
+
+    public static string ToSnakeCase(this string source)
+    {
+        var sb = new StringBuilder();
+        source.ToList().ForEach(x =>
+        {
+            if (sb.Length != 0 && x.ToString() == x.ToString().ToUpper()) sb.Append("_");
+            sb.Append(x);
+        });
+        return sb.ToString();
     }
 }
