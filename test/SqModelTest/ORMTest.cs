@@ -71,13 +71,8 @@ public class ORMTest
 
         var sql = @"insert into models(ModelName, Price)
 select
-    d.ModelName
-    , d.Price
-from (
-    select
-        :modelname as ModelName
-        , :price as Price
-) as d";
+    :modelname as ModelName
+    , :price as Price";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal("test", q.Parameters[":modelname"]);
@@ -98,13 +93,8 @@ from (
 
         var sql = @"insert into models(model_name, price)
 select
-    d.model_name
-    , d.price
-from (
-    select
-        :modelname as model_name
-        , :price as price
-) as d";
+    :modelname as model_name
+    , :price as price";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal("test", q.Parameters[":modelname"]);
@@ -124,16 +114,10 @@ from (
 
         var sql = @"update models as t
 set
-    ModelName = d.ModelName
-    , Price = d.Price
-from (
-    select
-        :modelid as ModelId
-        , :modelname as ModelName
-        , :price as Price
-) as d
+    ModelName = :modelname
+    , Price = :price
 where
-    t.ModelId = d.ModelId";
+    t.ModelId = :modelid";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal(0, q.Parameters[":modelid"]);
