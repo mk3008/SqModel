@@ -13,7 +13,7 @@ public partial class SqlParser
     public static SelectQuery Parse(object obj, string parametercmd = ":", Func<string, string>? nameconverter = null, Func<PropertyInfo, bool>? propfilter = null)
     {
         var conv = nameconverter;
-        conv ??= x => x.ToLower();
+        conv ??= x => x;
 
         var filter = propfilter;
         filter ??= _ => true;

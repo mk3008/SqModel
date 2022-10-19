@@ -1,5 +1,6 @@
 ﻿using SqModel;
 using SqModel.Analysis;
+using SqModel.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +28,9 @@ public class ORMTest
         var q = sq.ToQuery();
 
         var sql = @"select
-    :modelid as modelid
-    , :modelname as modelname
-    , :price as price";
+    :modelid as ModelId
+    , :modelname as ModelName
+    , :price as Price";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal(0, q.Parameters[":modelid"]);
@@ -46,9 +47,9 @@ public class ORMTest
         var q = sq.ToQuery();
 
         var sql = @"select
-    :modelid as modelid
-    , :modelname as modelname
-    , :price as price";
+    :modelid as ModelId
+    , :modelname as ModelName
+    , :price as Price";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal(0, q.Parameters[":modelid"]);
@@ -65,17 +66,43 @@ public class ORMTest
 
         //remove seq column
         var keys = new List<string>();
-        keys.Add("modelid");
+        keys.Add("ModelId");
         var q = sq.ToInsertQuery("models", keys);
 
-        var sql = @"insert into models(modelname, price)
+        var sql = @"insert into models(ModelName, Price)
 select
-    d.modelname
+    d.ModelName
+    , d.Price
+from (
+    select
+        :modelname as ModelName
+        , :price as Price
+) as d";
+
+        Assert.Equal(sql, q.CommandText);
+        Assert.Equal("test", q.Parameters[":modelname"]);
+        Assert.Equal(10, q.Parameters[":price"]);
+    }
+
+    [Fact]
+    public void ObjectToInsertQueryTest2()
+    {
+        var c = new Model() { ModelName = "test", Price = 10 };
+
+        var sq = SqlParser.Parse(c, nameconverter: x => x.ToSnakeCase().ToLower());
+
+        //remove seq column
+        var keys = new List<string>();
+        keys.Add("model_id");
+        var q = sq.ToInsertQuery("models", keys);
+
+        var sql = @"insert into models(model_name, price)
+select
+    d.model_name
     , d.price
 from (
     select
-        :modelid as modelid
-        , :modelname as modelname
+        :modelname as model_name
         , :price as price
 ) as d";
 
@@ -92,21 +119,21 @@ from (
         var sq = SqlParser.Parse(c);
 
         var keys = new List<string>();
-        keys.Add("modelid");
+        keys.Add("ModelId");
         var q = sq.ToUpdateQuery("models", keys);
 
         var sql = @"update models as t
 set
-    modelname = d.modelname
-    , price = d.price
+    ModelName = d.ModelName
+    , Price = d.Price
 from (
     select
-        :modelid as modelid
-        , :modelname as modelname
-        , :price as price
+        :modelid as ModelId
+        , :modelname as ModelName
+        , :price as Price
 ) as d
 where
-    t.modelid = d.modelid";
+    t.ModelId = d.ModelId";
 
         Assert.Equal(sql, q.CommandText);
         Assert.Equal(0, q.Parameters[":modelid"]);
