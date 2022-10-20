@@ -34,7 +34,7 @@ public static class LogicalExpressionExtension
     public static LogicalExpression Column(this LogicalExpression source, string table, string column)
         => source.SetLeftValue(ValueBuilder.Create(table, column));
 
-    public static LogicalExpression SetLeftValue(this LogicalExpression source, IValueClause value)
+    private static LogicalExpression SetLeftValue(this LogicalExpression source, IValueClause value)
     {
         source.Left = value;
         return source;
@@ -69,6 +69,15 @@ public static class LogicalExpressionExtension
 
     public static void False(this LogicalExpression source)
         => source.SetRightCommand("=", ValueBuilder.Create(false));
+
+    public static IValueClause Comparison(this LogicalExpression source, string @operator, TableClause table, string column)
+        => source.SetRightCommand(@operator, ValueBuilder.Create(table, column));
+
+    public static IValueClause Comparison(this LogicalExpression source, string @operator, string table, string column)
+        => source.SetRightCommand(@operator, ValueBuilder.Create(table, column));
+
+    public static IValueClause Comparison(this LogicalExpression source, string @operator, object commandtext)
+        => source.SetRightCommand(@operator, ValueBuilder.Create(commandtext));
 
     private static IValueClause SetRightCommand(this LogicalExpression source, string conjunction, IValueClause value)
     {

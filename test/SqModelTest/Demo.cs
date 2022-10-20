@@ -134,7 +134,8 @@ from (
         sq.Where.Add().Column(a, "id").IsNotNull();
         sq.Where.Add().Column(a, "id").True();
         sq.Where.Add().Column(a, "id").False();
-        sq.Where.Add().Column(a, "id").Right = new CommandValue() { Conjunction = ">=", CommandText = "10" };
+        sq.Where.Add().Column(a, "id").Comparison(">=", "10");
+        sq.Where.Add().Column(a, "id").Comparison("!=", ":id3").Parameter(":id3", 10);
 
         var q = sq.ToQuery();
         var expect = @"select
@@ -148,7 +149,8 @@ where
     and a.id is not null
     and a.id = true
     and a.id = false
-    and a.id >= 10";
+    and a.id >= 10
+    and a.id != :id3";
 
         Assert.Equal(expect, q.CommandText);
     }
