@@ -99,6 +99,49 @@ cross join table_e as e";
     }
 
     [Fact]
+    public void TableJoin_ManyColumns()
+    {
+        var cols = new List<string>() { "col1", "col2", "col3" };
+        var sq = new SelectQuery();
+        var a = sq.From("table_a").As("a");
+        var b = a.InnerJoin("table_b").As("b").On(cols);
+
+        sq.SelectAll();
+
+        var q = sq.ToQuery().CommandText;
+        var expect = @"select
+    *
+from table_a as a
+inner join table_b as b on a.col1 = b.col1 and a.col2 = b.col2 and a.col3 = b.col3";
+
+        Assert.Equal(expect, q);
+    }
+
+    [Fact]
+    public void TableJoin_Custom()
+    {
+        var cols = new List<string>() { "col1", "col2", "col3" };
+        var sq = new SelectQuery();
+        var a = sq.From("table_a").As("a");
+        var b = a.InnerJoin("table_b").As("b").On(g =>
+        {
+            g.IsDecorateBracket = false;
+            g.Add().Column(g.LeftTable, "id").Equal(g.RightTable, "table_a_id");
+            g.Add().Column(g.LeftTable, "value").Equal(10);
+        });
+
+        sq.SelectAll();
+
+        var q = sq.ToQuery().CommandText;
+        var expect = @"select
+    *
+from table_a as a
+inner join table_b as b on a.id = b.table_a_id and a.value = 10";
+
+        Assert.Equal(expect, q);
+    }
+
+    [Fact]
     public void SubQuery()
     {
         var sq = new SelectQuery();
