@@ -132,6 +132,16 @@ public static class TableClauseExtension
     public static TableClause On(this TableClause source, string column)
         => source.On(column, column);
 
+    public static TableClause On(this TableClause source, List<string> columns)
+    {
+        source.On(g =>
+        {
+            g.IsDecorateBracket = false;
+            columns.ForEach(x => g.Add().Column(g.LeftTable, x).Equal(g.RightTable, x));
+        });
+        return source;
+    }
+
     public static TableClause On(this TableClause source, string sourcecolumn, string destinationcolumn)
     {
         var st = source.RelationClause.LeftTable;
