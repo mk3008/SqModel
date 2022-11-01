@@ -20,14 +20,21 @@ public class SelectItem : IValueContainer, IQueryable
     /// </summary>
     public string Name { get; set; } = string.Empty;
 
-    public virtual Query ToQuery()
+    public Query ToQuery()
     {
-        if (Command == null) throw new InvalidProgramException();
+        if (Command == null) throw new InvalidProgramException("Command property is null.");
         var q = Command.ToQuery();
 
         if (Name.IsNotEmpty() && Name != Command.GetName()) q.AddToken($"as {Name}");
 
         return q;
+    }
+
+    public string ToCommandText()
+    {
+        if (Command == null) throw new InvalidProgramException("Command property is null.");
+        var q = Command.ToQuery();
+        return q.CommandText;
     }
 }
 
