@@ -130,6 +130,34 @@ from a";
     }
 
     [Fact]
+    public void WindowFunction()
+    {
+        using var p = new SqlParser(@"select row_number() over (partition by a.name order by a.id) as row_num from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    row_number() over(partition by a.name order by a.id) as row_num
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void WindowFunction_nospace()
+    {
+        using var p = new SqlParser(@"select row_number() over(partition by a.name order by a.id) as row_num from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    row_number() over(partition by a.name order by a.id) as row_num
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Full()
     {
         using var p = new SqlParser(@"select
