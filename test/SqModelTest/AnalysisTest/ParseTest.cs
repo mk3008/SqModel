@@ -130,6 +130,23 @@ from a";
     }
 
     [Fact]
+    public void Brackets()
+    {
+        using var p = new SqlParser(@"select * from a where ((a.c2=2) or (a.c3=3)) and a.c1=1");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    *
+from a
+where
+    ((a.c2 = 2) or (a.c3 = 3))
+    and a.c1 = 1";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void WindowFunction()
     {
         using var p = new SqlParser(@"select row_number() over (partition by a.name order by a.id) as row_num from a");
