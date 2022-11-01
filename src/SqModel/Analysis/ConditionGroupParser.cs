@@ -31,27 +31,29 @@ internal class ConditionGroupParser
         return group;
     }
 
-    private static void AddGroup(SqlParser Parser, ConditionGroup group, string @operator)
+    private static void AddGroup(SqlParser parser, ConditionGroup group, string @operator)
     {
         var suboperator = string.Empty;
 
-        var q = Parser.ReadTokensWithoutComment();
+        var q = parser.ReadTokensWithoutComment();
+        if (parser.CurrentToken.IsEmpty()) q.First();
 
-        if (Parser.CurrentToken.ToLower() == "not")
+        if (parser.CurrentToken.ToLower() == "not")
         {
-            suboperator = Parser.CurrentToken;
+            suboperator = parser.CurrentToken;
             q.First();
         }
 
-        if (Parser.CurrentToken == "(")
+        if (parser.CurrentToken == "(")
         {
-            var g = new ConditionGroup() { Operator = @operator , SubOperator = suboperator};
+            var g = new ConditionGroup() { Operator = @operator, SubOperator = suboperator };
+            group.Collection.Add(g);
+
             var inner = q.First(); // inner text
             q.First(); // ')'
             q.First(); // next
 
-            using var p = new SqlParser(inner) { Logger = Parser.Logger };
-            group.Collection.Add(g);
+            using var p = new SqlParser(inner) { Logger = parser.Logger };
 
             AddGroup(p, g, @operator);
             while (p.CurrentToken.IsLogicalOperator())
@@ -63,7 +65,7 @@ internal class ConditionGroupParser
 
             return;
         }
-        else if (Parser.CurrentToken.ToLower() == "exists")
+        else if (parser.CurrentToken.ToLower() == "exists")
         {
             var tmp = q.First();
             if (tmp != "(") throw new InvalidProgramException();
@@ -72,7 +74,7 @@ internal class ConditionGroupParser
             q.First(); // ')'
             q.First(); // next
 
-            using var p = new SqlParser(subquery) { Logger = Parser.Logger };
+            using var p = new SqlParser(subquery) { Logger = parser.Logger };
             var eq = p.ParseSelectQuery();
             eq.IsOneLineFormat = true;
             group.Add().SetOperator(@operator, suboperator).Exists(eq);
@@ -80,7 +82,7 @@ internal class ConditionGroupParser
         }
         else
         {
-            group.Add().SetOperator(@operator, suboperator).Expression = LogicalExpressionParser.Parse(Parser);
+            group.Add().SetOperator(@operator, suboperator).Expression = LogicalExpressionParser.Parse(parser);
             return;
         }
     }

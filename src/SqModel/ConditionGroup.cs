@@ -23,7 +23,7 @@ public class ConditionGroup : IQueryable, ICondition
         var splitter = IsOneLineFormat ? " " : "\r\n";
         var q = new Query();
         Collection.ForEach(x => q = q.Merge(x.ToQuery(), $"{splitter}{x.Operator} "));
-        if (IsDecorateBracket && Collection.Count > 1) q = q.DecorateBracket();
+        if (IsDecorateBracket) q = q.DecorateBracket();
         return q;
     }
 }
