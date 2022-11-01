@@ -143,7 +143,8 @@ public static class ValueClauseParser
         //logic();
         while (parser.CurrentToken.IsNotEmpty() && !parser.ValueBreakTokens.Contains(parser.CurrentToken))
         {
-            if (parser.CurrentToken.IsLetter() && !parser.PeekOrDefault().IsSymbol()) break;
+            var current = parser.CurrentToken;
+            if (current.IsLetter() && current.ToLower() != "over" && !parser.PeekOrDefault().IsSymbol()) break;
 
             logic();
             q.First();
