@@ -127,13 +127,14 @@ public partial class SqlParser
     private string ReadWordCrLfEnd()
     {
         var s = new StringBuilder();
-        var w = ReadWord();
+        var ignoreSpaceTokens = "\r\n".ToCharArray();
+        var w = ReadWord(ignoreSpaceTokens);
 
         while (w.IsNotEmpty())
         {
             s.Append(w);
             if (w == "\r" || w == "\r\n" || w == "\n") break;
-            w = ReadWord();
+            w = ReadWord(ignoreSpaceTokens);
         }
         return s.ToString();
     }
@@ -154,7 +155,7 @@ public partial class SqlParser
         return s.ToString();
     }
 
-    public string ReadWord()
+    public string ReadWord(char[]? ignoreSpaceTokens = null)
     {
         var cache = new StringBuilder();
 
@@ -237,7 +238,7 @@ public partial class SqlParser
 
         if (nextchar.IsSpace())
         {
-            while (nextchar.IsSpace())
+            while (nextchar.IsSpace() && !(ignoreSpaceTokens.Contains(nextchar)))
             {
                 cache.Append(Read());
                 nextchar = PeekOrDefault();

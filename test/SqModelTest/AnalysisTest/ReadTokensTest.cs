@@ -186,6 +186,22 @@ public class ReadTokensTest
         Assert.Equal("", lst[3]);
     }
 
+
+    [Fact]
+    public void LineComment_spaceend()
+    {
+        var text = "start-- comment text \r\n end";
+        using var p = new SqlParser(text);
+        p.Logger = (x) => Output.WriteLine(x);
+        var lst = p.ReadTokens().ToList();
+
+        Assert.Equal(4, lst.Count);
+        Assert.Equal("start", lst[0]);
+        Assert.Equal("-- comment text \r\n", lst[1]);
+        Assert.Equal("end", lst[2]);
+        Assert.Equal("", lst[3]);
+    }
+
     [Fact]
     public void BlockComment()
     {
