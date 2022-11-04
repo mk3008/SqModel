@@ -57,7 +57,7 @@ public static class ValueClauseParser
             var col = parser.CurrentToken;
             q.First();
 
-            if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken))
+            if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken) || parser.CurrentToken == "||")
             {
                 cache.Add(parser.CurrentToken);
                 cache.AddRange(ReadUntilValueBreak(parser));
