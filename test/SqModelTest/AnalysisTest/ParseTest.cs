@@ -175,6 +175,20 @@ from a";
     }
 
     [Fact]
+    public void Pipe()
+    {
+        using var p = new SqlParser(@"select a.val1 || a.val2 as text from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.val1 || a.val2 as text
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Full()
     {
         using var p = new SqlParser(@"select
