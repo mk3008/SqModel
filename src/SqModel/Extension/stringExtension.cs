@@ -75,6 +75,12 @@ public static class stringExtension
         return SqlParser.LetterChars.Where(x => x == c).Any();
     }
 
+    public static bool IsWord(this string source)
+    {
+        if (source.Length == 0) return false;
+        return !(source.ToCharArray().ToList().Where(x => !SqlParser.LetterChars.Contains(x)).Any());
+    }
+
     public static string ToSnakeCase(this string source)
     {
         var sb = new StringBuilder();

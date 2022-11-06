@@ -20,6 +20,13 @@ public static class ValueClauseParser
         var cache = new List<string>();
         var q = parser.ReadTokensWithoutComment();
 
+        var recursiveParse = () =>
+        {
+            var text = Parse(parser).ToQuery().CommandText;
+            cache.Add(text);
+            return ToCommandValue(cache);
+        };
+
         cache.Add(parser.CurrentToken.IsNotEmpty() ? parser.CurrentToken : q.First());
 
         if (parser.CurrentToken == "(")
@@ -47,6 +54,7 @@ public static class ValueClauseParser
 
         q.First();
         if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken)) return ToCommandValue(cache);
+        if (parser.CurrentToken.IsWord() && parser.CurrentToken.ToLower() != "is" && parser.CurrentToken.ToLower() != "null") return ToCommandValue(cache);
 
         cache.Add(parser.CurrentToken);
 
@@ -60,8 +68,8 @@ public static class ValueClauseParser
             if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken) || parser.CurrentToken == "||")
             {
                 cache.Add(parser.CurrentToken);
-                cache.AddRange(ReadUntilValueBreak(parser));
-                return ToCommandValue(cache);
+                q.First();
+                return recursiveParse();
             }
             else
             {
@@ -69,7 +77,6 @@ public static class ValueClauseParser
                 return item;
             }
         }
-
 
         if (parser.CurrentToken == ".*" && cache.Count == 2)
         {
@@ -86,70 +93,17 @@ public static class ValueClauseParser
             cache.Add(parser.CurrentToken);
         }
 
-        cache.AddRange(ReadUntilValueBreak(parser));
-
-        return ToCommandValue(cache);
-    }
-
-    private static List<string> ReadUntilValueBreak(SqlParser parser)
-    {
-        var q = parser.ReadTokensWithoutComment();
-        var lst = new List<string>();
-
-        var readBracket = () =>
-        {
-            lst.Add(parser.CurrentToken); //open
-            q.First(); //inner text
-            if (parser.CurrentToken.IsNotEmpty()) lst.Add(parser.CurrentToken);
-            q.First(); //close 
-            lst.Add(parser.CurrentToken);
-        };
-
-        var readArithmetic = () =>
-        {
-            lst.Add(parser.CurrentToken); //ArithmeticOperator
-            q.First();
-            lst.Add(parser.CurrentToken);
-        };
-
-        var readDot = () =>
-        {
-            lst.Add(parser.CurrentToken); //dot
-            q.First();
-            lst.Add(parser.CurrentToken);
-        };
-
-        var logic = () =>
-        {
-            if (parser.CurrentToken == "(")
-            {
-                readBracket();
-            }
-            else if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken))
-            {
-                readArithmetic();
-            }
-            else if (parser.CurrentToken == ".")
-            {
-                readDot();
-            }
-            else
-            {
-                lst.Add(parser.CurrentToken);
-            }
-        };
-
         q.First();
-        //logic();
-        while (parser.CurrentToken.IsNotEmpty() && !parser.ValueBreakTokens.Contains(parser.CurrentToken))
+        if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken))
         {
-            var current = parser.CurrentToken;
-            if (current.IsLetter() && current.ToLower() != "over" && !parser.PeekOrDefault().IsSymbol()) break;
-
-            logic();
-            q.First();
+            return ToCommandValue(cache);
         }
-        return lst;
+        if (parser.CurrentToken.IsLetter() && parser.CurrentToken.ToLower() != "over" && !parser.PeekOrDefault().IsSymbol())
+        {
+            return ToCommandValue(cache);
+        };
+
+        return recursiveParse();
     }
 
     private static CommandValue ToCommandValue(List<string> cache)
