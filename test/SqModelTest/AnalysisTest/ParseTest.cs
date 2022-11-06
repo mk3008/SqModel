@@ -102,6 +102,22 @@ group by
     }
 
     [Fact]
+    public void Expression_noalias()
+    {
+        using var p = new SqlParser(@"select
+    a.col1 * 1.23 c
+from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.col1 * 1.23 as c
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Expression()
     {
         using var p = new SqlParser(@"select
@@ -185,6 +201,37 @@ from a";
         var expect = @"select
     a.val1 || a.val2 as text
 from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void PipeAndFunction()
+    {
+        using var p = new SqlParser(@"select a.txt1 || case when 1=1 then 1 else 2 end as text from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    a.txt1 || case when 1 = 1 then 1 else 2 end as text
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void NullTest()
+    {
+        using var p = new SqlParser(@"select * from a where a.id is not null and a.id is null");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    *
+from a
+where
+    a.id is not null
+    and a.id is null";
         Assert.Equal(expect, text);
     }
 
