@@ -125,7 +125,7 @@ public static class ValueClauseParser
         var prev = string.Empty;
         cache.ForEach(x =>
         {
-            if (x == "." || x == "(" || x == ")" || sb.Length == 0)
+            if (x == "." || x == "(" || x == ")" || sb.Length == 0 || x.IndexOf("::") == 0)
             {
                 sb.Append(x);
             }

@@ -191,6 +191,20 @@ from a";
     }
 
     [Fact]
+    public void TypeConvert()
+    {
+        using var p = new SqlParser(@"select (1+1)::text as v1 from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    (1+1)::text as v1
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Pipe()
     {
         using var p = new SqlParser(@"select a.val1 || a.val2 as text from a");
