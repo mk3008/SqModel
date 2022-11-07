@@ -1,4 +1,5 @@
-﻿using SqModel.Extension;
+﻿using SqModel.Expression;
+using SqModel.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,28 @@ public static class ValueClauseParser
     }
 
     public static IValueClause Parse(SqlParser parser)
+    {
+        var c = ParseCore(parser);
+        if (!parser.CurrentToken.IsConjunction()) return c;
+
+        var exp = new ValueExpression();
+        exp.Collection.Add(c);
+
+        while (parser.CurrentToken.IsConjunction())
+        {
+            var q = parser.ReadTokensWithoutComment();
+            var con = parser.CurrentToken;
+            q.First();
+
+            var cmd = ValueClauseParser.ParseCore(parser);
+            cmd.Conjunction = con;
+            exp.Collection.Add(cmd);
+        }
+
+        return exp;
+    }
+
+    private static IValueClause ParseCore(SqlParser parser)
     {
         var cache = new List<string>();
         var q = parser.ReadTokensWithoutComment();
@@ -55,6 +78,7 @@ public static class ValueClauseParser
         q.First();
         if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken)) return ToCommandValue(cache);
         if (parser.CurrentToken.IsWord() && parser.CurrentToken.ToLower() != "is" && parser.CurrentToken.ToLower() != "null") return ToCommandValue(cache);
+        if (parser.CurrentToken.IsConjunction()) return ToCommandValue(cache);
 
         cache.Add(parser.CurrentToken);
 
@@ -65,17 +89,8 @@ public static class ValueClauseParser
             var col = parser.CurrentToken;
             q.First();
 
-            if (SqlParser.ArithmeticOperatorTokens.Contains(parser.CurrentToken) || parser.CurrentToken == "||")
-            {
-                cache.Add(parser.CurrentToken);
-                q.First();
-                return recursiveParse();
-            }
-            else
-            {
-                var item = new ColumnValue() { Table = cache.First(), Column = col };
-                return item;
-            }
+            var item = new ColumnValue() { Table = cache.First(), Column = col };
+            return item;
         }
 
         if (parser.CurrentToken == ".*" && cache.Count == 2)
@@ -94,16 +109,13 @@ public static class ValueClauseParser
         }
 
         q.First();
-        if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken))
-        {
-            return ToCommandValue(cache);
-        }
-        if (parser.CurrentToken.IsLetter() && parser.CurrentToken.ToLower() != "over" && !parser.PeekOrDefault().IsSymbol())
-        {
-            return ToCommandValue(cache);
-        };
 
-        return recursiveParse();
+        if (parser.CurrentToken.ToLower() == "over")
+        {
+            return recursiveParse();
+        }
+
+        return ToCommandValue(cache);
     }
 
     private static CommandValue ToCommandValue(List<string> cache)
