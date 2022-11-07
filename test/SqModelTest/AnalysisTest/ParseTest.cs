@@ -205,7 +205,21 @@ from a";
     }
 
     [Fact]
-    public void PipeAndFunction()
+    public void CasePipe()
+    {
+        using var p = new SqlParser(@"select case when 1=1 then '1' else '2' end || 'a' as text from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case when 1 = 1 then '1' else '2' end || 'a' as text
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void PipeCase()
     {
         using var p = new SqlParser(@"select a.txt1 || case when 1=1 then 1 else 2 end as text from a");
         p.Logger = (x) => Output.WriteLine(x);

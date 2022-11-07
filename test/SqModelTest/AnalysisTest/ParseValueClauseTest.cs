@@ -66,7 +66,7 @@ public class ParseValueClauseTest
         var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
-        Assert.Equal(text, sql);
+        Assert.Equal("(1 + 2) * 3.4", sql);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class ParseValueClauseTest
         var val = ValueClauseParser.Parse(text);
         var sql = val.ToQuery().CommandText;
 
-        Assert.Equal(text, sql);
+        Assert.Equal("a.value * 3.4", sql);
     }
 
     [Fact]
