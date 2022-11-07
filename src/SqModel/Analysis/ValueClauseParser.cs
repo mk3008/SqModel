@@ -115,6 +115,12 @@ public static class ValueClauseParser
             return recursiveParse();
         }
 
+        if (parser.CurrentToken.StartsWith("::"))
+        {
+            cache.Add(parser.CurrentToken);
+            q.First();
+        }
+
         return ToCommandValue(cache);
     }
 
@@ -125,7 +131,7 @@ public static class ValueClauseParser
         var prev = string.Empty;
         cache.ForEach(x =>
         {
-            if (x == "." || x == "(" || x == ")" || sb.Length == 0 || x.IndexOf("::") == 0)
+            if (x == "." || x == "(" || x == ")" || sb.Length == 0 || x.StartsWith("::"))
             {
                 sb.Append(x);
             }
