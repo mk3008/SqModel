@@ -204,6 +204,21 @@ from a";
         Assert.Equal(expect, text);
     }
 
+
+    [Fact]
+    public void ExpressionAndTypeConvert()
+    {
+        using var p = new SqlParser(@"select to_char(a.col1, 'yyyy')::int as v1 from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    to_char(a.col1, 'yyyy')::int as v1
+from a";
+        Assert.Equal(expect, text);
+    }
+
     [Fact]
     public void Pipe()
     {
