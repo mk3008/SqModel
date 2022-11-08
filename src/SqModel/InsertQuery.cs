@@ -16,7 +16,7 @@ public class InsertQuery
     public Query ToQuery()
     {
         var q = SelectQuery.ToQuery();
-        var cols = SelectQuery.SelectClause.GetColumnNames();
+        var cols = SelectQuery.Select.GetColumnNames();
 
         //If you are using wildcards, omit the column clause.
         var coltext = !cols.Any() ? "" : $"({cols.ToString(", ")})";

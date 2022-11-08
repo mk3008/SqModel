@@ -11,7 +11,7 @@ public class DistinctQuery
         var q = new SelectQuery();
         var table_a = q.From("table_a").As("a");
         q.Select(table_a, "name");
-        q.SelectClause.IsDistinct = true;
+        q.Select.IsDistinct = true;
         q.Distinct();
 
         var text = q.ToQuery().CommandText;
@@ -28,7 +28,7 @@ from table_a as a";
         var q = new SelectQuery();
         var table_a = q.From("table_a").As("a");
         q.Select(table_a, "name");
-        q.SelectClause.IsDistinct = true;
+        q.Select.IsDistinct = true;
         q.Distinct(false);
 
         var text = q.ToQuery().CommandText;
