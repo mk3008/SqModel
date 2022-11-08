@@ -1,6 +1,7 @@
 ﻿using SqModel;
 using SqModel.Extension;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -79,6 +80,8 @@ public partial class SelectQuery
 
     public bool IsIncludeOrder { get; set; } = true;
 
+    public Dictionary<string, object?>? Parameters = null;
+
     public Query ToQuery()
     {
         var splitter = IsOneLineFormat ? " " : "\r\n";
@@ -127,6 +130,8 @@ public partial class SelectQuery
         append(havingQ);
         append(unionQ);
         append(orderQ);
+
+        prms.Merge(Parameters);
 
         return new Query() { CommandText = sb.ToString(), Parameters = prms };
     }
