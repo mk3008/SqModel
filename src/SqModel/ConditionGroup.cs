@@ -14,6 +14,10 @@ public class ConditionGroup : IQueryable, ICondition
 
     public List<ICondition> Collection { get; } = new();
 
+    public string LeftTable { get; set; } = string.Empty;
+
+    public string RightTable { get; set; } = string.Empty;
+
     public bool IsDecorateBracket { get; set; } = true;
 
     public bool IsOneLineFormat { get; set; } = true;

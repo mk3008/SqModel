@@ -150,10 +150,10 @@ public static class TableClauseExtension
         return source;
     }
 
-    public static TableClause On(this TableClause source, Action<RelationGroup> fn)
+    public static TableClause On(this TableClause source, Action<ConditionGroup> fn)
     {
         var r = source.RelationClause;
-        var g = new RelationGroup() { LeftTable = r.LeftTable, RightTable = r.RightTable };
+        var g = new ConditionGroup() { LeftTable = r.LeftTable, RightTable = r.RightTable };
         source.RelationClause.Collection.Add(g);
         fn(g);
         return source;
