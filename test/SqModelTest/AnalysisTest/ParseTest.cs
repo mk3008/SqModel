@@ -34,6 +34,25 @@ from a";
     }
 
     [Fact]
+    public void Parameter()
+    {
+        using var p = new SqlParser(@"select :prm as val from a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var sq = p.ParseSelectQuery();
+        sq.Parameters ??= new();
+        sq.Parameters.Add(":prm", 1);
+
+        var q = sq.ToQuery();
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    :prm as val
+from a";
+        Assert.Equal(expect, text);
+        Assert.Equal(1, q.Parameters[":prm"]);
+    }
+
+    [Fact]
     public void Simple()
     {
         using var p = new SqlParser(@"select a.column_1 as col1, a.column_2 as col2 from table_a as a");
