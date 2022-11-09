@@ -25,8 +25,7 @@ public class ParseWhereTest
         var clause = WhereClauseParser.Parse(condition);
         var q = clause.ToQuery();
         var expect = @"where
-    a.column_1 = 1
-    or a.column_2 = 2";
+    a.column_1 = 1 or a.column_2 = 2";
         Assert.Equal(expect, q.CommandText);
     }
 
