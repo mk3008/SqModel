@@ -63,8 +63,12 @@ public static class CaseExpressionParser
             {
                 var cv = CreateCaseValuePair(parser, token);
                 c.Collection.Add(cv);
+
+                if (parser.CurrentToken.ToLower() == "end") break;
+
                 token = ReadUntilSplitToken(parser);
                 continue;
+
             }
 
             if (parser.CurrentToken.ToLower() == "end")
