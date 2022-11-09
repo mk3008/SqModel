@@ -298,6 +298,58 @@ where
     }
 
     [Fact]
+    public void CaseWhenTest()
+    {
+        using var p = new SqlParser(@"select case when 1=1 then 1 end val");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case when 1 = 1 then 1 end as val";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void CaseWhenElseTest()
+    {
+        using var p = new SqlParser(@"select case when 1=1 then 1 else 2 end val");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case when 1 = 1 then 1 else 2 end as val";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void CaseTest()
+    {
+        using var p = new SqlParser(@"select case 1 when 1 then 1 end val");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case 1 when 1 then 1 end as val";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void CaseElseTest()
+    {
+        using var p = new SqlParser(@"select case 1 when 1 then 1 else 2 end val");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case 1 when 1 then 1 else 2 end as val";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Full()
     {
         using var p = new SqlParser(@"select
