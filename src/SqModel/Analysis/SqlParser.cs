@@ -160,7 +160,7 @@ public partial class SqlParser
         .Union(LogicalOperatorTokens)
         .Union(AliasTokens).ToArray();
 
-    public string[] ConditionBreakTokens =
+    internal string[] ConditionBreakTokens =
         InnerJoinTokens
         .Union(LeftJoinTokens)
         .Union(RightJoinTokens)
