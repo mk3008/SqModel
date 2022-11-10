@@ -27,15 +27,10 @@ public static class LogicalExpressionParser
         {
             sign = parser.CurrentToken;
             q.First();
-        }
-        else
-        {
-            throw new SyntaxException("LogicalExpression syntax error.");
-        }
 
-        c.Right = ValueClauseParser.Parse(parser);
-        c.Right.Conjunction = sign;
-
+            c.Right = ValueClauseParser.Parse(parser);
+            c.Right.Conjunction = sign;
+        }
         return c;
     }
 }

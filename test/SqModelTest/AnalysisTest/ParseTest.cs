@@ -281,6 +281,19 @@ from a";
     }
 
     [Fact]
+    public void CaseWhenBool()
+    {
+        using var p = new SqlParser(@"select case when true then true else false end");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case when true then true else false end";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void NullTest()
     {
         using var p = new SqlParser(@"select * from a where a.id is not null and a.id is null");
