@@ -67,25 +67,6 @@ from table_a as a";
         Assert.Equal(expect, text);
     }
 
-    //[Fact]
-    //public void Boolean()
-    //{
-    //    using var p = new SqlParser(@"select 1, 1 = 1, 1 <> 1, 1 != 1, true, 1 is null, 1 is not null");
-    //    p.Logger = (x) => Output.WriteLine(x);
-
-    //    var q = p.ParseSelectQuery();
-    //    var text = q.ToQuery().CommandText;
-    //    var expect = @"select
-    //1
-    //, 1 = 1
-    //, 1 <> 1
-    //, 1 != 1
-    //, true
-    //, 1 is null
-    //, 1 is not null";
-    //    Assert.Equal(expect, text);
-    //}
-
     [Fact]
     public void Simple2()
     {
