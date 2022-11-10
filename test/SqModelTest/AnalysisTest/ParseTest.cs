@@ -167,7 +167,7 @@ from a";
     [Fact]
     public void Brackets()
     {
-        using var p = new SqlParser(@"select * from a where ((a.c2=2) or (a.c3=3)) and a.c1=1");
+        using var p = new SqlParser(@"select * from a where ((a.c2 = 2) or (a.c3 = 3)) and a.c1 = 1");
         p.Logger = (x) => Output.WriteLine(x);
 
         var q = p.ParseSelectQuery();
@@ -383,8 +383,7 @@ inner join table_c as c on a.column_1 = c.column_1
 left join table_d as d on a.column_2 = d.column_2 and a.column_3 = d.column_3
 left join table_e as e on a.column_4 = e.column_4
 where
-    a.column_1 = 1
-    or a.column_2 = 2";
+    a.column_1 = 1 or a.column_2 = 2";
 
         Assert.Equal(expect, text);
 

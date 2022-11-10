@@ -35,9 +35,9 @@ public class TableClause
 
     public string SourceAlias { get; set; } = string.Empty;
 
-    public RelationGroup RelationClause { get; set; } = new RelationGroup() { IsDecorateBracket = false };
+    public ConditionGroup RelationClause { get; set; } = new ConditionGroup() { IsDecorateBracket = false };
 
-    public RelationGroup On => RelationClause;
+    public ConditionGroup On => RelationClause;
 
     public List<TableClause> SubTableClauses { get; set; } = new();
 

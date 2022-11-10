@@ -38,6 +38,26 @@ public static class ValueClauseParser
         return exp;
     }
 
+    public static ValueExpression ParseAsExpression(SqlParser parser)
+    {
+        var c = ParseCore(parser);
+        var exp = new ValueExpression();
+        exp.Collection.Add(c);
+
+        while (parser.CurrentToken.IsConjunction())
+        {
+            var q = parser.ReadTokensWithoutComment();
+            var con = parser.CurrentToken;
+            q.First();
+
+            var cmd = ValueClauseParser.ParseCore(parser);
+            cmd.Conjunction = con;
+            exp.Collection.Add(cmd);
+        }
+
+        return exp;
+    }
+
     private static IValueClause ParseCore(SqlParser parser)
     {
         var cache = new List<string>();
@@ -131,11 +151,19 @@ public static class ValueClauseParser
         var prev = string.Empty;
         cache.ForEach(x =>
         {
-            if (x == "." || x == "(" || x == ")" || sb.Length == 0 || x.StartsWith("::"))
+            if (sb.Length == 0)
             {
                 sb.Append(x);
             }
+            else if (prev.ToLower() == "exists")
+            {
+                sb.Append($" {x}");
+            }
             else if (prev == "." || prev == "(")
+            {
+                sb.Append(x);
+            }
+            else if (x == "." || x == "(" || x == ")" || x.StartsWith("::"))
             {
                 sb.Append(x);
             }

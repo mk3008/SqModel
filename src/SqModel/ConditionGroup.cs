@@ -14,15 +14,23 @@ public class ConditionGroup : IQueryable, ICondition
 
     public List<ICondition> Collection { get; } = new();
 
+    public string LeftTable { get; set; } = string.Empty;
+
+    public string RightTable { get; set; } = string.Empty;
+
     public bool IsDecorateBracket { get; set; } = true;
 
     public bool IsOneLineFormat { get; set; } = true;
 
     public Query ToQuery()
     {
-        var splitter = IsOneLineFormat ? " " : "\r\n";
         var q = new Query();
-        Collection.ForEach(x => q = q.Merge(x.ToQuery(), $"{splitter}{x.Operator} "));
+        Collection.ForEach(x =>
+        {
+            var splitter = " ";
+            if (IsOneLineFormat == false && x.Operator.ToLower() == "and") splitter = "\r\n";
+            q = q.Merge(x.ToQuery(), $"{splitter}{x.Operator} ");
+        });
         if (IsDecorateBracket) q = q.DecorateBracket();
         return q;
     }
