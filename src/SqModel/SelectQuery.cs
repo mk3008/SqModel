@@ -37,16 +37,26 @@ public partial class SelectQuery
 
     public WithClause With => WithClause;
 
+    [Obsolete("GetCommonTables")]
     public IEnumerable<CommonTable> GetCommonTableClauses()
+        => GetCommonTables();
+
+    public IEnumerable<CommonTable> GetCommonTables()
     {
         foreach (var item in FromClause.GetCommonTableClauses()) yield return item;
         foreach (var item in With.GetCommonTableClauses()) yield return item;
     }
 
+    public CommonTable? GetCommonTableOrDefault(string alias)
+        => GetCommonTables().Where(x => x.Name == alias).FirstOrDefault();
+
+    public CommonTable GetCommonTable(string alias)
+        => GetCommonTables().Where(x => x.Name == alias).First();
+
     public WithClause GetAllWith()
     {
         var w = new WithClause();
-        GetCommonTableClauses().ToList().ForEach(x => w.Collection.Add(x));
+        GetCommonTables().ToList().ForEach(x => w.Collection.Add(x));
 
         if (UnionClause != null && UnionClause.SelectQuery != null)
         {
@@ -144,5 +154,5 @@ public partial class SelectQuery
     }
 
     public CommonTable SearchCommonTable(string alias)
-        => GetCommonTableClauses().Where(x => x.Name == alias).First();
+        => GetCommonTables().Where(x => x.Name == alias).First();
 }
