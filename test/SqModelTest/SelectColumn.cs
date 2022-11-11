@@ -96,4 +96,26 @@ public class SelectColumn
 
         q.GetSelectItems().ForEach(x => Output.WriteLine(x.Name));
     }
+
+    [Fact]
+    public void AddRange()
+    {
+        var q = new SelectQuery();
+        var ta = q.From("table_a").As("ta");
+        var tb = ta.InnerJoin("table_b").As("tb").On("id");
+        q.Select.AddRangeOrDefault(ta, new List<string>() { "a", "b", "c" });
+        q.Select.AddRangeOrDefault(tb, new List<string>() { "a", "c", "d" });
+        var text = q.ToQuery().CommandText;
+
+        var expect = @"select
+    ta.a
+    , ta.b
+    , ta.c
+    , tb.d
+from table_a as ta
+inner join table_b as tb on ta.id = tb.id";
+
+        Assert.Equal(expect, text);
+
+    }
 }
