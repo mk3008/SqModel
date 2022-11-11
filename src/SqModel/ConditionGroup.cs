@@ -40,14 +40,14 @@ public static class ConditionGroupExtension
 {
     public static Condition Add(this ConditionGroup source)
     {
-        var c = new Condition();
+        var c = new Condition() { LeftTable = source.LeftTable, RightTable = source.RightTable };
         source.Collection.Add(c);
         return c;
     }
 
     public static void AddGroup(this ConditionGroup source, Action<ConditionGroup> action)
     {
-        var c = new ConditionGroup();
+        var c = new ConditionGroup() { LeftTable = source.LeftTable, RightTable = source.RightTable };
         source.Collection.Add(c);
         action(c);
     }

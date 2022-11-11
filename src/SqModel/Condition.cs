@@ -15,6 +15,10 @@ public class Condition : IQueryable, ICondition
 
     public string SubOperator { get; set; } = string.Empty;
 
+    public string LeftTable { get; set; } = string.Empty;
+
+    public string RightTable { get; set; } = string.Empty;
+
     public ILogicalExpression? Expression { get; set; } = null;
 
     public Query ToQuery()
@@ -54,6 +58,11 @@ public static class ConditionExtension
     {
         source.SubOperator = suboperator;
         return source;
+    }
+
+    public static void Equal(this Condition source, string column)
+    {
+        source.SetLeftValue(ValueBuilder.Create(source.LeftTable, column)).Equal(source.RightTable, column);
     }
 
     public static void Equal(this Condition source, TableClause left, TableClause right, string column)
