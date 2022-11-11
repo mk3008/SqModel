@@ -60,4 +60,21 @@ public static class SelectClauseExtension
         source.Collection.Add(c);
         return c;
     }
+
+    public static void AddRange(this SelectClause source, TableClause table, List<string> columns)
+    {
+        columns.ForEach(x =>
+        {
+            var c = new SelectItem();
+            c.Column(table, x);
+            source.Collection.Add(c);
+        });
+    }
+
+    public static void AddRangeOrDefault(this SelectClause source, TableClause table, List<string> columns)
+    {
+        var name = source.GetColumnNames();
+        var cols = columns.Where(x => !name.Contains(x)).ToList();
+        source.AddRange(table, cols);
+    }
 }
