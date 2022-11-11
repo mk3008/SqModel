@@ -153,7 +153,7 @@ public static class TableClauseExtension
     public static TableClause On(this TableClause source, Action<ConditionGroup> fn)
     {
         var r = source.RelationClause;
-        var g = new ConditionGroup() { LeftTable = r.LeftTable, RightTable = r.RightTable };
+        var g = new ConditionGroup() { LeftTable = r.LeftTable, RightTable = r.RightTable, IsDecorateBracket = false };
         source.RelationClause.Collection.Add(g);
         fn(g);
         return source;

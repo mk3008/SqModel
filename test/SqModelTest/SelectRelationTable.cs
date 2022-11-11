@@ -74,7 +74,49 @@ cross join table_b as b";
         var expect = @"select
     *
 from table_a as a
-inner join table_b as b on (10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id = b.b_id))";
+inner join table_b as b on 10 = 10 and a.a_id = b.b_id and (10 = 10 or a.a_id = b.b_id)";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void Conditions_brief()
+    {
+        var q = new SelectQuery();
+        var ta = q.From("table_a").As("a");
+        var tb = ta.InnerJoin("table_b").As("b").On(x =>
+        {
+            x.Add().Equal("rel1_id");
+            x.Add().Equal("rel2_id");
+        });
+
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    *
+from table_a as a
+inner join table_b as b on a.rel1_id = b.rel1_id and a.rel2_id = b.rel2_id";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void Conditions_array()
+    {
+        var cols = new List<string>() { "rel1_id", "rel2_id" };
+
+        var q = new SelectQuery();
+        var ta = q.From("table_a").As("a");
+        var tb = ta.InnerJoin("table_b").As("b").On(cols);
+
+        q.SelectAll();
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    *
+from table_a as a
+inner join table_b as b on a.rel1_id = b.rel1_id and a.rel2_id = b.rel2_id";
 
         Assert.Equal(expect, text);
     }
