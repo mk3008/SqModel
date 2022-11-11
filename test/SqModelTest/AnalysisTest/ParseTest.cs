@@ -82,6 +82,63 @@ from table_a as a";
     }
 
     [Fact]
+    public void PushAndSelect_OldStyle()
+    {
+        using var p = new SqlParser(@"select table_a.id, table_a.name from table_a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var q = p.ParseSelectQuery();
+        q = q.PushToCommonTable("a");
+        var a = q.From("a");
+        var cte_a = q.GetCommonTables().Where(x => x.Name == "a").First();
+        var cols = cte_a.Query.GetSelectItems().Select(x => x.Name).ToList();
+        cols.ForEach(x => q.Select.Add().Column("a", x));
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"with
+a as (
+    select
+        table_a.id
+        , table_a.name
+    from table_a
+)
+select
+    a.id
+    , a.name
+from a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void PushAndSelect_NewStyle()
+    {
+        using var p = new SqlParser(@"select table_a.id, table_a.name from table_a");
+        p.Logger = (x) => Output.WriteLine(x);
+
+        var cteName = "common_a";
+        var q = p.ParseSelectQuery();
+        q = q.PushToCommonTable(cteName);
+
+        var a = q.From(q.GetCommonTable(cteName)).As("a");
+        q.SelectAll(a);
+
+        var text = q.ToQuery().CommandText;
+        var expect = @"with
+common_a as (
+    select
+        table_a.id
+        , table_a.name
+    from table_a
+)
+select
+    a.id
+    , a.name
+from common_a as a";
+
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void OrderBy()
     {
         using var p = new SqlParser(@"select a.id, a.name, a.price from a order by a.id, a.name, a.price");

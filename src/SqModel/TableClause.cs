@@ -25,6 +25,8 @@ public class TableClause
         AliasName = aliasName;
     }
 
+    public SelectQuery? Actual { get; internal set; }
+
     public RelationTypes RelationType { get; set; } = RelationTypes.Undefined;
 
     public string TableName { get; set; } = string.Empty;
