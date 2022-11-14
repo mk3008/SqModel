@@ -1,4 +1,11 @@
 # SqModel
+![GitHub](https://img.shields.io/github/license/mk3008/SqModel)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/mk3008/SqModel)
+![Github Last commit](https://img.shields.io/github/last-commit/mk3008/SqModel)  
+[![SqModel](https://img.shields.io/nuget/v/SqModel.svg)](https://www.nuget.org/packages/SqModel/) 
+[![SqModel](https://img.shields.io/nuget/dt/SqModel.svg)](https://www.nuget.org/packages/SqModel/) 
+
+
 A lightweight library that allows you to easily build Select queries.
 You can also parse handwritten Sql.
 
