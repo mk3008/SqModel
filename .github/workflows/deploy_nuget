@@ -1,0 +1,31 @@
+name: Publish - Nuget
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-nuget:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+    
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6        
+      
+      - name: Build
+        run: dotnet build --configuration Release
+        working-directory: ./src
+      
+      - name: Unit tests
+        run: dotnet test --configuration Release
+        working-directory: ./src
+
+      - name: Generate nuget package.
+        run: dotnet pack --configuration Release -o nupkg
+        working-directory: ./src
