@@ -21,7 +21,11 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
         working-directory: ./src
-
-      - name: Generate nuget package.
-        run: dotnet pack --configuration Release -o nupkg
-        working-directory: ./src
+        
+      - name: Publish to NuGet
+        uses: brandedoutcast/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: ./src/SqModel/SqModel.csproj
+          VERSION_REGEX: '^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$'
+          TAG_FORMAT: '*'
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
