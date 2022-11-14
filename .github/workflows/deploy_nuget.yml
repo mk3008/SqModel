@@ -21,10 +21,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
         working-directory: ./src
-      
-      - name: Unit tests
-        run: dotnet test --configuration Release
-        working-directory: ./src
 
       - name: Generate nuget package.
         run: dotnet pack --configuration Release -o nupkg
