@@ -233,8 +233,7 @@ from a";
     *
 from a
 where
-    ((a.c2 = 2) or (a.c3 = 3))
-    and a.c1 = 1";
+    ((a.c2 = 2) or (a.c3 = 3)) and a.c1 = 1";
         Assert.Equal(expect, text);
     }
 
@@ -362,8 +361,7 @@ from a";
     *
 from a
 where
-    a.id is not null
-    and a.id is null";
+    a.id is not null and a.id is null";
         Assert.Equal(expect, text);
     }
 
@@ -447,6 +445,19 @@ from a";
         var text = sq.ToQuery().CommandText;
         var expect = @"select
     1 + 1 = 2 as calc";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
+    public void BooleanColumn_operator()
+    {
+        var sq = SqlParser.Parse(@"select 
+  1 + 1 = 2 and 2 + 2 = 4 and 3 + 3 = 6 calc1
+, 1 + 1 = 2 or  2 * 2 = 2 or  3 + 3 = 3 calc2");
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    1 + 1 = 2 and 2 + 2 = 4 and 3 + 3 = 6 calc1
+    , 1 + 1 = 2 or 2 * 2 = 2 or 3 + 3 = 3 calc2";
         Assert.Equal(expect, text);
     }
 

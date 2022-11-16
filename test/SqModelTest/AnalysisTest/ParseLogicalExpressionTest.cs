@@ -90,7 +90,7 @@ public class ParseLogicalExpressionTest
         var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
-        Assert.Equal("a.id1 is null", text);
+        Assert.Equal("a.id1 is null and a.id1 is not null", text);
     }
 
     [Fact]
@@ -101,6 +101,6 @@ public class ParseLogicalExpressionTest
         var clause = LogicalExpressionParser.Parse(relationSql);
         var text = clause.ToQuery().CommandText;
 
-        Assert.Equal("a.id1 is not null", text);
+        Assert.Equal("a.id1 is not null and a.id1 is not null", text);
     }
 }
