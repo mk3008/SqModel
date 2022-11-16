@@ -10,9 +10,9 @@ using Xunit.Abstractions;
 
 namespace SqModelTest.AnalysisTest;
 
-public class Analyze
+public class SelectItemTest
 {
-    public Analyze(ITestOutputHelper output)
+    public SelectItemTest(ITestOutputHelper output)
     {
         Output = output;
     }
@@ -60,6 +60,14 @@ from
 ";
 
         Assert.Equal(expect, s);
+        Assert.Equal(6, sq.GetSelectItems().Count);
+
+        Assert.True(sq.ColumnContains("value3"));
+        var item = sq.GetSelectItemByName("value3");
+        Assert.Equal("value3", item.Name);
+        Assert.Equal("a.val3", item.ToCommandText());
+
+        Assert.False(sq.ColumnContains("value99"));
     }
 
     [Fact]
@@ -89,5 +97,15 @@ from
 ";
 
         Assert.Equal(expect, s);
+
+        Assert.Equal(expect, s);
+        Assert.Equal(6, sq.GetSelectItems().Count);
+
+        Assert.True(sq.ColumnContains("value3"));
+        var item = sq.GetSelectItemByName("value3");
+        Assert.Equal("value3", item.Name);
+        Assert.Equal("a.val3", item.ToCommandText());
+
+        Assert.False(sq.ColumnContains("value99"));
     }
 }

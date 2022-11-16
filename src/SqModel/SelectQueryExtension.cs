@@ -9,11 +9,59 @@ namespace SqModel;
 
 public static class SelectQueryExtension
 {
+    public static SelectQuery PushToCommonTable(this SelectQuery source, string alias)
+    {
+        var q = new SelectQuery();
+        q.With.Add(source, alias);
+        return q;
+    }
+
+    [Obsolete("GetCommonTable")]
+    public static CommonTable SearchCommonTable(this SelectQuery source, string alias)
+        => source.GetCommonTables().Where(x => x.Name == alias).First();
+
+    [Obsolete("GetCommonTables")]
+    public static IEnumerable<CommonTable> GetCommonTableClauses(this SelectQuery source)
+        => source.GetCommonTables();
+
+    public static IEnumerable<CommonTable> GetCommonTables(this SelectQuery source)
+    {
+        foreach (var item in source.FromClause.GetCommonTableClauses()) yield return item;
+        foreach (var item in source.With.GetCommonTableClauses()) yield return item;
+    }
+
+    public static CommonTable? GetCommonTableOrDefault(this SelectQuery source, string alias)
+        => source.GetCommonTables().Where(x => x.Name == alias).FirstOrDefault();
+
+    public static CommonTable GetCommonTable(this SelectQuery source, string alias)
+        => source.GetCommonTables().Where(x => x.Name == alias).First();
+
     public static List<SelectItem> GetSelectItems(this SelectQuery source)
         => source.Select.Collection;
 
+    public static bool ColumnContains(this SelectQuery source, string name)
+        => source.Select.Collection.Where(x => x.Name == name).Any();
+
+    public static SelectItem GetSelectItemByName(this SelectQuery source, string name)
+        => source.Select.Collection.Where(x => x.Name == name).First();
+
+    public static SelectItem? GetSelectItemByNameOrDefault(this SelectQuery source, string name)
+        => source.Select.Collection.Where(x => x.Name == name).FirstOrDefault();
+
+    public static bool TableAliasContains(this SelectQuery source, string alias)
+        => source.FromClause.GetTableClauses().Where(x => x.AliasName == alias).Any();
+
     public static List<TableClause> GetTableClauses(this SelectQuery source)
         => source.FromClause.GetTableClauses();
+
+    public static List<TableClause> GetTableClausesByTable(this SelectQuery source, string table)
+        => source.FromClause.GetTableClauses().Where(x => x.TableName == table).ToList();
+
+    public static TableClause GetTableClauseByName(this SelectQuery source, string alias)
+        => source.FromClause.GetTableClauses().Where(x => x.AliasName == alias).First();
+
+    public static TableClause? GetTableClauseByNameOrDefault(this SelectQuery source, string alias)
+        => source.FromClause.GetTableClauses().Where(x => x.AliasName == alias).FirstOrDefault();
 
     public static Query ToCreateTableQuery(this SelectQuery source, string tablename, bool istemporary = true)
     {
