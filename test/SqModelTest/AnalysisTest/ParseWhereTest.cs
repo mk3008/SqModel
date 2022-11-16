@@ -61,8 +61,7 @@ public class ParseWhereTest
         var clause = WhereClauseParser.Parse(condition);
         var q = clause.ToQuery();
         var expect = @"where
-    (a.id = 1 or a.id = 2)
-    and (a.value = 1 or (a.id = 3 and a.id = 4))";
+    (a.id = 1 or a.id = 2) and (a.value = 1 or (a.id = 3 and a.id = 4))";
         Assert.Equal(expect, q.CommandText);
     }
 }

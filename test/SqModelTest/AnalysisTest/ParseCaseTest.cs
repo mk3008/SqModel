@@ -73,11 +73,16 @@ from table_a as a";
     [Fact]
     public void AndOrTest()
     {
-        using var p = new SqlParser(@"select case when 1 = 1 and 2 = 2 then 1 when 3 = 3 or 4 = 4 then 2 end as val");
+        using var p = new SqlParser(@"select 
+    case 
+        when 1 = 1 and 2 = 2 and 3 = 3 and 4 = 4 then 'A'
+        when 1 = 1 or 2 = 2 or 3 = 3 or 4 = 4 then 'B' 
+        when 1 = 1 and 2 = 2 and 3 = 3 or 4 = 4 then 'C' 
+    end as val");
         var q = p.ParseSelectQuery();
         var text = q.ToQuery().CommandText;
         var expect = @"select
-    case when 1 = 1 and 2 = 2 then 1 when 3 = 3 or 4 = 4 then 2 end as val";
+    case when 1 = 1 and 2 = 2 and 3 = 3 and 4 = 4 then 'A' when 1 = 1 or 2 = 2 or 3 = 3 or 4 = 4 then 'B' when 1 = 1 and 2 = 2 and 3 = 3 or 4 = 4 then 'C' end as val";
         Assert.Equal(expect, text);
     }
 

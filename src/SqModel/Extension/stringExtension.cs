@@ -94,7 +94,7 @@ public static class stringExtension
 
     public static bool IsConjunction(this string source)
     {
-        var strings = new[] { "||", "=", "!=", "<>", ">=", "<=" }.ToList();
+        var strings = new[] { "||", "=", "!=", "<>", ">=", "<=", "and", "or", "is" }.ToList();
         if (SqlParser.ArithmeticOperatorTokens.Contains(source) || strings.Contains(source)) return true;
         return false;
     }
