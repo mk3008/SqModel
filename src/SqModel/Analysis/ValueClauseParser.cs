@@ -130,7 +130,7 @@ public static class ValueClauseParser
 
         q.First();
 
-        if (parser.CurrentToken.ToLower() == "over")
+        if (parser.CurrentToken.ToLower() == "over" || parser.CurrentToken == "(")
         {
             return recursiveParse();
         }
@@ -163,7 +163,7 @@ public static class ValueClauseParser
             {
                 sb.Append(x);
             }
-            else if (x == "." || x == "(" || x == ")" || x.StartsWith("::"))
+            else if (x == "." || x.StartsWith("(") || x == ")" || x.StartsWith("::"))
             {
                 sb.Append(x);
             }

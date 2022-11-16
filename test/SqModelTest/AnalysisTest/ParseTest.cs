@@ -420,6 +420,17 @@ where
     }
 
     [Fact]
+    public void TypeConvertWithBracket()
+    {
+        var sq = SqlParser.Parse("select 3.1415::numeric(8,2) as val1");
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    3.1415::numeric(8,2) as val1";
+        Assert.Equal(expect, text);
+    }
+
+
+    [Fact]
     public void Full()
     {
         using var p = new SqlParser(@"select
