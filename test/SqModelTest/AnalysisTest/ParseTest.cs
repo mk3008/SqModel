@@ -48,6 +48,28 @@ where
     }
 
     [Fact]
+    public void UpperCaseGroupByHavingByOrderBy()
+    {
+        var sq = SqlParser.Parse(@"SELECT SUM(V.VAL) FROM dbo.V WHERE (V.VAL = 1) GROUP BY V.VAL, V.VAL2 HAVING SUM(V.VAL) > 10 ORDER BY V.VAL");
+
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    SUM(V.VAL)
+from dbo.V
+where
+    (V.VAL = 1)
+group by
+    V.VAL
+    , V.VAL2
+having
+    SUM(V.VAL) > 10
+order by
+    V.VAL";
+        Assert.Equal(expect, text);
+    }
+
+
+    [Fact]
     public void Parameter()
     {
         using var p = new SqlParser(@"select :prm as val from a");

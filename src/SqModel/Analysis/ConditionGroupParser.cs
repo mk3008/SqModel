@@ -20,7 +20,7 @@ internal class ConditionGroupParser
         q.First(); //skip start token token
 
         var isFirst = true;
-        while (!parser.ConditionBreakTokens.Contains(parser.CurrentToken) && parser.CurrentToken.IsNotEmpty())
+        while (!parser.ConditionBreakTokens.Contains(parser.CurrentToken.ToLower()) && parser.CurrentToken.IsNotEmpty())
         {
             var op = string.Empty;
             var sop = string.Empty;
