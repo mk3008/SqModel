@@ -36,12 +36,14 @@ from a";
     [Fact]
     public void UpperCase()
     {
-        var sq = SqlParser.Parse(@"select a.id FROM table_a as a");
+        var sq = SqlParser.Parse(@"SELECT A.Id FROM A WHERE A.Id = 1");
 
         var text = sq.ToQuery().CommandText;
         var expect = @"select
-    a.id
-from table_a as a";
+    A.Id
+from A
+where
+    A.Id = 1";
         Assert.Equal(expect, text);
     }
 

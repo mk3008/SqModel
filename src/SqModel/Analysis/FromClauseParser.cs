@@ -104,7 +104,7 @@ public static class FromClauseParser
 
             t.TableName = sb.ToString();
 
-            if (!parser.TableBreakTokens.Contains(parser.CurrentToken) && parser.CurrentToken.ToLower() != "on")
+            if (!parser.TableBreakTokens.Contains(parser.CurrentToken.ToLower()) && parser.CurrentToken.ToLower() != "on")
             {
                 t.AliasName = parser.ParseAlias();
             }
