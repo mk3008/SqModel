@@ -96,7 +96,7 @@ public static class ValueClauseParser
         }
 
         q.First();
-        if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken)) return ToCommandValue(cache);
+        if (parser.CurrentToken.IsEmpty() || parser.ValueBreakTokens.Contains(parser.CurrentToken.ToLower())) return ToCommandValue(cache);
         if (parser.CurrentToken.IsWord() && parser.CurrentToken.ToLower() != "is" && parser.CurrentToken.ToLower() != "null") return ToCommandValue(cache);
         if (parser.CurrentToken.IsConjunction()) return ToCommandValue(cache);
 
