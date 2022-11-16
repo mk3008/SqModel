@@ -440,6 +440,15 @@ from a";
         Assert.Equal(expect, text);
     }
 
+    [Fact]
+    public void BooleanColumn()
+    {
+        var sq = SqlParser.Parse("select 1 + 1 = 2 calc");
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    1 + 1 = 2 as calc";
+        Assert.Equal(expect, text);
+    }
 
     [Fact]
     public void Full()
