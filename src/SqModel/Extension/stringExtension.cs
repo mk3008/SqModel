@@ -71,7 +71,7 @@ public static class stringExtension
     public static bool IsLetter(this string source)
     {
         if (source.Length == 0) return false;
-        var c = source.ToCharArray().First();
+        var c = source.ToLower().ToCharArray().First();
         return SqlParser.LetterChars.Where(x => x == c).Any();
     }
 
