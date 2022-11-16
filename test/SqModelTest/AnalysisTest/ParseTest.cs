@@ -34,6 +34,18 @@ from a";
     }
 
     [Fact]
+    public void UpperCase()
+    {
+        var sq = SqlParser.Parse(@"select a.id FROM table_a as a");
+
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    a.id
+from table_a as a";
+        Assert.Equal(expect, text);
+    }
+
+    [Fact]
     public void Parameter()
     {
         using var p = new SqlParser(@"select :prm as val from a");
