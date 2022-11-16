@@ -43,7 +43,7 @@ internal static class SelectClauseParser
         var c = new SelectItem();
         c.Command = ValueClauseParser.Parse(parser);
 
-        if (!parser.AliasBreakTokens.Contains(parser.CurrentToken))
+        if (!parser.AliasBreakTokens.Contains(parser.CurrentToken.ToLower()))
         {
             c.Name = parser.ParseAlias();
         }
