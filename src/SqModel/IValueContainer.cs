@@ -36,6 +36,7 @@ public static class IValueContainerExtension
     {
         source.Command = value;
         source.ColumnName = column;
+        if (column != "*") source.Name = column;
         return source;
     }
 

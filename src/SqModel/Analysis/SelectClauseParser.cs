@@ -47,7 +47,11 @@ internal static class SelectClauseParser
         {
             c.Name = parser.ParseAlias();
         }
-        if (c.Name.IsEmpty()) c.Name = c.Command.GetName();
+        if (c.Name.IsEmpty())
+        {
+            var n = c.Command.GetName();
+            if (n.IsLetter()) c.Name = c.Command.GetName();
+        }
 
         return c;
     }
