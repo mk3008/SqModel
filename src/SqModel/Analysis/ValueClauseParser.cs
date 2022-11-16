@@ -108,9 +108,12 @@ public static class ValueClauseParser
             cache.Add(parser.CurrentToken);
             var col = parser.CurrentToken;
             q.First();
-
-            var item = new ColumnValue() { Table = cache.First(), Column = col };
-            return item;
+            if (parser.CurrentToken != "(")
+            {
+                var item = new ColumnValue() { Table = cache.First(), Column = col };
+                return item;
+            }
+            cache.Add(parser.CurrentToken);
         }
 
         if (parser.CurrentToken == ".*" && cache.Count == 2)

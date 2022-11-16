@@ -429,6 +429,17 @@ where
         Assert.Equal(expect, text);
     }
 
+    [Fact]
+    public void TypeConvertWithBracketColumn()
+    {
+        var sq = SqlParser.Parse("select a.val1::numeric(8,2) as val1 from a");
+        var text = sq.ToQuery().CommandText;
+        var expect = @"select
+    a.val1::numeric(8,2) as val1
+from a";
+        Assert.Equal(expect, text);
+    }
+
 
     [Fact]
     public void Full()
