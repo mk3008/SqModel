@@ -71,6 +71,18 @@ from table_a as a";
     }
 
     [Fact]
+    public void AndOrTest()
+    {
+        using var p = new SqlParser(@"select case when 1 = 1 and 2 = 2 then 1 when 3 = 3 or 4 = 4 then 2 end as val");
+        var q = p.ParseSelectQuery();
+        var text = q.ToQuery().CommandText;
+        var expect = @"select
+    case when 1 = 1 and 2 = 2 then 1 when 3 = 3 or 4 = 4 then 2 end as val";
+        Assert.Equal(expect, text);
+    }
+
+
+    [Fact]
     public void WhereTest()
     {
         using var p = new SqlParser(@"select * from table_a as a where 
