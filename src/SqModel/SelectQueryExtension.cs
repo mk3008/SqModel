@@ -24,6 +24,9 @@ public static class SelectQueryExtension
     public static IEnumerable<CommonTable> GetCommonTableClauses(this SelectQuery source)
         => source.GetCommonTables();
 
+    public static bool CommonTableContains(this SelectQuery source, string alias)
+        => source.GetCommonTables().Where(x => x.Name == alias).Any();
+
     public static IEnumerable<CommonTable> GetCommonTables(this SelectQuery source)
     {
         foreach (var item in source.FromClause.GetCommonTableClauses()) yield return item;
