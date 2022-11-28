@@ -1,10 +1,6 @@
 ﻿namespace SqModel.Core.Clauses;
 
-public interface IValue
+public interface IValue : IQueryCommand
 {
-    string? GetName();
-
-    string GetCommandText();
-
-    NestedValue? Nest { get; set; }
+    string GetDefaultName();
 }

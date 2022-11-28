@@ -18,5 +18,5 @@ public class WhereClause
         return $"where\r\n{Condition.GetCommandText()}";
     }
 
-    public IDictionary<string, object?> GetParameters() => Condition.GetParameters();
+    //public IDictionary<string, object?> GetParameters() => Condition.GetParameters();
 }

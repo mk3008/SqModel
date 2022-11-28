@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Values;
 
-public class LiteralValue : IValue
+public class LiteralValue : ValueBase
 {
     public LiteralValue(string commandText)
     {
@@ -11,17 +11,5 @@ public class LiteralValue : IValue
 
     public string CommandText { get; init; }
 
-    public Dictionary<string, object?>? Parameters { get; set; }
-
-    public NestedValue? Nest { get; set; }
-
-    public virtual string GetCommandText() => CommandText;
-
-    public string? GetName() => null;
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        if (Parameters != null) return Parameters;
-        return EmptyParameters.Get();
-    }
+    internal override string GetCurrentCommandText() => CommandText;
 }

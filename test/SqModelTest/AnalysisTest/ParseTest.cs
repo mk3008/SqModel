@@ -50,7 +50,7 @@ where
     [Fact]
     public void UpperCaseGroupByHavingByOrderBy()
     {
-        var sq = SqlParser.Parse(@"SELECT SUM(V.VAL) FROM dbo.V WHERE (V.VAL = 1) GROUP BY V.VAL, V.VAL2 HAVING SUM(V.VAL) > 10 ORDER BY V.VAL");
+        var sq = SqlParser.Parse(@"SELECT View1.OrderDate,View1.Email,SUM(View1.TotalPayments) FROM dbo.View1 WHERE (View1.OrderStatus = 'Completed') GROUP BY View1.OrderDate,View1.Email HAVING (SUM(View1.TotalPayments) > 75);");
 
         var text = sq.ToQuery().CommandText;
         var expect = @"select

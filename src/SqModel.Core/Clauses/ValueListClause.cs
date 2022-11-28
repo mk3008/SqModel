@@ -27,7 +27,6 @@ public class ValueListClause : IQueryable
 
     public IDictionary<string, object?> GetParameters()
     {
-        if (!Values.Any()) return EmptyParameters.Get();
-        return Values.Select(x => x.GetParameters()).Merge();
+        return EmptyParameters.Get();
     }
 }

@@ -19,13 +19,12 @@ public class SelectableItem : IQueryable
     public string GetCommandText()
     {
         var query = Query.GetCommandText();
-        if (Alias == Query.GetName()) return query;
+        if (Alias == Query.GetDefaultName()) return query;
         return $"{query} as {Alias}";
     }
 
     public IDictionary<string, object?> GetParameters()
     {
-        if (Parameters == null) return Query.GetParameters();
-        return Parameters.Merge(Query.GetParameters());
+        return Parameters ?? EmptyParameters.Get();
     }
 }

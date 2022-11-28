@@ -36,15 +36,7 @@ public class SelectItemTest
     [Fact]
     public void ColumnInfo_Parse()
     {
-        var sq = SqlParser.Parse(@"select 
-    a.val1
-    , a.val2 as val2
-    , a.val3 as value3
-    , 1
-    , 2 as num2
-    , a.*
-from
-    table as a");
+        var sq = SqlParser.Parse(@"SELECT View1.OrderDate,View1.Email,SUM(View1.TotalPayments) FROM dbo.View1 WHERE (View1.OrderStatus = 'Completed') GROUP BY View1.OrderDate,View1.Email HAVING (SUM(View1.TotalPayments) > 75);");
 
         var items = sq.GetSelectItems();
         var s = ToString(items);

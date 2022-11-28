@@ -1,39 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SqModel.Core.Clauses;
+﻿namespace SqModel.Core.Values;
 
-namespace SqModel.Core.Values;
-
-public class ColumnValue : IValue
+public class ColumnValue : ValueBase
 {
     public ColumnValue(string column)
     {
         Column = column;
     }
 
-    public string? TableAlias { get; set; }
+    public ColumnValue(string table, string column)
+    {
+        TableAlias = table;
+        Column = column;
+    }
+
+    public string TableAlias { get; set; } = string.Empty;
 
     public string Column { get; init; }
 
-    public Dictionary<string, object?>? Parameters { get; set; }
-
-    public NestedValue? Nest { get; set; }
-
-    public string GetCommandText()
+    internal override string GetCurrentCommandText()
     {
         if (string.IsNullOrEmpty(TableAlias)) return Column;
         return $"{TableAlias}.{Column}";
     }
 
-    public string? GetName() => Column;
-
-    public IDictionary<string, object?> GetParameters()
+    public override string GetDefaultName()
     {
-        if (Parameters != null) return Parameters;
-        return EmptyParameters.Get();
+        if (OperatableValue == null) return Column;
+        return string.Empty;
     }
 }

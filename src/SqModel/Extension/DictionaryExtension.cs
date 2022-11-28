@@ -20,4 +20,13 @@ internal static class DictionaryExtension
         return source;
     }
 
+    public static Dictionary<T1, T2>? MergeOrDefault<T1, T2>(this Dictionary<T1, T2>? source, Dictionary<T1, T2>? dic) where T1 : notnull
+    {
+        if (source == null) return dic;
+        if (dic == null) return source;
+        dic.ForEach(x => source[x.Key] = x.Value);
+        return source;
+    }
+
+
 }
