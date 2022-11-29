@@ -95,7 +95,7 @@ public class WordReader : CharReader
         // ex. + or != etc
         if (MultipleSymbols.Contains(fc))
         {
-            foreach (var item in ReadUntil((char x) => !MultipleSymbols.Contains(x)))
+            foreach (var item in ReadWhile((char x) => x != '/' && x != '*' && MultipleSymbols.Contains(x)))
             {
                 sb.Append(item);
             }
@@ -105,7 +105,7 @@ public class WordReader : CharReader
         // ex. 123.45
         if (fc.IsInteger())
         {
-            foreach (var item in ReadUntil((char x) => !"0123456789.".ToArray().Contains(x)))
+            foreach (var item in ReadWhile((char x) => "0123456789.".ToArray().Contains(x)))
             {
                 sb.Append(item);
             }

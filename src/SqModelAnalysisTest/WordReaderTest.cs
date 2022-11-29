@@ -79,7 +79,7 @@ public class WordReaderTest
     }
 
     [Fact]
-    public void SingleQupte()
+    public void SingleQuote()
     {
         var text = "'a b' '   '";
         using var r = new WordReader(text);
@@ -89,6 +89,18 @@ public class WordReaderTest
         Assert.Equal(2, lst.Count);
         Assert.Equal("'a b'", lst[0]);
         Assert.Equal("'   '", lst[1]);
+    }
+
+    [Fact]
+    public void SingleQuoteEscape()
+    {
+        var text = "'a b''c'";
+        using var r = new WordReader(text);
+        var lst = r.ReadWords().ToList();
+        LogOutput(lst);
+
+        Assert.Single(lst);
+        Assert.Equal("'a b''c'", lst[0]);
     }
 
     [Fact]
@@ -139,16 +151,18 @@ public class WordReaderTest
     [Fact]
     public void BlockComment()
     {
-        var text = "a/*b*/";
+        var text = "a//*b**/";
         using var r = new WordReader(text);
         var lst = r.ReadWords().ToList();
         LogOutput(lst);
 
-        Assert.Equal(4, lst.Count);
+        Assert.Equal(6, lst.Count);
         Assert.Equal("a", lst[0]);
-        Assert.Equal("/*", lst[1]);
-        Assert.Equal("b", lst[2]);
-        Assert.Equal("*/", lst[3]);
+        Assert.Equal("/", lst[1]);
+        Assert.Equal("/*", lst[2]);
+        Assert.Equal("b", lst[3]);
+        Assert.Equal("*", lst[4]);
+        Assert.Equal("*/", lst[5]);
     }
 
     [Fact]

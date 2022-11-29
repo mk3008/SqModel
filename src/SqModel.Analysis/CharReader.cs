@@ -47,7 +47,7 @@ public class CharReader : IDisposable
 
     public IEnumerable<char> ReadChars() => ReadWhile((_) => true);
 
-    public char? Cache { get; private set; }
+    //public char? Cache { get; private set; }
 
     //public void ClearCache()
     //{
@@ -58,35 +58,56 @@ public class CharReader : IDisposable
     {
         var i = Reader.Read();
         if (i < 0) throw new EndOfStreamException();
-        Cache = (char)i;
+        //Cache = (char)i;
         return (char)i;
     }
 
     public string ReadUntilSingleQuote()
     {
         var sb = ZString.CreateStringBuilder();
-        var isOpen = true;
         foreach (var item in ReadChars())
         {
             sb.Append(item);
             if (item.IsSingleQuote())
             {
-                isOpen = false;
-                break;
+                if (PeekAreEqual('\''))
+                {
+                    sb.Append(Read());
+                    continue;
+                }
+                return sb.ToString();
             }
         }
-
-        if (isOpen) throw new SyntaxException("single quote is not closed.");
-        return sb.ToString();
+        throw new SyntaxException("single quote is not closed.");
     }
 
     public void SkipSpace() => ReadUntil(x => !SpaceChars.Contains(x)).FirstOrDefault();
 
-    public void SkipToLineEnd()
+    //public void SkipToLineEnd()
+    //{
+    //    foreach (var item in ReadChars())
+    //    {
+    //        if (item != '\n' && item != '\r') continue;
+    //        if (item == '\r')
+    //        {
+    //            var c = PeekOrDefault();
+    //            if (c != null && c.Value == '\n') Read();
+    //        }
+    //        break;
+    //    }
+    //}
+
+    public string ReadUntilLineEnd()
     {
+        var sb = ZString.CreateStringBuilder();
         foreach (var item in ReadChars())
         {
-            if (item != '\n' && item != '\r') continue;
+            if (item != '\n' && item != '\r')
+            {
+                sb.Append(item);
+                continue;
+            }
+
             if (item == '\r')
             {
                 var c = PeekOrDefault();
@@ -94,6 +115,7 @@ public class CharReader : IDisposable
             }
             break;
         }
+        return sb.ToString();
     }
 
     protected virtual void Dispose(bool disposing)
