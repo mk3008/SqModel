@@ -40,7 +40,7 @@ public class CharReader : IDisposable
         var c = PeekOrDefault();
         while (c != null && whileFn(c.Value))
         {
-            yield return Read();
+            yield return ReadChar();
             c = PeekOrDefault();
         }
     }
@@ -54,7 +54,7 @@ public class CharReader : IDisposable
     //    Cache = null;
     //}
 
-    public char Read()
+    public char ReadChar()
     {
         var i = Reader.Read();
         if (i < 0) throw new EndOfStreamException();
@@ -72,7 +72,7 @@ public class CharReader : IDisposable
             {
                 if (PeekAreEqual('\''))
                 {
-                    sb.Append(Read());
+                    sb.Append(ReadChar());
                     continue;
                 }
                 return sb.ToString();
@@ -111,7 +111,7 @@ public class CharReader : IDisposable
             if (item == '\r')
             {
                 var c = PeekOrDefault();
-                if (c != null && c.Value == '\n') Read();
+                if (c != null && c.Value == '\n') ReadChar();
             }
             break;
         }

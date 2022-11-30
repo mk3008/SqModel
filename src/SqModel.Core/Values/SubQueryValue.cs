@@ -12,5 +12,5 @@ public class SubQueryValue : ValueBase
 
     public IQueryable Query { get; init; }
 
-    internal override string GetCurrentCommandText() => $"({Query.GetCommandText()})";
+    public override string GetCurrentCommandText() => $"({Query.GetCommandText()})";
 }

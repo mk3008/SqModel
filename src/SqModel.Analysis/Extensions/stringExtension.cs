@@ -10,12 +10,12 @@ namespace SqModel.Analysis.Extensions;
 
 public static class stringExtension
 {
-    public static bool AreEqual(this string source, string text)
+    public static bool AreEqual(this string? source, string text)
     {
         return string.Equals(source, text, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public static bool AreContains(this string source, IEnumerable<string> texts)
+    public static bool AreContains(this string? source, IEnumerable<string> texts)
     {
         return texts.Where(x => source.AreEqual(x)).Any();
     }
@@ -25,8 +25,9 @@ public static class stringExtension
         return source == ".";
     }
 
-    public static bool IsSelectQuery(this string source)
+    public static bool IsSelectQuery(this string? source)
     {
+        if (source == null) return false;
         return Regex.IsMatch(source, @"^select\s", RegexOptions.IgnoreCase);
     }
 

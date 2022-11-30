@@ -16,23 +16,58 @@ public class TokenReader : WordReader
 
     public Action<string>? Logger { get; set; }
 
-    public string CurrentToken { get; private set; } = string.Empty;
+    private string? TokenCache { get; set; } = string.Empty;
 
-    public void ClearCache() => CurrentToken = string.Empty;
-
-    public IEnumerable<string> ReadTokens(bool includeCurrentToken = false)
+    public IEnumerable<string> ReadTokens()
     {
-        if (includeCurrentToken && !string.IsNullOrEmpty(CurrentToken))
-        {
-            yield return CurrentToken;
-        }
-
         foreach (var item in ReadTokensCore())
         {
-            CurrentToken = item;
-            yield return CurrentToken;
+            yield return item;
         }
-        CurrentToken = string.Empty;
+    }
+
+    public string? PeekToken()
+    {
+        if (string.IsNullOrEmpty(TokenCache))
+        {
+            TokenCache = ReadTokensCore(skipSpace: true).FirstOrDefault();
+        }
+        return TokenCache;
+    }
+
+    //public bool PeekTokenAreEqual(string expect)
+    //{
+    //    return PeekToken().AreEqual(expect);
+    //}
+
+    //public bool PeekTokenAreContain(IEnumerable<string> expects)
+    //{
+    //    return PeekToken().AreContains(expects);
+    //}
+
+    public string ReadToken(bool skipComment = true)
+    {
+        string? token = ReadTokenCore();
+        if (token == null) return string.Empty;
+        if (!skipComment) return token;
+
+        if (token == "--" || token == "/*")
+        {
+            ReadTokenCore();
+            return ReadToken(skipComment);
+        }
+        return token;
+    }
+
+    public string? ReadTokenCore()
+    {
+        if (!string.IsNullOrEmpty(TokenCache))
+        {
+            var s = TokenCache;
+            TokenCache = string.Empty;
+            return s;
+        }
+        return ReadTokensCore(skipSpace: true).FirstOrDefault();
     }
 
     private IEnumerable<string> ReadTokensCore(bool skipSpace = true)
@@ -53,7 +88,7 @@ public class TokenReader : WordReader
                 continue;
             }
 
-            if (word.AreEqual("group") || word.AreEqual("partiton") || word.AreEqual("order"))
+            if (word.AreEqual("group") || word.AreEqual("partition") || word.AreEqual("order"))
             {
                 var next = ReadWord();
                 if (!next.AreEqual("by")) throw new SyntaxException($"near {word}");
@@ -158,7 +193,7 @@ public class TokenReader : WordReader
         }
     }
 
-    private (string inner, string closer) ReadUntilCloseBracket()
+    internal (string inner, string closer) ReadUntilCloseBracket()
     {
         var inner = ZString.CreateStringBuilder();
 

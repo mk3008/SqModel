@@ -17,7 +17,7 @@ public class ColumnValue : ValueBase
 
     public string Column { get; init; }
 
-    internal override string GetCurrentCommandText()
+    public override string GetCurrentCommandText()
     {
         if (string.IsNullOrEmpty(TableAlias)) return Column;
         return $"{TableAlias}.{Column}";

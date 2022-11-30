@@ -11,5 +11,5 @@ public class LiteralValue : ValueBase
 
     public string CommandText { get; init; }
 
-    internal override string GetCurrentCommandText() => CommandText;
+    public override string GetCurrentCommandText() => CommandText;
 }

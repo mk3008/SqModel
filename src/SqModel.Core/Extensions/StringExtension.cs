@@ -4,6 +4,11 @@ namespace SqModel.Core.Extensions;
 
 public static class StringExtension
 {
+    public static bool AreEqual(this string? source, string text)
+    {
+        return string.Equals(source, text, StringComparison.CurrentCultureIgnoreCase);
+    }
+
     public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
         if (string.IsNullOrEmpty(source)) return source;

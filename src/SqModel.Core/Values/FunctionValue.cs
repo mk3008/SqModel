@@ -11,12 +11,14 @@ public class FunctionValue : ValueBase
     public FunctionValue(string functionName, string argumentText)
     {
         FunctionName = functionName;
-        ArgumentText = argumentText;
+        Inner = new LiteralValue(argumentText);
     }
 
     public string FunctionName { get; init; }
 
-    public string ArgumentText { get; init; }
-
-    internal override string GetCurrentCommandText() => $"{FunctionName}({ArgumentText})";
+    public override string GetCurrentCommandText()
+    {
+        if (Inner == null) throw new Exception();
+        return $"{FunctionName}({Inner.GetCommandText()})";
+    }
 }

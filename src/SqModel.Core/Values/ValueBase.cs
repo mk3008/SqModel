@@ -9,7 +9,7 @@ namespace SqModel.Core.Values;
 
 public abstract class ValueBase : IValue
 {
-    internal abstract string GetCurrentCommandText();
+    public abstract string GetCurrentCommandText();
 
     public virtual string GetDefaultName() => string.Empty;
 
@@ -20,6 +20,8 @@ public abstract class ValueBase : IValue
     }
 
     public OperatableValue<ValueBase>? OperatableValue { get; private set; }
+
+    public ValueBase? Inner { get; init; }
 
     public ValueBase AddOperatableValue(string @operator, ValueBase value)
     {

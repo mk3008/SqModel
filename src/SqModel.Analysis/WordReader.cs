@@ -65,28 +65,28 @@ public class WordReader : CharReader
         // ex. | or ||
         if (fc == '|')
         {
-            if (PeekAreEqual('|')) sb.Append(Read());
+            if (PeekAreEqual('|')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
         // ex. - or --
         if (fc == '-')
         {
-            if (PeekAreEqual('-')) sb.Append(Read());
+            if (PeekAreEqual('-')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
         // ex. /*
         if (fc == '/')
         {
-            if (PeekAreEqual('*')) sb.Append(Read());
+            if (PeekAreEqual('*')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
         // ex. */
         if (fc == '*')
         {
-            if (PeekAreEqual('/')) sb.Append(Read());
+            if (PeekAreEqual('/')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
