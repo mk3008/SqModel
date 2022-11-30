@@ -93,7 +93,7 @@ public class SelectQueryParser : TokenReader
 
     public ValueBase ParseValue()
     {
-        var breaktokens = new string[] { "as", ",", "from", "where", "group by", "having", "order by", "union" };
+        var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
         var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~" };
 
         var item = ReadToken();
