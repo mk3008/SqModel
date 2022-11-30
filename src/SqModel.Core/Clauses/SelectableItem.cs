@@ -19,7 +19,7 @@ public class SelectableItem : IQueryable
     public string GetCommandText()
     {
         var query = Query.GetCommandText();
-        if (Alias == Query.GetDefaultName()) return query;
+        if (string.IsNullOrEmpty(Alias) || Alias == Query.GetDefaultName() ) return query;
         return $"{query} as {Alias}";
     }
 

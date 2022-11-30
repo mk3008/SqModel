@@ -68,6 +68,29 @@ public class SelectQueryParser : TokenReader
         return new SelectableItem(value, name);
     }
 
+    public SelectableItem ParseSelectableItem()
+    {
+        var breaktokens = new string?[] { null, ",", "from", "where", "group by", "having", "order by", "union" };
+
+        var v = ParseValue();
+
+        if (PeekToken().AreContains(breaktokens))
+        {
+            return new SelectableItem(v, v.GetDefaultName());
+        }
+
+        if (PeekToken().AreEqual("as"))
+        {
+            ReadToken();
+            if (PeekToken().AreContains(breaktokens))
+            {
+                throw new SyntaxException($"alias name is not found.");
+            }
+        }
+
+        return new SelectableItem(v, ReadToken());
+    }
+
     public ValueBase ParseValue()
     {
         var breaktokens = new string[] { "as", ",", "from", "where", "group by", "having", "order by", "union" };
