@@ -172,4 +172,26 @@ public class ValueParseTest
 
         Assert.Equal("row_number() over(partition by tbl.col order by tbl.col2)", v.GetCommandText());
     }
+
+    [Fact]
+    public void CaseExpression()
+    {
+        var text = "case tbl.col when 1 then 10 when 2 then 20 else 30 end";
+        using var p = new SelectQueryParser(text);
+        var v = p.ParseValue();
+        LogOutput(v);
+
+        Assert.Equal("case tbl.col when 1 then 10 when 2 then 20 else 30 end", v.GetCommandText());
+    }
+
+    [Fact]
+    public void CaseWhenExpression()
+    {
+        var text = "case when tbl.col1 = 1 then 10 when tbl.col2 = 2 then 20 else 30 end";
+        using var p = new SelectQueryParser(text);
+        var v = p.ParseValue();
+        LogOutput(v);
+
+        Assert.Equal("case when tbl.col1 = 1 then 10 when tbl.col2 = 2 then 20 else 30 end", v.GetCommandText());
+    }
 }

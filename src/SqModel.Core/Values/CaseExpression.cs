@@ -22,8 +22,6 @@ public class CaseExpression : ValueBase
 
     public List<WhenExpression> WhenExpressions { get; init; } = new();
 
-    public ValueBase? ElseValue { get; set; }
-
     public override string GetCurrentCommandText()
     {
         var sb = ZString.CreateStringBuilder();
@@ -33,7 +31,6 @@ public class CaseExpression : ValueBase
         {
             sb.Append(" " + item.GetCommandText());
         }
-        if (ElseValue != null) sb.Append(" else " + ElseValue.GetCommandText());
         sb.Append(" end");
         return sb.ToString();
     }

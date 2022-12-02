@@ -14,6 +14,12 @@ public class FunctionValue : ValueBase
         Inner = new LiteralValue(argumentText);
     }
 
+    public FunctionValue(string functionName, ValueBase argument)
+    {
+        FunctionName = functionName;
+        Inner = argument;
+    }
+
     public string FunctionName { get; init; }
 
     public override string GetCurrentCommandText()

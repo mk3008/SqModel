@@ -18,13 +18,13 @@ public class TokenReader : WordReader
 
     private string? TokenCache { get; set; } = string.Empty;
 
-    public IEnumerable<string> ReadTokens()
-    {
-        foreach (var item in ReadTokensCore())
-        {
-            yield return item;
-        }
-    }
+    //public IEnumerable<string> ReadTokens()
+    //{
+    //    foreach (var item in ReadTokensCore())
+    //    {
+    //        yield return item;
+    //    }
+    //}
 
     public string? PeekToken()
     {
@@ -141,24 +141,15 @@ public class TokenReader : WordReader
 
             if (word.AreEqual("case"))
             {
+                yield return word; //case 
                 SkipSpace();
                 var cnd = ReadUntilToken("when");
+                if (string.IsNullOrEmpty(cnd)) yield return cnd; //t.c 
+
                 var exp = ReadUntilToken("end");
-                if (string.IsNullOrEmpty(cnd))
-                {
-                    //case when t.c = 1 else 2 end
-                    yield return word; //case 
-                    yield return "when" + exp; //when t.c = 1 else 2
-                    yield return "end"; //end
-                }
-                else
-                {
-                    //case t.c when 1 else 2 end
-                    yield return word; //case 
-                    yield return cnd; //t.c 
-                    yield return "when" + exp; //when 1 else 2
-                    yield return "end"; //end
-                }
+                yield return "when" + exp; //when t.c = 1 else 2
+                yield return "end"; //end
+
                 continue;
             }
 
@@ -193,23 +184,29 @@ public class TokenReader : WordReader
         }
     }
 
-    internal (string inner, string closer) ReadUntilCloseBracket()
+    internal (string first, string inner) ReadUntilCloseBracket()
     {
-        var inner = ZString.CreateStringBuilder();
+        var sb = ZString.CreateStringBuilder();
+        var fs = string.Empty;
 
         foreach (var word in ReadTokensCore(skipSpace: false))
         {
             if (word == null) break;
+            if (string.IsNullOrEmpty(word)) fs = word;
+
             if (word.AreEqual(")"))
             {
-                return (inner.ToString(), word);
+                return (fs, sb.ToString());
             }
-            inner.Append(word);
+
             if (word.AreEqual("("))
             {
-                var (x, y) = ReadUntilCloseBracket();
-                inner.Append(x);
-                inner.Append(y);
+                var (x, inner) = ReadUntilCloseBracket();
+                sb.Append("(" + inner + ")");
+            }
+            else
+            {
+                sb.Append(word);
             }
         }
 
@@ -238,20 +235,48 @@ public class TokenReader : WordReader
         throw new SyntaxException("block comment is not closed");
     }
 
-    private string ReadUntilToken(string breaktoken)
+    internal string ReadUntilCaseExpressionEnd()
     {
         var inner = ZString.CreateStringBuilder();
 
         foreach (var word in ReadTokensCore(skipSpace: false))
         {
             if (word == null) break;
-            if (word.TrimStart().AreEqual(breaktoken))
+
+            inner.Append(word);
+            if (word.TrimStart().AreEqual("end"))
+            {
+                return inner.ToString();
+            }
+            if (word.TrimStart().AreEqual("case"))
+            {
+                inner.Append(ReadUntilCaseExpressionEnd());
+            }
+        }
+
+        throw new SyntaxException("case expression is not end");
+    }
+
+    internal string ReadUntilToken(string breaktoken)
+    {
+        return ReadUntilToken(x => x.AreEqual(breaktoken));
+    }
+
+    internal string ReadUntilToken(Func<string, bool> fn)
+    {
+        var inner = ZString.CreateStringBuilder();
+
+        SkipSpace();
+        foreach (var word in ReadTokensCore(skipSpace: false))
+        {
+            if (word == null) break;
+            if (fn(word.TrimStart()))
             {
                 return inner.ToString();
             }
             inner.Append(word);
         }
 
-        throw new SyntaxException($"{breaktoken} token is not found");
+        throw new SyntaxException($"breaktoken token is not found");
     }
 }

@@ -14,12 +14,18 @@ public class WhenExpression
         Value = value;
     }
 
-    public ValueBase Condition { get; init; }
+    public WhenExpression(ValueBase value)
+    {
+        Value = value;
+    }
+
+    public ValueBase? Condition { get; init; }
 
     public ValueBase Value { get; init; }
 
     public string GetCommandText()
     {
-        return "when " + Condition.GetCommandText() + " then " + Value.GetCommandText();
+        if (Condition != null) return "when " + Condition.GetCommandText() + " then " + Value.GetCommandText();
+        return "else " + Value.GetCommandText();
     }
 }
