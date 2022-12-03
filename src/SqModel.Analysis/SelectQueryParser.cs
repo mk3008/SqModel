@@ -19,14 +19,6 @@ public class SelectQueryParser : TokenReader
     {
     }
 
-
-
-    //public static List<ValueBase> ParseValues(string text)
-    //{
-    //    using var p = new SelectQueryParser(text);
-    //    return p.ParseValues().ToList();
-
-    //}
     public void Parse()
     {
         var token = ReadToken();
@@ -100,35 +92,4 @@ public class SelectQueryParser : TokenReader
 
         return new SelectableItem(v, ReadToken());
     }
-
-    //public IEnumerable<ValueBase> ParseValues()
-    //{
-    //    do
-    //    {
-    //        if (PeekToken().AreEqual(",")) ReadToken();
-    //        yield return ParseValue();
-    //    }
-    //    while (PeekToken().AreEqual(","));
-    //}
-
-
-    //private FunctionValue ParseWindowFuncion(string text)
-    //{
-    //    var dic = new Dictionary<string, ValueCollection>();
-
-    //    using var p = new SelectQueryParser(text);
-    //    do
-    //    {
-    //        var token = p.ReadToken();
-    //        var vs = new ValueCollection(p.ParseValues().ToList());
-    //        dic.Add(token, vs);
-
-    //    } while (p.PeekOrDefault() != null);
-
-    //    var arg = new WindowFunction();
-    //    if (dic.ContainsKey("partition by")) arg.PartitionBy = dic["partition by"];
-    //    if (dic.ContainsKey("order by")) arg.OrderBy = dic["order by"];
-
-    //    return new FunctionValue("over", arg);
-    //}
 }

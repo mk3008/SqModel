@@ -65,17 +65,6 @@ public static class ValueBuilder
             return value;
         }
 
-        //if (r.PeekToken().AreEqual("over"))
-        //{
-        //    var ov = r.ReadToken();
-        //    if (!r.PeekToken().AreEqual("(")) throw new SyntaxException("near over. expect '('");
-        //    r.ReadToken(); // "("
-        //    var (_, inner) = r.ReadUntilCloseBracket();
-
-        //    var winfn = r.ParseWindowFuncion(inner);
-        //    value.AddOperatableValue("", winfn);
-        //}
-
         if (r.PeekToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
