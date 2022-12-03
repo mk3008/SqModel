@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class ValueCollection : ValueBase
+public class Values : ValueBase
 {
-    public List<ValueBase> Values { get; init; } = new();
+    public Values(List<ValueBase> collection)
+    {
+        Collection.AddRange(collection);
+    }
+
+    public List<ValueBase> Collection { get; init; } = new();
 
     public override string GetCurrentCommandText()
     {
-        return Values.Select(x => x.GetCommandText()).ToString(", ");
+        return Collection.Select(x => x.GetCommandText()).ToString(", ");
     }
 }

@@ -108,6 +108,7 @@ public class SelectQueryParser : TokenReader
     {
         do
         {
+            if (PeekToken().AreEqual(",")) ReadToken();
             yield return ParseValue();
         }
         while (PeekToken().AreEqual(","));
@@ -191,21 +192,20 @@ public class SelectQueryParser : TokenReader
 
     private WindowFunctionValue ParseWindowFuncion(string text)
     {
-        var dic = new Dictionary<string, ValueCollection>();
+        var dic = new Dictionary<string, Values>();
 
         using var p = new SelectQueryParser(text);
         do
         {
             var token = p.ReadToken();
-            var vs = new ValueCollection();
-            vs.Values.AddRange(p.ParseValues().ToList());
+            var vs = new Values(p.ParseValues().ToList());
             dic.Add(token, vs);
 
         } while (p.PeekOrDefault() != null);
 
         var c = new WindowFunctionValue();
-        c.PartitionBy = dic["partition by"];
-        c.OrderBy = dic["order by"];
+        if (dic.ContainsKey("partition by")) c.PartitionBy = dic["partition by"];
+        if (dic.ContainsKey("order by")) c.OrderBy = dic["order by"];
 
         return c;
     }

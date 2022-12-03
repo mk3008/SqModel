@@ -11,9 +11,9 @@ namespace SqModel.Core.Values;
 public class WindowFunctionValue : ValueBase
 {
 
-    public ValueCollection? PartitionBy { get; set; }
+    public Values? PartitionBy { get; set; }
 
-    public ValueCollection? OrderBy { get; set; }
+    public Values? OrderBy { get; set; }
 
     public override string GetCurrentCommandText()
     {

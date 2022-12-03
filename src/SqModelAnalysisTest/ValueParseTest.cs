@@ -33,6 +33,7 @@ public class ValueParseTest
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Current : {arguments.GetCurrentCommandText()}");
         Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
+
         if (arguments.Inner != null)
         {
             var s = (indent + 2).ToSpaceString();
@@ -40,6 +41,7 @@ public class ValueParseTest
             Output.WriteLine($"{s}Inner");
             LogOutputCore(arguments.Inner, indent + 4);
         }
+
         if (arguments.OperatableValue != null)
         {
             var s = (indent + 2).ToSpaceString();
@@ -163,14 +165,25 @@ public class ValueParseTest
     }
 
     [Fact]
-    public void Function2()
+    public void WindowFunction()
     {
-        var text = "row_number() over(partition by tbl.col order by tbl.col2)";
+        var text = "row_number() over(partition by tbl.col, tbl.col2 order by tbl.col3, tbl.col4)";
         using var p = new SelectQueryParser(text);
         var v = p.ParseValue();
         LogOutput(v);
 
-        Assert.Equal("row_number() over(partition by tbl.col order by tbl.col2)", v.GetCommandText());
+        Assert.Equal("row_number() over(partition by tbl.col, tbl.col2 order by tbl.col3, tbl.col4)", v.GetCommandText());
+    }
+
+    [Fact]
+    public void WindowFunction2()
+    {
+        var text = "row_number() over(order by tbl.col, tbl.col2)";
+        using var p = new SelectQueryParser(text);
+        var v = p.ParseValue();
+        LogOutput(v);
+
+        Assert.Equal("row_number() over(order by tbl.col, tbl.col2)", v.GetCommandText());
     }
 
     [Fact]
