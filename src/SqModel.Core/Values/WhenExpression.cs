@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class WhenExpression
+public class WhenExpression : IQueryCommand
 {
     public WhenExpression(ValueBase condition, ValueBase value)
     {

@@ -36,6 +36,20 @@ public class WordReaderTest
     }
 
     [Fact]
+    public void Space()
+    {
+        var text = "  1  2";
+        using var r = new WordReader(text);
+        var lst = r.ReadWords().ToList();
+        LogOutput(lst);
+
+        Assert.Equal(2, lst.Count);
+        Assert.Equal("1", lst[0]);
+        Assert.Equal("2", lst[1]);
+    }
+
+
+    [Fact]
     public void Colon()
     {
         var text = ":val val::text";

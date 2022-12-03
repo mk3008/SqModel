@@ -1,4 +1,5 @@
-﻿using SqModel.Analysis.Extensions;
+﻿using SqModel.Analysis.Builder;
+using SqModel.Analysis.Extensions;
 using SqModel.Core.Values;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ public class CaseExpressionParser : TokenReader
         }
         else
         {
-            var cnd = SelectQueryParser.ParseValue(cndtext);
+            var cnd = ValueBuilder.Build(cndtext);
             c = new CaseExpression(cnd);
         }
 
@@ -64,7 +65,7 @@ public class CaseExpressionParser : TokenReader
 
         if (token.AreEqual("else"))
         {
-            var val = SelectQueryParser.ParseValue(ReadUntilToken("end"));
+            var val = ValueBuilder.Build(ReadUntilToken("end"));
             yield return new WhenExpression(val);
         }
     }
@@ -82,8 +83,8 @@ public class CaseExpressionParser : TokenReader
             return false;
         };
 
-        var cnd = SelectQueryParser.ParseValue(ReadUntilToken("then"));
-        var val = SelectQueryParser.ParseValue(ReadUntilToken(fn));
+        var cnd = ValueBuilder.Build(ReadUntilToken("then"));
+        var val = ValueBuilder.Build(ReadUntilToken(fn));
         var exp = new WhenExpression(cnd, val);
         return (exp, breaktoken);
     }

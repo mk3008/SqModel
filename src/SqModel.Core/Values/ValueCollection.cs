@@ -10,6 +10,16 @@ namespace SqModel.Core.Values;
 
 public class ValueCollection : IList<ValueBase>, IQueryCommand
 {
+    public ValueCollection(string text)
+    {
+        Collection.Add(new LiteralValue(text));
+    }
+
+    public ValueCollection(ValueBase item)
+    {
+        Collection.Add(item);
+    }
+
     public ValueCollection(List<ValueBase> collection)
     {
         Collection.AddRange(collection);

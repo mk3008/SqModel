@@ -21,8 +21,6 @@ public abstract class ValueBase : IValue
 
     public OperatableValue<ValueBase>? OperatableValue { get; private set; }
 
-    public IQueryCommand? Inner { get; init; }
-
     public ValueBase AddOperatableValue(string @operator, ValueBase value)
     {
         if (OperatableValue != null) throw new InvalidOperationException();

@@ -81,7 +81,7 @@ public class CharReader : IDisposable
         throw new SyntaxException("single quote is not closed.");
     }
 
-    public void SkipSpace() => ReadUntil(x => !SpaceChars.Contains(x)).FirstOrDefault();
+    public void SkipSpace() => ReadWhile(x => SpaceChars.Contains(x)).ToList();
 
     //public void SkipToLineEnd()
     //{

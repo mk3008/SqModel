@@ -13,6 +13,8 @@ public class BracketValue : ValueBase
         Inner = inner;
     }
 
+    public ValueBase Inner { get; init; }
+
     public override string GetCurrentCommandText()
     {
         if (Inner == null) throw new NullReferenceException();
