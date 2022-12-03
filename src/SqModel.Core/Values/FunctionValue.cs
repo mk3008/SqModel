@@ -8,23 +8,23 @@ namespace SqModel.Core.Values;
 
 public class FunctionValue : ValueBase
 {
-    public FunctionValue(string functionName, string argumentText)
+    public FunctionValue(string name, string argument)
     {
-        FunctionName = functionName;
-        Inner = new LiteralValue(argumentText);
+        Name = name;
+        Inner = new LiteralValue(argument);
     }
 
-    public FunctionValue(string functionName, ValueBase argument)
+    public FunctionValue(string functionName, IQueryCommand argument)
     {
-        FunctionName = functionName;
+        Name = functionName;
         Inner = argument;
     }
 
-    public string FunctionName { get; init; }
+    public string Name { get; init; }
 
     public override string GetCurrentCommandText()
     {
         if (Inner == null) throw new Exception();
-        return $"{FunctionName}({Inner.GetCommandText()})";
+        return $"{Name}({Inner.GetCommandText()})";
     }
 }

@@ -21,7 +21,7 @@ public abstract class ValueBase : IValue
 
     public OperatableValue<ValueBase>? OperatableValue { get; private set; }
 
-    public ValueBase? Inner { get; init; }
+    public IQueryCommand? Inner { get; init; }
 
     public ValueBase AddOperatableValue(string @operator, ValueBase value)
     {

@@ -8,23 +8,20 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class WindowFunctionValue : ValueBase
+public class WindowFunctionArgument : IQueryCommand
 {
+    public ValueCollection? PartitionBy { get; set; }
 
-    public Values? PartitionBy { get; set; }
+    public ValueCollection? OrderBy { get; set; }
 
-    public Values? OrderBy { get; set; }
-
-    public override string GetCurrentCommandText()
+    public string GetCommandText()
     {
         if (PartitionBy == null && OrderBy == null) throw new Exception();
 
         var sb = ZString.CreateStringBuilder();
-        sb.Append("(");
         if (PartitionBy != null) sb.Append("partition by " + PartitionBy.GetCommandText());
         if (PartitionBy != null && OrderBy != null) sb.Append(" ");
         if (OrderBy != null) sb.Append("order by " + OrderBy.GetCommandText());
-        sb.Append(")");
 
         return sb.ToString();
     }

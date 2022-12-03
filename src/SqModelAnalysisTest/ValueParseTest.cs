@@ -1,4 +1,5 @@
 ﻿using SqModel.Analysis;
+using SqModel.Core;
 using SqModel.Core.Clauses;
 using SqModel.Core.Values;
 using System;
@@ -31,7 +32,8 @@ public class ValueParseTest
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
-        Output.WriteLine($"{space}Current : {arguments.GetCurrentCommandText()}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}CurrentCommand : {arguments.GetCurrentCommandText()}");
         Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
 
         if (arguments.Inner != null)
@@ -49,6 +51,68 @@ public class ValueParseTest
             Output.WriteLine($"{s}Operator : {v.Operator}");
             LogOutputCore(v.Value, indent + 4);
         }
+    }
+
+    private void LogOutputCore(WindowFunctionArgument arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.PartitionBy != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}partition by");
+            LogOutputCore(arguments.PartitionBy, indent + 4);
+        }
+
+        if (arguments.OrderBy != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}order by");
+            LogOutputCore(arguments.OrderBy, indent + 4);
+        }
+    }
+
+    private void LogOutputCore(ValueCollection arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}Count : {arguments.Count}");
+
+        foreach (var item in arguments)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}item");
+            LogOutputCore(item, indent + 4);
+        }
+    }
+
+    private void LogOutputCore(IQueryCommand arguments, int indent = 0)
+    {
+        if (arguments is ValueBase val)
+        {
+            LogOutputCore(val, indent);
+            return;
+        }
+        else if (arguments is WindowFunctionArgument winfnarg)
+        {
+            LogOutputCore(winfnarg, indent);
+            return;
+        }
+        else if (arguments is ValueCollection values)
+        {
+            LogOutputCore(values, indent);
+            return;
+        }
+
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
     }
 
     [Fact]

@@ -17,7 +17,7 @@ public class OperatableValue<T> : IQueryCommand where T : IValue
 
     public string GetCommandText()
     {
-        if (Operator.AreEqual("over")) return $"{Operator}{Value.GetCommandText()}";
+        if (string.IsNullOrEmpty(Operator)) return $"{Value.GetCommandText()}";
         return $"{Operator} {Value.GetCommandText()}";
     }
 }

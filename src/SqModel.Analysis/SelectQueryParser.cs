@@ -177,8 +177,8 @@ public class SelectQueryParser : TokenReader
             ReadToken(); // "("
             var (_, inner) = ReadUntilCloseBracket();
 
-            var v = ParseWindowFuncion(inner);
-            value.AddOperatableValue("over", v);
+            var winfn = ParseWindowFuncion(inner);
+            value.AddOperatableValue("", winfn);
         }
 
         if (PeekToken().AreContains(operatorTokens))
@@ -190,23 +190,23 @@ public class SelectQueryParser : TokenReader
         return value;
     }
 
-    private WindowFunctionValue ParseWindowFuncion(string text)
+    private FunctionValue ParseWindowFuncion(string text)
     {
-        var dic = new Dictionary<string, Values>();
+        var dic = new Dictionary<string, ValueCollection>();
 
         using var p = new SelectQueryParser(text);
         do
         {
             var token = p.ReadToken();
-            var vs = new Values(p.ParseValues().ToList());
+            var vs = new ValueCollection(p.ParseValues().ToList());
             dic.Add(token, vs);
 
         } while (p.PeekOrDefault() != null);
 
-        var c = new WindowFunctionValue();
-        if (dic.ContainsKey("partition by")) c.PartitionBy = dic["partition by"];
-        if (dic.ContainsKey("order by")) c.OrderBy = dic["order by"];
+        var arg = new WindowFunctionArgument();
+        if (dic.ContainsKey("partition by")) arg.PartitionBy = dic["partition by"];
+        if (dic.ContainsKey("order by")) arg.OrderBy = dic["order by"];
 
-        return c;
+        return new FunctionValue("over", arg);
     }
 }
