@@ -1,10 +1,5 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Values;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqModel.Analysis.Builder;
 
@@ -44,7 +39,7 @@ public static class ValueBuilder
         else if (item == "case")
         {
             var text = "case " + r.ReadUntilCaseExpressionEnd();
-            value = CaseExpressionParser.Parse(text);
+            value = CaseExpressionBuilder.Build(text);
         }
         else if (r.PeekToken().AreEqual("("))
         {
