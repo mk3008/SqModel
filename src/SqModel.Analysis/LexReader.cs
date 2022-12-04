@@ -9,9 +9,9 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace SqModel.Analysis;
 
-public class WordReader : CharReader
+public class LexReader : CharReader
 {
-    public WordReader(string text) : base(text)
+    public LexReader(string text) : base(text)
     {
     }
 
@@ -31,20 +31,7 @@ public class WordReader : CharReader
 
     public IEnumerable<char> AllSymbols => SingleSymbols.Union(MultipleSymbols).Union(PrefixSymbols);
 
-
-    //public IEnumerable<string> BreakSymbolStrings { get; set; } = new[]
-    //{
-    //    "--",
-    //    "/*",
-    //    "*/",
-    //    "<>",
-    //    "!=",
-    //    ">=",
-    //    "<=",
-    //    "::",
-    //};
-
-    public string ReadWord(bool skipSpace = true)
+    public string ReadLex(bool skipSpace = true)
     {
         if (skipSpace) SkipSpace();
 
@@ -76,23 +63,24 @@ public class WordReader : CharReader
             return sb.ToString();
         }
 
-        // ex. /*
+        // ex. / or /*
         if (fc == '/')
         {
             if (PeekAreEqual('*')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
-        // ex. */
+        // ex. * or */
         if (fc == '*')
         {
             if (PeekAreEqual('/')) sb.Append(ReadChar());
             return sb.ToString();
         }
 
+        // ex. . or , or (
         if (SingleSymbols.Contains(fc)) return sb.ToString();
 
-        // ex. + or != etc
+        // ex. + or !=
         if (MultipleSymbols.Contains(fc))
         {
             foreach (var item in ReadWhile((char x) => x != '/' && x != '*' && MultipleSymbols.Contains(x)))
@@ -127,13 +115,13 @@ public class WordReader : CharReader
         return sb.ToString();
     }
 
-    public IEnumerable<string> ReadWords(bool skipSpace = true)
+    public IEnumerable<string> ReadLexs(bool skipSpace = true)
     {
-        var w = ReadWord(skipSpace);
+        var w = ReadLex(skipSpace);
         while (!string.IsNullOrEmpty(w))
         {
             yield return w;
-            w = ReadWord(skipSpace);
+            w = ReadLex(skipSpace);
         }
     }
 }

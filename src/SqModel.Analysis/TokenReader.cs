@@ -8,13 +8,13 @@ using System.Text;
 
 namespace SqModel.Analysis;
 
-public class TokenReader : WordReader
+public class TokenReader : LexReader
 {
     public TokenReader(string text) : base(text)
     {
     }
 
-    public Action<string>? Logger { get; set; }
+    //public Action<string>? Logger { get; set; }
 
     private string? TokenCache { get; set; } = string.Empty;
 
@@ -72,7 +72,7 @@ public class TokenReader : WordReader
 
     private IEnumerable<string> ReadTokensCore(bool skipSpace = true)
     {
-        foreach (var word in ReadWords(skipSpace: skipSpace))
+        foreach (var word in ReadLexs(skipSpace: skipSpace))
         {
             if (word.AreEqual(")"))
             {
@@ -82,7 +82,7 @@ public class TokenReader : WordReader
 
             if (word.AreEqual("inner") || word.AreEqual("cross"))
             {
-                var next = ReadWord();
+                var next = ReadLex();
                 if (!next.AreEqual("join")) throw new SyntaxException($"near {word}");
                 yield return word + " " + next;
                 continue;
@@ -90,7 +90,7 @@ public class TokenReader : WordReader
 
             if (word.AreEqual("group") || word.AreEqual("partition") || word.AreEqual("order"))
             {
-                var next = ReadWord();
+                var next = ReadLex();
                 if (!next.AreEqual("by")) throw new SyntaxException($"near {word}");
                 yield return word + " " + next;
                 continue;
@@ -105,13 +105,13 @@ public class TokenReader : WordReader
                     continue;
                 }
 
-                var next = ReadWord();
+                var next = ReadLex();
                 var sb = ZString.CreateStringBuilder();
                 sb.Append(word);
                 if (next.AreEqual("outer"))
                 {
                     sb.Append(" " + next);
-                    next = ReadWord();
+                    next = ReadLex();
                 }
                 if (!next.AreEqual("join")) throw new SyntaxException($"near {word}");
                 sb.Append(" " + next);
@@ -121,7 +121,7 @@ public class TokenReader : WordReader
 
             if (word.AreEqual("is"))
             {
-                var next = ReadWord();
+                var next = ReadLex();
                 if (string.IsNullOrEmpty(next))
                 {
                     throw new SyntaxException($"near {word}");

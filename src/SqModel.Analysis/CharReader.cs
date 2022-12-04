@@ -47,18 +47,10 @@ public class CharReader : IDisposable
 
     public IEnumerable<char> ReadChars() => ReadWhile((_) => true);
 
-    //public char? Cache { get; private set; }
-
-    //public void ClearCache()
-    //{
-    //    Cache = null;
-    //}
-
     public char ReadChar()
     {
         var i = Reader.Read();
         if (i < 0) throw new EndOfStreamException();
-        //Cache = (char)i;
         return (char)i;
     }
 
@@ -82,20 +74,6 @@ public class CharReader : IDisposable
     }
 
     public void SkipSpace() => ReadWhile(x => SpaceChars.Contains(x)).ToList();
-
-    //public void SkipToLineEnd()
-    //{
-    //    foreach (var item in ReadChars())
-    //    {
-    //        if (item != '\n' && item != '\r') continue;
-    //        if (item == '\r')
-    //        {
-    //            var c = PeekOrDefault();
-    //            if (c != null && c.Value == '\n') Read();
-    //        }
-    //        break;
-    //    }
-    //}
 
     public string ReadUntilLineEnd()
     {

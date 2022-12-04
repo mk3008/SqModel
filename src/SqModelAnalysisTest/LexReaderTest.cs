@@ -5,12 +5,12 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class WordReaderTest
+public class LexReaderTest
 {
 
     private readonly ITestOutputHelper Output;
 
-    public WordReaderTest(ITestOutputHelper output)
+    public LexReaderTest(ITestOutputHelper output)
     {
         Output = output;
     }
@@ -27,9 +27,9 @@ public class WordReaderTest
     public void Blank()
     {
         var text = "";
-        using var r = new WordReader(text);
+        using var r = new LexReader(text);
 
-        foreach (var item in r.ReadWords())
+        foreach (var item in r.ReadLexs())
         {
             throw new Exception();
         }
@@ -39,8 +39,8 @@ public class WordReaderTest
     public void Space()
     {
         var text = "  1  2";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(2, lst.Count);
@@ -53,8 +53,8 @@ public class WordReaderTest
     public void Colon()
     {
         var text = ":val val::text";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(2, lst.Count);
@@ -66,8 +66,8 @@ public class WordReaderTest
     public void Numeric()
     {
         var text = "123 1.23";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(2, lst.Count);
@@ -79,8 +79,8 @@ public class WordReaderTest
     public void TableColumn()
     {
         var text = "tbl.col1 tbl.col2";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(6, lst.Count);
@@ -96,8 +96,8 @@ public class WordReaderTest
     public void SingleQuote()
     {
         var text = "'a b' '   '";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(2, lst.Count);
@@ -109,8 +109,8 @@ public class WordReaderTest
     public void SingleQuoteEscape()
     {
         var text = "'a b''c'";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Single(lst);
@@ -121,8 +121,8 @@ public class WordReaderTest
     public void Operator()
     {
         var text = "1+1!=3";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(5, lst.Count);
@@ -137,8 +137,8 @@ public class WordReaderTest
     public void Pipe()
     {
         var text = "'a' || 'b'";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(3, lst.Count);
@@ -151,8 +151,8 @@ public class WordReaderTest
     public void LineComment()
     {
         var text = "a---b";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(4, lst.Count);
@@ -166,8 +166,8 @@ public class WordReaderTest
     public void BlockComment()
     {
         var text = "a//*b**/";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(6, lst.Count);
@@ -183,8 +183,8 @@ public class WordReaderTest
     public void Function()
     {
         var text = "sum(a.price)";
-        using var r = new WordReader(text);
-        var lst = r.ReadWords().ToList();
+        using var r = new LexReader(text);
+        var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
         Assert.Equal(6, lst.Count);

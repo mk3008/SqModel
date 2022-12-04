@@ -3,9 +3,9 @@ using SqModel.Core.Values;
 
 namespace SqModel.Analysis.Builder;
 
-public static class ValueCollectionBuilder
+public static class ValueCollectionParser
 {
-    public static ValueCollection Build(string text)
+    public static ValueCollection Parse(string text)
     {
         using var r = new TokenReader(text);
         return new ValueCollection(ReadValues(r).ToList());
@@ -21,7 +21,7 @@ public static class ValueCollectionBuilder
         do
         {
             if (r.PeekToken().AreEqual(",")) r.ReadToken();
-            yield return ValueBuilder.Build(r);
+            yield return ValueParser.Build(r);
         }
         while (r.PeekToken().AreEqual(","));
     }

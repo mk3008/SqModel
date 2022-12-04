@@ -74,7 +74,7 @@ public class SelectQueryParser : TokenReader
     {
         var breaktokens = new string?[] { null, ",", "from", "where", "group by", "having", "order by", "union" };
 
-        var v = ValueBuilder.Build(this);
+        var v = ValueParser.Build(this);
 
         if (PeekToken().AreContains(breaktokens))
         {

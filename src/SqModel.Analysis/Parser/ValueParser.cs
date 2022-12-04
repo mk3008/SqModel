@@ -3,7 +3,7 @@ using SqModel.Core.Values;
 
 namespace SqModel.Analysis.Builder;
 
-public static class ValueBuilder
+public static class ValueParser
 {
     public static ValueBase Build(string text)
     {
@@ -39,11 +39,11 @@ public static class ValueBuilder
         else if (item == "case")
         {
             var text = "case " + r.ReadUntilCaseExpressionEnd();
-            value = CaseExpressionBuilder.Build(text);
+            value = CaseExpressionParser.Parse(text);
         }
         else if (r.PeekToken().AreEqual("("))
         {
-            value = FunctionValueBuilder.Build(r, item);
+            value = FunctionValueParseLogic.Parse(r, item);
         }
         else if (r.PeekToken().AreEqual("."))
         {
