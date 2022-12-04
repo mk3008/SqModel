@@ -24,7 +24,7 @@ public static class CaseExpressionParser
         }
         else
         {
-            var cnd = ValueParser.Build(cndtext);
+            var cnd = ValueParser.Parse(cndtext);
             c = new CaseExpression(cnd);
         }
 

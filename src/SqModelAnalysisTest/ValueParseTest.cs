@@ -249,7 +249,7 @@ public class ValueParseTest
     public void Column()
     {
         var text = "col";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("col", v.GetCommandText());
@@ -260,7 +260,7 @@ public class ValueParseTest
     public void TableColumn()
     {
         var text = "tbl.col";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
 
         LogOutput(v);
 
@@ -272,7 +272,7 @@ public class ValueParseTest
     public void Numeric()
     {
         var text = "3.14";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
 
         LogOutput(v);
 
@@ -283,7 +283,7 @@ public class ValueParseTest
     public void Text()
     {
         var text = "'abc''s'";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
 
         LogOutput(v);
 
@@ -294,7 +294,7 @@ public class ValueParseTest
     public void BooleanTrue()
     {
         var text = "true";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("true", v.GetCommandText());
@@ -304,7 +304,7 @@ public class ValueParseTest
     public void BooleanFalse()
     {
         var text = "false";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("false", v.GetCommandText());
@@ -314,7 +314,7 @@ public class ValueParseTest
     public void Expression()
     {
         var text = "1*3.14";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("1 * 3.14", v.GetCommandText());
@@ -324,7 +324,7 @@ public class ValueParseTest
     public void Expression2()
     {
         var text = "tbl.col1 *   tbl.col2";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("tbl.col1 * tbl.col2", v.GetCommandText());
@@ -335,7 +335,7 @@ public class ValueParseTest
     public void Expression3()
     {
         var text = "(1+1)*2";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("(1 + 1) * 2", v.GetCommandText());
@@ -345,7 +345,7 @@ public class ValueParseTest
     public void Function()
     {
         var text = "sum(tbl.col+    tbl.col2)";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("sum(tbl.col + tbl.col2)", v.GetCommandText());
@@ -355,7 +355,7 @@ public class ValueParseTest
     public void WindowFunction()
     {
         var text = "row_number() over(partition by tbl.col, tbl.col2 order by tbl.col3, tbl.col4)";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("row_number() over(partition by tbl.col, tbl.col2 order by tbl.col3, tbl.col4)", v.GetCommandText());
@@ -365,7 +365,7 @@ public class ValueParseTest
     public void WindowFunction2()
     {
         var text = "row_number() over(order by tbl.col, tbl.col2)";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("row_number() over(order by tbl.col, tbl.col2)", v.GetCommandText());
@@ -375,7 +375,7 @@ public class ValueParseTest
     public void CaseExpression()
     {
         var text = "case tbl.col when 1 then 10 when 2 then 20 else 30 end";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("case tbl.col when 1 then 10 when 2 then 20 else 30 end", v.GetCommandText());
@@ -385,7 +385,7 @@ public class ValueParseTest
     public void CaseWhenExpression()
     {
         var text = "case when tbl.col1 = 1 then 10 when tbl.col2 = 2 then 20 else 30 end";
-        var v = ValueParser.Build(text);
+        var v = ValueParser.Parse(text);
         LogOutput(v);
 
         Assert.Equal("case when tbl.col1 = 1 then 10 when tbl.col2 = 2 then 20 else 30 end", v.GetCommandText());

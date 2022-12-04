@@ -25,7 +25,7 @@ public class WhenExpressionParser
 
         if (token.AreEqual("else"))
         {
-            var val = ValueParser.Build(r.ReadUntilToken("end"));
+            var val = ValueParser.Parse(r.ReadUntilToken("end"));
             yield return new WhenExpression(val);
         }
     }
@@ -43,8 +43,8 @@ public class WhenExpressionParser
             return false;
         };
 
-        var cnd = ValueParser.Build(r.ReadUntilToken("then"));
-        var val = ValueParser.Build(r.ReadUntilToken(fn));
+        var cnd = ValueParser.Parse(r.ReadUntilToken("then"));
+        var val = ValueParser.Parse(r.ReadUntilToken(fn));
         var exp = new WhenExpression(cnd, val);
         return (exp, breaktoken);
     }

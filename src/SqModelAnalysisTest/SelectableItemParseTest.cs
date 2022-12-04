@@ -1,4 +1,5 @@
 ﻿using SqModel.Analysis;
+using SqModel.Analysis.Parser;
 using SqModel.Core.Clauses;
 using SqModel.Core.Values;
 using System;
@@ -29,8 +30,7 @@ public class SelectableItemParseTest
     public void NotTableColumn()
     {
         var text = "3.14";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("3.14", item.GetCommandText());
@@ -41,8 +41,7 @@ public class SelectableItemParseTest
     public void NotTableColumnAlias()
     {
         var text = "3.14 as val";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("3.14 as val", item.GetCommandText());
@@ -53,8 +52,7 @@ public class SelectableItemParseTest
     public void TableColumn()
     {
         var text = "t.col";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("t.col", item.GetCommandText());
@@ -65,8 +63,7 @@ public class SelectableItemParseTest
     public void TableColumnAliasRedundant()
     {
         var text = "t.col as col";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("t.col", item.GetCommandText());
@@ -77,8 +74,7 @@ public class SelectableItemParseTest
     public void TableColumnAlias()
     {
         var text = "t.col as col1";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("t.col as col1", item.GetCommandText());
@@ -89,8 +85,7 @@ public class SelectableItemParseTest
     public void TableColumnAlias1()
     {
         var text = "t.col col1";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("t.col as col1", item.GetCommandText());
@@ -101,8 +96,7 @@ public class SelectableItemParseTest
     public void BreakToken()
     {
         var text = "t.col ,";
-        using var p = new SelectQueryParser(text);
-        var item = p.ParseSelectableItem();
+        var item = SelectableItemParser.Parse(text);
         LogOutput(item);
 
         Assert.Equal("t.col", item.GetCommandText());

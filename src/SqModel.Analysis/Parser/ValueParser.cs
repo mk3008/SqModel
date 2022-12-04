@@ -5,13 +5,13 @@ namespace SqModel.Analysis.Builder;
 
 public static class ValueParser
 {
-    public static ValueBase Build(string text)
+    public static ValueBase Parse(string text)
     {
         using var r = new TokenReader(text);
-        return Build(r);
+        return Parse(r);
     }
 
-    public static ValueBase Build(TokenReader r)
+    public static ValueBase Parse(TokenReader r)
     {
         var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
         var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~" };
@@ -33,7 +33,7 @@ public static class ValueParser
             }
             else
             {
-                value = new BracketValue(Build(inner));
+                value = new BracketValue(Parse(inner));
             }
         }
         else if (item == "case")
@@ -68,7 +68,7 @@ public static class ValueParser
         if (r.PeekToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
-            value.AddOperatableValue(op, Build(r));
+            value.AddOperatableValue(op, Parse(r));
         }
 
         return value;

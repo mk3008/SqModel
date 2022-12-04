@@ -21,7 +21,7 @@ public static class ValueCollectionParser
         do
         {
             if (r.PeekToken().AreEqual(",")) r.ReadToken();
-            yield return ValueParser.Build(r);
+            yield return ValueParser.Parse(r);
         }
         while (r.PeekToken().AreEqual(","));
     }
