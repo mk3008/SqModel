@@ -13,17 +13,11 @@ namespace SqModelAnalysisTest;
 
 public class SelectableItemParseTest
 {
-    private readonly ITestOutputHelper Output;
+    private readonly QueryCommandMonitor Monitor;
 
     public SelectableItemParseTest(ITestOutputHelper output)
     {
-        Output = output;
-    }
-
-    private void LogOutput(SelectableItem arguments)
-    {
-        Output.WriteLine($"CommandText : {arguments.GetCommandText()}");
-        Output.WriteLine($"Alias : {arguments.Alias}");
+        Monitor = new QueryCommandMonitor(output);
     }
 
     [Fact]
@@ -31,7 +25,7 @@ public class SelectableItemParseTest
     {
         var text = "3.14";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("3.14", item.GetCommandText());
         Assert.Equal("", item.Alias);
@@ -42,7 +36,7 @@ public class SelectableItemParseTest
     {
         var text = "3.14 as val";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("3.14 as val", item.GetCommandText());
         Assert.Equal("val", item.Alias);
@@ -53,7 +47,7 @@ public class SelectableItemParseTest
     {
         var text = "t.col";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("t.col", item.GetCommandText());
         Assert.Equal("col", item.Alias);
@@ -64,7 +58,7 @@ public class SelectableItemParseTest
     {
         var text = "t.col as col";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("t.col", item.GetCommandText());
         Assert.Equal("col", item.Alias);
@@ -75,7 +69,7 @@ public class SelectableItemParseTest
     {
         var text = "t.col as col1";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("t.col as col1", item.GetCommandText());
         Assert.Equal("col1", item.Alias);
@@ -86,7 +80,7 @@ public class SelectableItemParseTest
     {
         var text = "t.col col1";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("t.col as col1", item.GetCommandText());
         Assert.Equal("col1", item.Alias);
@@ -97,7 +91,7 @@ public class SelectableItemParseTest
     {
         var text = "t.col ,";
         var item = SelectableItemParser.Parse(text);
-        LogOutput(item);
+        Monitor.Log(item);
 
         Assert.Equal("t.col", item.GetCommandText());
         Assert.Equal("col", item.Alias);
