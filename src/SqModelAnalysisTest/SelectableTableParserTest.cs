@@ -8,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class SelectableTableParseTest
+public class SelectableTableParserTest
 {
     private readonly QueryCommandMonitor Monitor;
 
-    public SelectableTableParseTest(ITestOutputHelper output)
+    public SelectableTableParserTest(ITestOutputHelper output)
     {
         Monitor = new QueryCommandMonitor(output);
     }

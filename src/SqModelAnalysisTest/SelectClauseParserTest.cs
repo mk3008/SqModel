@@ -11,11 +11,11 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class SelectClauseParseTest
+public class SelectClauseParserTest
 {
     private readonly QueryCommandMonitor Monitor;
 
-    public SelectClauseParseTest(ITestOutputHelper output)
+    public SelectClauseParserTest(ITestOutputHelper output)
     {
         Monitor = new QueryCommandMonitor(output);
     }
