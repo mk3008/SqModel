@@ -12,11 +12,11 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class ValueParseTest
+public class ValueParserTest
 {
     private readonly QueryCommandMonitor Monitor;
 
-    public ValueParseTest(ITestOutputHelper output)
+    public ValueParserTest(ITestOutputHelper output)
     {
         Monitor = new QueryCommandMonitor(output);
     }

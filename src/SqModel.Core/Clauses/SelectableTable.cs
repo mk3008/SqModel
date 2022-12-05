@@ -1,38 +1,60 @@
 ﻿using SqModel.Core.Extensions;
+using SqModel.Core.Values;
+using System.ComponentModel;
 
 namespace SqModel.Core.Clauses;
 
-public class SelectableTable : IQueryable, ITableAlias
+public class SelectableTable : IQueryable, ISelectable
 {
-    public SelectableTable(ITable query, string alias)
+    public SelectableTable(ITable table, string alias)
     {
-        Query = query;
+        Table = table;
         Alias = alias;
     }
+    public SelectableTable(ITable table, string alias, ValueCollection columnAliases)
+    {
+        Table = table;
+        Alias = alias;
+        ColumnAliases = columnAliases;
+    }
 
-    internal ITable Query { get; init; }
+    public ITable Table { get; init; }
 
-    internal Dictionary<string, object?>? Parameters { get; set; }
+    public Dictionary<string, object?>? Parameters { get; set; }
 
     public string Alias { get; init; }
 
-    public List<string>? ColumnAliases { get; set; }
+    public ValueCollection? ColumnAliases { get; init; }
+
+    private string GetAliasCommand()
+    {
+        /*
+         * alias(col1, col2, col3)
+         */
+        if (string.IsNullOrEmpty(Alias)) return string.Empty;
+        if (ColumnAliases == null || !ColumnAliases.Any())
+        {
+            if (Alias == Table.GetDefaultName()) return string.Empty;
+            return Alias;
+        }
+
+        return Alias + "(" + ColumnAliases.GetCommandText() + ")";
+    }
 
     public string GetCommandText()
     {
         /*
          * query as alias(col1, col2, col3) 
          */
-        var query = Query.GetCommandText();
 
-        var alias = this.GetAliasCommand();
-        if (!string.IsNullOrEmpty(alias)) return query;
+        var query = Table.GetCommandText();
+        var alias = GetAliasCommand();
+        if (string.IsNullOrEmpty(alias)) return query;
         return $"{query} as {alias}";
     }
 
     public IDictionary<string, object?> GetParameters()
     {
-        if (Parameters == null) return Query.GetParameters();
-        return Parameters.Merge(Parameters);
+        return Parameters ?? EmptyParameters.Get();
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 using SqModel.Core.Clauses;
+using SqModel.Core.Tables;
 
 namespace SqModelAnalysisTest;
 internal class QueryCommandMonitor
@@ -69,10 +70,75 @@ internal class QueryCommandMonitor
             LogCore(selectclauese, indent);
             return;
         }
+        else if (arguments is PhysicalTable physicalTable)
+        {
+            LogCore(physicalTable, indent);
+            return;
+        }
+        else if (arguments is ValuesTable valuesTable)
+        {
+            LogCore(valuesTable, indent);
+            return;
+        }
+        else if (arguments is SelectableTable selectableTable)
+        {
+            LogCore(selectableTable, indent);
+            return;
+        }
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+    }
+
+    private void LogCore(SelectableTable arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.ColumnAliases != null)
+        {
+            foreach (var item in arguments.ColumnAliases)
+            {
+                var s = (indent + 2).ToSpaceString();
+                Output.WriteLine($"{s}column name");
+                LogCore(item, indent + 4);
+            }
+        }
+
+        if (arguments.Table != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Table");
+            LogCore(arguments.Table, indent + 4);
+        }
+    }
+
+    private void LogCore(ValuesTable arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
+
+        foreach (var item in arguments.Rows)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}row");
+            LogCore(item, indent + 4);
+        }
+    }
+
+    private void LogCore(PhysicalTable arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
     }
 
     private void LogCore(SelectClause arguments, int indent = 0)
@@ -99,11 +165,11 @@ internal class QueryCommandMonitor
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
         Output.WriteLine($"{space}Alias : {arguments.Alias}");
 
-        if (arguments.Query != null)
+        if (arguments.Value != null)
         {
             var s = (indent + 2).ToSpaceString();
             Output.WriteLine($"{s}Value");
-            LogCore(arguments.Query, indent + 4);
+            LogCore(arguments.Value, indent + 4);
         }
     }
 

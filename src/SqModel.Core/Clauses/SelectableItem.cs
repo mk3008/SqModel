@@ -6,11 +6,11 @@ public class SelectableItem : IQueryable
 {
     public SelectableItem(IValue query, string alias)
     {
-        Query = query;
+        Value = query;
         Alias = alias;
     }
 
-    public IValue Query { get; init; }
+    public IValue Value { get; init; }
 
     public Dictionary<string, object?>? Parameters { get; set; } = null;
 
@@ -18,8 +18,8 @@ public class SelectableItem : IQueryable
 
     public string GetCommandText()
     {
-        var query = Query.GetCommandText();
-        if (string.IsNullOrEmpty(Alias) || Alias == Query.GetDefaultName() ) return query;
+        var query = Value.GetCommandText();
+        if (string.IsNullOrEmpty(Alias) || Alias == Value.GetDefaultName()) return query;
         return $"{query} as {Alias}";
     }
 

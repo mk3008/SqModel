@@ -2,22 +2,28 @@
 
 namespace SqModel.Core.Tables;
 
-internal class PhysicalTable : ITable
+public class PhysicalTable : TableBase
 {
     public PhysicalTable(string table)
     {
         Table = table;
     }
 
-    public string? Schame { get; set; }
+    public PhysicalTable(string schema, string table)
+    {
+        Schame = schema;
+        Table = table;
+    }
+
+    public string? Schame { get; init; }
 
     public string Table { get; init; }
 
-    public string GetCommandText()
+    public override string GetCommandText()
     {
         if (string.IsNullOrEmpty(Schame)) return Table;
         return $"{Schame}.{Table}";
     }
 
-    public IDictionary<string, object?> GetParameters() => EmptyParameters.Get();
+    public override string GetDefaultName() => Table;
 }

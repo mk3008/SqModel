@@ -25,8 +25,8 @@ public static class ValueParser
         }
         else if (item == "(")
         {
-            var (_, inner) = r.ReadUntilCloseBracket();
-            if (inner.IsSelectQuery())
+            var (first, inner) = r.ReadUntilCloseBracket();
+            if (first.AreEqual("select"))
             {
                 //TODO : inline query
                 throw new NotSupportedException();

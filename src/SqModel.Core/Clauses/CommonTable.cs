@@ -3,7 +3,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Clauses;
 
-public class CommonTable : IQueryable, ITableAlias
+public class CommonTable : IQueryable, ISelectable
 {
     public CommonTable(ITable query, string alias)
     {
@@ -28,23 +28,24 @@ public class CommonTable : IQueryable, ITableAlias
          *     query
          * )
          */
-        var query = Query.GetCommandText();
-        var alias = this.GetAliasCommand();
-        var keyword = Keywords == null || !Keywords.Any() ? string.Empty : Keywords.ToString(" ");
+        //var query = Query.GetCommandText();
+        //var alias = GetAliasCommand();
+        //var keyword = Keywords == null || !Keywords.Any() ? string.Empty : Keywords.ToString(" ");
 
         var sb = new StringBuilder();
-        sb.Append($"{alias} as ");
-        if (string.IsNullOrEmpty(keyword))
-        {
-            sb.Append($"{keyword} ");
-        }
-        sb.Append($"(\r\n{query.InsertIndent()}\r\n)");
+        //sb.Append($"{alias} as ");
+        //if (string.IsNullOrEmpty(keyword))
+        //{
+        //    sb.Append($"{keyword} ");
+        //}
+        //sb.Append($"(\r\n{query.InsertIndent()}\r\n)");
         return sb.ToString();
     }
 
     public IDictionary<string, object?> GetParameters()
     {
-        if (Parameters == null) return Query.GetParameters();
-        return Parameters.Merge(Query.GetParameters());
+        return EmptyParameters.Get();
+        //if (Parameters == null) return Query.GetParameters();
+        //return Parameters.Merge(Query.GetParameters());
     }
 }

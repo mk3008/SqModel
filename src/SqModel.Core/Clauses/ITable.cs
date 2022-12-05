@@ -1,3 +1,6 @@
 ﻿namespace SqModel.Core.Clauses;
 
-public interface ITable : IQueryable { }
+public interface ITable : IQueryCommand
+{
+    string GetDefaultName();
+}

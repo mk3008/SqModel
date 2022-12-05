@@ -156,9 +156,9 @@ public class TokenReader : LexReader
             if (word.AreEqual("("))
             {
                 yield return word;
-                var (inner, closer) = ReadUntilCloseBracket();
+                var (_, inner) = ReadUntilCloseBracket();
                 yield return inner;
-                yield return closer;
+                yield return ")";
                 continue;
             }
 
@@ -192,7 +192,7 @@ public class TokenReader : LexReader
         foreach (var word in ReadTokensCore(skipSpace: false))
         {
             if (word == null) break;
-            if (string.IsNullOrEmpty(word)) fs = word;
+            if (string.IsNullOrEmpty(fs)) fs = word;
 
             if (word.AreEqual(")"))
             {
@@ -201,7 +201,7 @@ public class TokenReader : LexReader
 
             if (word.AreEqual("("))
             {
-                var (x, inner) = ReadUntilCloseBracket();
+                var (_, inner) = ReadUntilCloseBracket();
                 sb.Append("(" + inner + ")");
             }
             else
