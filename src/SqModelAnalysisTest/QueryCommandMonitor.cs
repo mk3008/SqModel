@@ -110,10 +110,30 @@ internal class QueryCommandMonitor
             LogCore(groupclause, indent);
             return;
         }
+        else if (arguments is HavingClause havingclause)
+        {
+            LogCore(havingclause, indent);
+            return;
+        }
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+    }
+
+    private void LogCore(HavingClause arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.Condition != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Condition");
+            LogCore(arguments.Condition, indent + 4);
+        }
     }
 
     private void LogCore(GroupClause arguments, int indent = 0)
