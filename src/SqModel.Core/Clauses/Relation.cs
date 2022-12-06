@@ -2,34 +2,34 @@
 
 namespace SqModel.Core.Clauses;
 
-public class Relation : IQueryable
+public class Relation : IQueryCommand
 {
-    public Relation(SelectableTable query, RelationTypes types)
+    public Relation(SelectableTable query, RelationType types)
     {
-        Query = query;
+        Table = query;
         RelationType = types;
     }
 
-    public RelationTypes RelationType { get; init; }
+    public Relation(SelectableTable query, RelationType types, IValue condition)
+    {
+        Table = query;
+        RelationType = types;
+        Condition = condition;
+    }
 
-    public IQueryable? Condition { get; set; }
+    public RelationType RelationType { get; init; }
 
-    public SelectableTable Query { get; init; }
+    public IValue? Condition { get; set; }
+
+    public SelectableTable Table { get; init; }
 
     public string GetCommandText()
     {
         /*
          * inner join table as t2 on t1.id = t2.id
          */
-        var cmd = $"{RelationType.ToRelationText()} {Query.GetCommandText()}";
+        var cmd = $"{RelationType.ToRelationText()} {Table.GetCommandText()}";
         if (Condition == null) return cmd;
         return $"{cmd} on {Condition.GetCommandText()}";
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = Query.GetParameters();
-        if (Condition == null) return prm;
-        return prm.Merge(Condition.GetParameters());
     }
 }

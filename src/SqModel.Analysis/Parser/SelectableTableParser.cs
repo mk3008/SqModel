@@ -1,5 +1,6 @@
 ﻿using SqModel.Analysis.Builder;
 using SqModel.Analysis.Extensions;
+using SqModel.Core;
 using SqModel.Core.Clauses;
 using System;
 using System.Collections.Generic;
@@ -50,5 +51,4 @@ public static class SelectableTableParser
 
         return new SelectableTable(v, alias, colAliases);
     }
-
 }

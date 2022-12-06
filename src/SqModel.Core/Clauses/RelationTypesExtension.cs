@@ -2,19 +2,19 @@
 
 public static class RelationTypesExtension
 {
-    public static string ToRelationText(this RelationTypes source)
+    public static string ToRelationText(this RelationType source)
     {
         switch (source)
         {
-            case RelationTypes.From:
+            case RelationType.From:
                 return "from";
-            case RelationTypes.Inner:
+            case RelationType.Inner:
                 return "inner join";
-            case RelationTypes.Left:
+            case RelationType.Left:
                 return "left join";
-            case RelationTypes.Right:
+            case RelationType.Right:
                 return "right join";
-            case RelationTypes.Cross:
+            case RelationType.Cross:
                 return "cross join";
         }
         throw new NotSupportedException();

@@ -85,10 +85,68 @@ internal class QueryCommandMonitor
             LogCore(selectableTable, indent);
             return;
         }
+        else if (arguments is Relation relation)
+        {
+            LogCore(relation, indent);
+            return;
+        }
+        else if (arguments is FromClause fromclause)
+        {
+            LogCore(fromclause, indent);
+            return;
+        }
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+    }
+
+    private void LogCore(FromClause arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.Root != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Root");
+            LogCore(arguments.Root, indent + 4);
+        }
+
+        if (arguments.Relations != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Relations");
+            foreach (var item in arguments.Relations)
+            {
+                LogCore(item, indent + 4);
+            }
+        }
+    }
+
+    private void LogCore(Relation arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}Relation : {arguments.RelationType.ToRelationText()}");
+
+        if (arguments.Table != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Table");
+            LogCore(arguments.Table, indent + 4);
+        }
+
+        if (arguments.Condition != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}on");
+            LogCore(arguments.Condition, indent + 4);
+        }
     }
 
     private void LogCore(SelectableTable arguments, int indent = 0)
@@ -97,6 +155,7 @@ internal class QueryCommandMonitor
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+        Output.WriteLine($"{space}Alias : {arguments.Alias}");
 
         if (arguments.ColumnAliases != null)
         {
@@ -124,10 +183,10 @@ internal class QueryCommandMonitor
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
         Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
 
+        var s = (indent + 2).ToSpaceString();
+        Output.WriteLine($"{s}rows");
         foreach (var item in arguments.Rows)
         {
-            var s = (indent + 2).ToSpaceString();
-            Output.WriteLine($"{s}row");
             LogCore(item, indent + 4);
         }
     }
@@ -149,10 +208,10 @@ internal class QueryCommandMonitor
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
         Output.WriteLine($"{space}Count : {arguments.Count}");
 
+        var s = (indent + 2).ToSpaceString();
+        Output.WriteLine($"{s}items");
         foreach (var item in arguments)
         {
-            var s = (indent + 2).ToSpaceString();
-            Output.WriteLine($"{s}item");
             LogCore(item, indent + 4);
         }
     }
@@ -313,10 +372,10 @@ internal class QueryCommandMonitor
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
         Output.WriteLine($"{space}Count : {arguments.Count}");
 
+        var s = (indent + 2).ToSpaceString();
+        Output.WriteLine($"{s}items");
         foreach (var item in arguments)
         {
-            var s = (indent + 2).ToSpaceString();
-            Output.WriteLine($"{s}item");
             LogCore(item, indent + 4);
         }
     }

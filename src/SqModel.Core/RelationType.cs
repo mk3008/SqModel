@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core;
 
-public enum RelationTypes
+public enum RelationType
 {
     Undefined = 0,
     From = 1,

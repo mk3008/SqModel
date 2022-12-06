@@ -28,9 +28,6 @@ public class FromClause : IQueryable
 
     public IDictionary<string, object?> GetParameters()
     {
-        var prm = Root.GetParameters();
-        if (Relations == null) return prm;
-        var relationprm = Relations.Select(x => x.GetParameters()).Merge();
-        return prm.Merge(relationprm);
+        return Root.GetParameters();
     }
 }
