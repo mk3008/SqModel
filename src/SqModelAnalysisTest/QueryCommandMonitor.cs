@@ -100,11 +100,50 @@ internal class QueryCommandMonitor
             LogCore(virtualTable, indent);
             return;
         }
-
+        else if (arguments is WhereClause whereclause)
+        {
+            LogCore(whereclause, indent);
+            return;
+        }
+        else if (arguments is GroupClause groupclause)
+        {
+            LogCore(groupclause, indent);
+            return;
+        }
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+    }
+
+    private void LogCore(GroupClause arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.Values != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Collection");
+            LogCore(arguments.Values, indent + 4);
+        }
+    }
+
+    private void LogCore(WhereClause arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
+
+        if (arguments.Condition != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Condition");
+            LogCore(arguments.Condition, indent + 4);
+        }
     }
 
     private void LogCore(FromClause arguments, int indent = 0)
@@ -334,7 +373,7 @@ internal class QueryCommandMonitor
             var s = (indent + 2).ToSpaceString();
             var v = arguments.OperatableValue;
             Output.WriteLine($"{s}Operator : {v.Operator}");
-            LogCore(v.Value, indent + 4);
+            LogCore((IQueryCommand)v.Value, indent + 4);
         }
     }
 

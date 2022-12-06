@@ -8,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class WhereClauseParserTest
+public class GroupClauseParserTest
 {
     private readonly QueryCommandMonitor Monitor;
 
-    public WhereClauseParserTest(ITestOutputHelper output)
+    public GroupClauseParserTest(ITestOutputHelper output)
     {
         Monitor = new QueryCommandMonitor(output);
     }
@@ -20,8 +20,8 @@ public class WhereClauseParserTest
     [Fact]
     public void Default()
     {
-        var text = "tbl.col1 = 1 and (tbl.col2 = 2 or tbl.col3 = 3)";
-        var item = WhereClauseParser.Parse(text);
+        var text = "tbl.col1, 1, tbl.col2";
+        var item = GroupClauseParser.Parse(text);
         Monitor.Log(item);
     }
 }
