@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Analysis.Parser;
 
-public static class ValuesTableParser
+public static class ValuesQueryParser
 {
     public static ValuesQuery Parse(string text)
     {

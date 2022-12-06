@@ -33,7 +33,7 @@ public static class TableParser
             }
             else if (first.AreEqual("values"))
             {
-                var vals = ValuesTableParser.Parse(inner);
+                var vals = ValuesQueryParser.Parse(inner);
                 return new VirtualTable(vals);
             }
         }
