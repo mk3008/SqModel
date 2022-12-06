@@ -75,7 +75,7 @@ internal class QueryCommandMonitor
             LogCore(physicalTable, indent);
             return;
         }
-        else if (arguments is ValuesTable valuesTable)
+        else if (arguments is ValuesQuery valuesTable)
         {
             LogCore(valuesTable, indent);
             return;
@@ -95,6 +95,12 @@ internal class QueryCommandMonitor
             LogCore(fromclause, indent);
             return;
         }
+        else if (arguments is VirtualTable virtualTable)
+        {
+            LogCore(virtualTable, indent);
+            return;
+        }
+
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
@@ -175,13 +181,27 @@ internal class QueryCommandMonitor
         }
     }
 
-    private void LogCore(ValuesTable arguments, int indent = 0)
+    private void LogCore(VirtualTable arguments, int indent = 0)
     {
         var space = indent.ToSpaceString();
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
-        Output.WriteLine($"{space}DefaultName : {arguments.GetDefaultName()}");
+
+        if (arguments.Query != null)
+        {
+            var s = (indent + 2).ToSpaceString();
+            Output.WriteLine($"{s}Table");
+            LogCore(arguments.Query, indent + 4);
+        }
+    }
+
+    private void LogCore(ValuesQuery arguments, int indent = 0)
+    {
+        var space = indent.ToSpaceString();
+
+        Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
+        Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
 
         var s = (indent + 2).ToSpaceString();
         Output.WriteLine($"{s}rows");

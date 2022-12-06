@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Cysharp.Text;
+using System.Text;
 
 namespace SqModel.Core.Extensions;
 
@@ -15,15 +16,15 @@ public static class StringExtension
 
         var indent = spaceCount.ToSpaceString();
 
-        return $"{indent}{source.Replace(separator, $"{separator}{indent}")}";
+        return indent + source.Replace(separator, $"{separator}{indent}");
     }
 
     public static string Join(this string source, string jointext, IEnumerable<string>? items, string splitter = ",", string? startDecorate = null, string? endDecorate = null)
     {
         if (items == null || !items.Any()) return source;
 
-        var sb = new StringBuilder();
-        sb.Append($"{source}{jointext}");
+        var sb = ZString.CreateStringBuilder();
+        sb.Append(source + jointext);
         sb.Append(items.ToString(splitter, startDecorate, endDecorate));
         return sb.ToString();
     }
@@ -32,7 +33,7 @@ public static class StringExtension
     {
         if (!source.Any()) return string.Empty;
 
-        var sb = new StringBuilder();
+        var sb = ZString.CreateStringBuilder();
         var isFirst = true;
 
         if (startDecorate != null) sb.Append(startDecorate);

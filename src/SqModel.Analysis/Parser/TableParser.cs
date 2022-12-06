@@ -20,13 +20,11 @@ public static class TableParser
 
     public static TableBase Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, "as", "inner join", "left join", "left outer join", "right join", "right outer join", "cross join", "where", "group by", "having", "order by", "union" };
-
         var item = r.ReadToken();
-        TableBase? value = null;
 
         if (item == "(")
         {
+            //virtualTable
             var (first, inner) = r.ReadUntilCloseBracket();
             if (first.AreEqual("select"))
             {
@@ -35,25 +33,23 @@ public static class TableParser
             }
             else if (first.AreEqual("values"))
             {
-                return ValuesTableParser.Parse(inner);
+                var vals = ValuesTableParser.Parse(inner);
+                return new VirtualTable(vals);
             }
-            throw new NotSupportedException();
         }
         else if (r.PeekToken().AreEqual("."))
         {
             //schema.table
             var schema = item;
             r.ReadToken();
-            value = new PhysicalTable(schema, r.ReadToken());
+            return new PhysicalTable(schema, r.ReadToken());
         }
         else
         {
             //table
-            value = new PhysicalTable(item);
+            return new PhysicalTable(item);
         }
 
-        if (value == null) throw new Exception();
-
-        return value;
+        throw new Exception();
     }
 }

@@ -12,20 +12,20 @@ namespace SqModel.Analysis.Parser;
 
 public static class ValuesTableParser
 {
-    public static ValuesTable Parse(string text)
+    public static ValuesQuery Parse(string text)
     {
         using var r = new TokenReader(text);
         return Parse(r);
     }
 
-    public static ValuesTable Parse(TokenReader r)
+    public static ValuesQuery Parse(TokenReader r)
     {
         var fn = () =>
         {
             if (!r.PeekToken().AreEqual(",")) return false;
             r.ReadToken();
             if (!r.PeekToken().AreEqual("(")) throw new SyntaxException("near ,");
-            r.ReadToken(); 
+            r.ReadToken();
             return true;
         };
 
@@ -43,6 +43,6 @@ public static class ValuesTableParser
 
         } while (fn());
 
-        return new ValuesTable(lst);
+        return new ValuesQuery(lst);
     }
 }

@@ -8,16 +8,16 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core.Tables;
 
-public class ValuesTable : TableBase
+public class ValuesQuery : IQueryCommand
 {
-    public ValuesTable(List<ValueCollection> rows)
+    public ValuesQuery(List<ValueCollection> rows)
     {
         Rows = rows;
     }
 
     public List<ValueCollection> Rows { get; init; } = new();
 
-    public override string GetCommandText()
+    public string GetCommandText()
     {
         /*
          * values
@@ -27,12 +27,11 @@ public class ValuesTable : TableBase
          */
         if (!Rows.Any()) throw new IndexOutOfRangeException(nameof(Rows));
         var indent4 = 4.ToSpaceString();
-        var indent8 = 8.ToSpaceString();
         var isFirst = true;
         var sb = ZString.CreateStringBuilder();
-        sb.Append("(\r\n" + indent4 + "values\r\n");
+        sb.Append("values\r\n");
 
-        foreach (var item in Rows.Select(x => indent8 + "(" + x.GetCommandText() + ")"))
+        foreach (var item in Rows.Select(x => indent4 + "(" + x.GetCommandText() + ")"))
         {
             if (isFirst)
             {
@@ -44,8 +43,6 @@ public class ValuesTable : TableBase
             }
             sb.Append(item);
         }
-        sb.Append("\r\n)");
-
         return sb.ToString();
     }
 }
