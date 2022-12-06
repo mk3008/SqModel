@@ -1,5 +1,4 @@
-﻿using SqModel.Analysis.Builder;
-using SqModel.Analysis.Extensions;
+﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Clauses;
 using System;
 using System.Collections.Generic;

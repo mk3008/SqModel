@@ -1,7 +1,7 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Values;
 
-namespace SqModel.Analysis.Builder;
+namespace SqModel.Analysis.Parser;
 
 public class WhenExpressionParser
 {

@@ -1,5 +1,5 @@
 ﻿using SqModel.Analysis;
-using SqModel.Analysis.Builder;
+using SqModel.Analysis.Parser;
 using SqModel.Core;
 using SqModel.Core.Clauses;
 using SqModel.Core.Values;
