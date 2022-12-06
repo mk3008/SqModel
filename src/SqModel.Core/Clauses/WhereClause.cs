@@ -1,6 +1,8 @@
-﻿namespace SqModel.Core.Clauses;
+﻿using SqModel.Core.Extensions;
 
-public class WhereClause
+namespace SqModel.Core.Clauses;
+
+public class WhereClause : IQueryCommand
 {
     public WhereClause(IValue condition)
     {
@@ -15,8 +17,6 @@ public class WhereClause
          * where
          *     col1 = 1 and col2 = 2
          */
-        return $"where\r\n{Condition.GetCommandText()}";
+        return $"where\r\n" + Condition.GetCommandText().InsertIndent();
     }
-
-    //public IDictionary<string, object?> GetParameters() => Condition.GetParameters();
 }
