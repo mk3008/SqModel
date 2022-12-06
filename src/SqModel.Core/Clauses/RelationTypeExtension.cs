@@ -1,6 +1,6 @@
 ﻿namespace SqModel.Core.Clauses;
 
-public static class RelationTypesExtension
+public static class RelationTypeExtension
 {
     public static string ToRelationText(this RelationType source)
     {

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SqModel.Analysis;
 
@@ -173,6 +174,21 @@ public class TokenReader : LexReader
             {
                 yield return word;
                 yield return ReadUntilCloseBlockComment();
+                continue;
+            }
+
+            if (word.AreEqual("nulls"))
+            {
+                var next = ReadLex();
+                if (next.AreEqual("first") || next.AreEqual("last"))
+                {
+                    yield return word + " " + next;
+                }
+                else
+                {
+                    yield return word;
+                    yield return next;
+                }
                 continue;
             }
 
