@@ -1,11 +1,6 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Tables;
 using SqModel.Core.Values;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqModel.Analysis.Parser;
 
