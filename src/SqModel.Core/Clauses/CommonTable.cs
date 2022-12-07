@@ -5,13 +5,13 @@ namespace SqModel.Core.Clauses;
 
 public class CommonTable : IQueryable, ISelectable
 {
-    public CommonTable(ITable query, string alias)
+    public CommonTable(TableBase query, string alias)
     {
         Query = query;
         Alias = alias;
     }
 
-    public ITable Query { get; init; }
+    public TableBase Query { get; init; }
 
     public Dictionary<string, object?>? Parameters { get; set; } = null;
 

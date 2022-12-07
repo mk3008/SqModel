@@ -1,4 +1,5 @@
 ﻿using SqModel.Analysis.Extensions;
+using SqModel.Core.Clauses;
 using SqModel.Core.Tables;
 
 namespace SqModel.Analysis.Parser;

@@ -4,20 +4,20 @@ namespace SqModel.Core.Clauses;
 
 public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
 {
-    public SelectableTable(ITable table, string alias)
+    public SelectableTable(TableBase table, string alias)
     {
         Table = table;
         Alias = alias;
     }
 
-    public SelectableTable(ITable table, string alias, ValueCollection columnAliases)
+    public SelectableTable(TableBase table, string alias, ValueCollection columnAliases)
     {
         Table = table;
         Alias = alias;
         ColumnAliases = columnAliases;
     }
 
-    public ITable Table { get; init; }
+    public TableBase Table { get; init; }
 
     public Dictionary<string, object?>? Parameters { get; set; }
 

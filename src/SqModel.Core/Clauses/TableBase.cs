@@ -1,14 +1,13 @@
-﻿using SqModel.Core.Clauses;
-using SqModel.Core.Values;
+﻿using SqModel.Core.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqModel.Core.Tables;
+namespace SqModel.Core.Clauses;
 
-public abstract class TableBase : ITable
+public abstract class TableBase : IQueryCommand, IQueryParameter
 {
     public abstract string GetCommandText();
 
