@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class WhereClause : IQueryCommand
+public class WhereClause : IQueryCommand, IQueryParameter
 {
     public WhereClause(ValueBase condition)
     {
@@ -18,5 +18,10 @@ public class WhereClause : IQueryCommand
          *     col1 = 1 and col2 = 2
          */
         return $"where\r\n" + Condition.GetCommandText().InsertIndent();
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Condition.GetParameters();
     }
 }

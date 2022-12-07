@@ -21,4 +21,9 @@ public class BracketValue : ValueBase
         if (Inner == null) throw new NullReferenceException();
         return "(" + Inner.GetCommandText() + ")";
     }
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        return Inner.GetParameters();
+    }
 }

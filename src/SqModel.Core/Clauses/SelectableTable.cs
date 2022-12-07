@@ -1,4 +1,5 @@
-﻿using SqModel.Core.Values;
+﻿using SqModel.Core.Extensions;
+using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
@@ -18,8 +19,6 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
     }
 
     public TableBase Table { get; init; }
-
-    public Dictionary<string, object?>? Parameters { get; set; }
 
     public string Alias { get; init; }
 
@@ -54,6 +53,8 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
 
     public IDictionary<string, object?> GetParameters()
     {
-        return Parameters ?? EmptyParameters.Get();
+        var prm = Table.GetParameters();
+        prm = prm.Merge(ColumnAliases!.GetParameters());
+        return prm;
     }
 }

@@ -31,13 +31,8 @@ public class FromClause : IQueryCommand, IQueryParameter
     public IDictionary<string, object?> GetParameters()
     {
         var prm = Root.GetParameters();
-        if (Relations != null)
-        {
-            foreach (var item in Relations)
-            {
-                prm = prm.Merge(item.GetParameters());
-            }
-        }
+        if (Relations == null) return prm;
+        prm = prm.Merge(Relations.Select(x => x.GetParameters()).Merge());
         return prm;
     }
 }

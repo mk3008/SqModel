@@ -1,5 +1,6 @@
 ﻿using Cysharp.Text;
 using SqModel.Core.Clauses;
+using SqModel.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,5 +44,13 @@ public class FunctionValue : ValueBase
         sb.Append(")");
         if (WindowFunction != null) sb.Append(" " + WindowFunction.GetCommandText());
         return sb.ToString();
+    }
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(Argument?.GetParameters());
+        prm = prm.Merge(WindowFunction?.GetParameters());
+        return prm;
     }
 }

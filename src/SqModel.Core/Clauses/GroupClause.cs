@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class GroupClause : IList<ValueBase>, IQueryCommand
+public class GroupClause : IList<ValueBase>, IQueryCommand, IQueryParameter
 {
     public GroupClause(IList<ValueBase> items)
     {
@@ -23,6 +23,11 @@ public class GroupClause : IList<ValueBase>, IQueryCommand
          *     col2 as c2
          */
         return "group by".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Items.Select(x => x.GetParameters()).Merge();
     }
 
     public ValueBase this[int index] { get => ((IList<ValueBase>)Items)[index]; set => ((IList<ValueBase>)Items)[index] = value; }

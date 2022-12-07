@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqModel.Core.Clauses;
+using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class WhenExpression : IQueryCommand
+public class WhenExpression : IQueryCommand, IQueryParameter
 {
     public WhenExpression(ValueBase condition, ValueBase value)
     {
@@ -28,5 +29,13 @@ public class WhenExpression : IQueryCommand
     {
         if (Condition != null) return "when " + Condition.GetCommandText() + " then " + Value.GetCommandText();
         return "else " + Value.GetCommandText();
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(Condition!.GetParameters());
+        prm = prm.Merge(Value!.GetParameters());
+        return prm;
     }
 }

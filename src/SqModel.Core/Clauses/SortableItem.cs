@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class SortableItem : IQueryCommand
+public class SortableItem : IQueryCommand, IQueryParameter
 {
     public SortableItem(ValueBase value, bool isAscending = true, NullSortType tp = NullSortType.Undefined)
     {
@@ -25,5 +25,10 @@ public class SortableItem : IQueryCommand
         if (NullSort == NullSortType.Undefined) return sb.ToString();
         sb.Append(" " + NullSort.ToSortText());
         return sb.ToString();
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Value.GetParameters();
     }
 }

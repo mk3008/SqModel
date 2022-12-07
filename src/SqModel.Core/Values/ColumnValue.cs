@@ -30,4 +30,9 @@ public class ColumnValue : ValueBase
         if (OperatableValue == null) return Column;
         return string.Empty;
     }
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        return EmptyParameters.Get();
+    }
 }

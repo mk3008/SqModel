@@ -24,8 +24,6 @@ public class VirtualTable : TableBase
 
     public override IDictionary<string, object?> GetParameters()
     {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(Query.GetParameters());
-        return prm;
+        return Query.GetParameters();
     }
 }

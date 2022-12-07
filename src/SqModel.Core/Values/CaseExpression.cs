@@ -1,5 +1,6 @@
 ﻿using Cysharp.Text;
 using SqModel.Core.Clauses;
+using SqModel.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,5 +35,13 @@ public class CaseExpression : ValueBase
         }
         sb.Append(" end");
         return sb.ToString();
+    }
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(CaseCondition!.GetParameters());
+        WhenExpressions.ForEach(x => prm = prm.Merge(x.GetParameters()));
+        return prm;
     }
 }

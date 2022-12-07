@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class HavingClause : IQueryCommand
+public class HavingClause : IQueryCommand, IQueryParameter
 {
     public HavingClause(ValueBase condition)
     {
@@ -18,5 +18,10 @@ public class HavingClause : IQueryCommand
          *     sum(col1) = 1 and sum(col2) = 2
          */
         return $"having\r\n" + Condition.GetCommandText().InsertIndent();
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Condition.GetParameters();
     }
 }

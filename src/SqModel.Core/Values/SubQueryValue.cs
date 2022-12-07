@@ -13,4 +13,9 @@ public class SubQueryValue : ValueBase
     public IQueryable Query { get; init; }
 
     public override string GetCurrentCommandText() => $"({Query.GetCommandText()})";
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        return Query.GetParameters();
+    }
 }

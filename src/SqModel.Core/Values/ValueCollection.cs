@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class ValueCollection : IList<ValueBase>, IQueryCommand
+public class ValueCollection : IList<ValueBase>, IQueryCommand, IQueryParameter
 {
     public ValueCollection(string text)
     {
@@ -26,18 +26,24 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand
         Collection.AddRange(collection);
     }
 
+    private List<ValueBase> Collection { get; init; } = new();
+
     public string GetCommandText()
     {
         return Collection.Select(x => x.GetCommandText()).ToString(", ");
     }
 
-    public ValueBase this[int index] { get => ((IList<ValueBase>)Collection)[index]; set => ((IList<ValueBase>)Collection)[index] = value; }
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Collection.Select(x => x.GetParameters()).Merge();
+    }
+
+    public ValueBase this[int index]
+    { get => ((IList<ValueBase>)Collection)[index]; set => ((IList<ValueBase>)Collection)[index] = value; }
 
     public int Count => ((ICollection<ValueBase>)Collection).Count;
 
     public bool IsReadOnly => ((ICollection<ValueBase>)Collection).IsReadOnly;
-
-    private List<ValueBase> Collection { get; init; } = new();
 
     public void Add(ValueBase item)
     {

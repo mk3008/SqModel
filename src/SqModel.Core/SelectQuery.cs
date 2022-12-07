@@ -6,7 +6,7 @@ namespace SqModel.Core;
 
 public class SelectQuery : IQueryable
 {
-    public WithClause? WithClause { get; set; }
+    //public WithClause? WithClause { get; set; }
 
     //public WithClause With()
     //{
@@ -76,7 +76,19 @@ public class SelectQuery : IQueryable
     {
         var prm = EmptyParameters.Get();
         prm = prm.Merge(Parameters);
+        prm = prm.Merge(SelectClause!.GetParameters());
+        prm = prm.Merge(FromClause!.GetParameters());
+        prm = prm.Merge(WhereClause!.GetParameters());
+        prm = prm.Merge(GroupClause!.GetParameters());
+        prm = prm.Merge(HavingClause!.GetParameters());
+        prm = prm.Merge(OrderClause!.GetParameters());
+
         return prm;
+    }
+
+    public Query ToQuery()
+    {
+        return new Query(GetCommandText(), GetParameters());
     }
 
     //public ValueListClause OrderBy()

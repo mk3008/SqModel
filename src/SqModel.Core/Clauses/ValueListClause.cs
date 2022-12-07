@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class ValueListClause : IQueryable
+public class ValueListClause : IQueryCommand, IQueryParameter
 {
     public ValueListClause(string command)
     {
@@ -27,6 +27,11 @@ public class ValueListClause : IQueryable
 
     public IDictionary<string, object?> GetParameters()
     {
-        return EmptyParameters.Get();
+        var prm = EmptyParameters.Get();
+        foreach (var item in Values)
+        {
+            prm = prm.Merge(item.GetParameters());
+        }
+        return prm;
     }
 }

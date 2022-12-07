@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class SelectableItem : IQueryable, ISelectable
+public class SelectableItem : IQueryCommand, IQueryParameter, ISelectable
 {
     public SelectableItem(ValueBase value, string alias)
     {
@@ -11,8 +11,6 @@ public class SelectableItem : IQueryable, ISelectable
     }
 
     public ValueBase Value { get; init; }
-
-    public Dictionary<string, object?>? Parameters { get; set; } = null;
 
     public string Alias { get; init; }
 
@@ -25,6 +23,6 @@ public class SelectableItem : IQueryable, ISelectable
 
     public IDictionary<string, object?> GetParameters()
     {
-        return Parameters ?? EmptyParameters.Get();
+        throw new NotImplementedException();
     }
 }

@@ -3,7 +3,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class OperatableValue<T> : IQueryCommand where T : ValueBase
+public class OperatableValue<T> : IQueryCommand, IQueryParameter where T : ValueBase
 {
     public OperatableValue(string @operator, T value)
     {
@@ -19,5 +19,10 @@ public class OperatableValue<T> : IQueryCommand where T : ValueBase
     {
         if (string.IsNullOrEmpty(Operator)) return $"{Value.GetCommandText()}";
         return $"{Operator} {Value.GetCommandText()}";
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Value.GetParameters();
     }
 }

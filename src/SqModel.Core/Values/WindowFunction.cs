@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using SqModel.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class WindowFunction : IQueryCommand
+public class WindowFunction : IQueryCommand, IQueryParameter
 {
     public ValueCollection? PartitionBy { get; set; }
 
@@ -26,5 +27,13 @@ public class WindowFunction : IQueryCommand
         sb.Append(")");
 
         return sb.ToString();
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(PartitionBy!.GetParameters());
+        prm = prm.Merge(OrderBy!.GetParameters());
+        return prm;
     }
 }

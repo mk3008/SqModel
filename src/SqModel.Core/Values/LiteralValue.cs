@@ -12,4 +12,9 @@ public class LiteralValue : ValueBase
     public string CommandText { get; init; }
 
     public override string GetCurrentCommandText() => CommandText;
+
+    public override IDictionary<string, object?> GetCurrentParameters()
+    {
+        return EmptyParameters.Get();
+    }
 }

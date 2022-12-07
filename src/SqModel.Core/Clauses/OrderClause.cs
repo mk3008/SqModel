@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class OrderClause : IList<SortableItem>, IQueryCommand
+public class OrderClause : IList<SortableItem>, IQueryCommand, IQueryParameter
 {
     public OrderClause(List<SortableItem> orders)
     {
@@ -22,6 +22,11 @@ public class OrderClause : IList<SortableItem>, IQueryCommand
          *     col2
          */
         return "order by".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Items.Select(x => x.GetParameters()).Merge();
     }
 
     public SortableItem this[int index] { get => ((IList<SortableItem>)Items)[index]; set => ((IList<SortableItem>)Items)[index] = value; }

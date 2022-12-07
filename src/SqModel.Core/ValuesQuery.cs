@@ -52,4 +52,9 @@ public class ValuesQuery : IQueryable
     {
         return Parameters ?? EmptyParameters.Get();
     }
+
+    public Query ToQuery()
+    {
+        return new Query(GetCommandText(), GetParameters());
+    }
 }

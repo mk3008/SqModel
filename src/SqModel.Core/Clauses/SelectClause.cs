@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class SelectClause : IList<SelectableItem>, IQueryable
+public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParameter
 {
     public SelectClause()
     {
@@ -28,8 +28,12 @@ public class SelectClause : IList<SelectableItem>, IQueryable
         return "select".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
     }
 
-    public SelectableItem this[int index] { get => ((IList<SelectableItem>)Items)[index]; set => ((IList<SelectableItem>)Items)[index] = value; }
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Items.Select(x => x.GetParameters()).Merge();
+    }
 
+    public SelectableItem this[int index] { get => ((IList<SelectableItem>)Items)[index]; set => ((IList<SelectableItem>)Items)[index] = value; }
 
     public int Count => ((ICollection<SelectableItem>)Items).Count;
 
@@ -58,11 +62,6 @@ public class SelectClause : IList<SelectableItem>, IQueryable
     public IEnumerator<SelectableItem> GetEnumerator()
     {
         return ((IEnumerable<SelectableItem>)Items).GetEnumerator();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Items.Select(x => x.GetParameters()).Merge();
     }
 
     public int IndexOf(SelectableItem item)
