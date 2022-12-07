@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core;
 
-public interface IQueryCommand
+public interface IQueryParameter : IQueryCommand
 {
-    string GetCommandText();
+    IDictionary<string, object?> GetParameters();
 }

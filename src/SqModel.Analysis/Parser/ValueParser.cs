@@ -14,7 +14,7 @@ public static class ValueParser
     public static ValueBase Parse(TokenReader r)
     {
         var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
-        var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or" };
+        var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", ">", "<", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or" };
 
         var item = r.ReadToken();
         ValueBase? value = null;

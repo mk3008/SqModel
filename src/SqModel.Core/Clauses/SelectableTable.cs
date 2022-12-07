@@ -4,13 +4,14 @@ using System.ComponentModel;
 
 namespace SqModel.Core.Clauses;
 
-public class SelectableTable : IQueryable, ISelectable
+public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
 {
     public SelectableTable(ITable table, string alias)
     {
         Table = table;
         Alias = alias;
     }
+
     public SelectableTable(ITable table, string alias, ValueCollection columnAliases)
     {
         Table = table;

@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class SelectableItem : IQueryable
+public class SelectableItem : IQueryable, ISelectable
 {
     public SelectableItem(IValue query, string alias)
     {

@@ -1,8 +1,9 @@
 ﻿using SqModel.Analysis.Extensions;
-using SqModel.Core.Tables;
+using SqModel.Analysis.Parser;
+using SqModel.Core;
 using SqModel.Core.Values;
 
-namespace SqModel.Analysis.Parser;
+namespace SqModel.Analysis;
 
 public static class ValuesQueryParser
 {

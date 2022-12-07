@@ -13,4 +13,6 @@ public abstract class TableBase : ITable
     public abstract string GetCommandText();
 
     public virtual string GetDefaultName() => string.Empty;
+
+    public virtual IDictionary<string, object?> GetParameters() => EmptyParameters.Get();
 }

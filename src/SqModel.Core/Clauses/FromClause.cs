@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class FromClause : IQueryable
+public class FromClause : IQueryCommand, IQueryParameter
 {
     public FromClause(SelectableTable root)
     {
@@ -22,12 +22,22 @@ public class FromClause : IQueryable
          *     inner join table as t3 on t1.id = t3.id
          */
         var indent = 4.ToSpaceString();
-        var cmd = $"from\r\n{indent}{Root.GetCommandText()}";
+        var cmd = "from\r\n    " + Root.GetCommandText();
+        if (Relations == null || !Relations.Any()) return cmd;
+
         return cmd.Join($"\r\n", Relations!.Select(x => x.GetCommandText().InsertIndent()), $"\r\n");
     }
 
     public IDictionary<string, object?> GetParameters()
     {
-        return Root.GetParameters();
+        var prm = Root.GetParameters();
+        if (Relations != null)
+        {
+            foreach (var item in Relations)
+            {
+                prm = prm.Merge(item.GetParameters());
+            }
+        }
+        return prm;
     }
 }

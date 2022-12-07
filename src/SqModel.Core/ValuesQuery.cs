@@ -6,9 +6,9 @@ using SqModel.Core.Clauses;
 using SqModel.Core.Extensions;
 using SqModel.Core.Values;
 
-namespace SqModel.Core.Tables;
+namespace SqModel.Core;
 
-public class ValuesQuery : IQueryCommand
+public class ValuesQuery : IQueryable
 {
     public ValuesQuery(List<ValueCollection> rows)
     {
@@ -44,5 +44,12 @@ public class ValuesQuery : IQueryCommand
             sb.Append(item);
         }
         return sb.ToString();
+    }
+
+    public Dictionary<string, object?>? Parameters { get; set; }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Parameters ?? EmptyParameters.Get();
     }
 }

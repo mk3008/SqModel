@@ -9,15 +9,22 @@ namespace SqModel.Core.Tables;
 
 public class VirtualTable : TableBase
 {
-    public VirtualTable(IQueryCommand query)
+    public VirtualTable(IQueryable query)
     {
         Query = query;
     }
 
-    public IQueryCommand Query { get; init; }
+    public IQueryable Query { get; init; }
 
     public override string GetCommandText()
     {
         return "(\r\n" + Query.GetCommandText().InsertIndent() + "\r\n)";
+    }
+
+    public override IDictionary<string, object?> GetParameters()
+    {
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(Query.GetParameters());
+        return prm;
     }
 }

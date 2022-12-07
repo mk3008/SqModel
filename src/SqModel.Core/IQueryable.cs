@@ -1,6 +1,5 @@
 ﻿namespace SqModel.Core;
 
-public interface IQueryable : IQueryCommand
+public interface IQueryable : IQueryCommand, IQueryParameter
 {
-    IDictionary<string, object?> GetParameters();
 }

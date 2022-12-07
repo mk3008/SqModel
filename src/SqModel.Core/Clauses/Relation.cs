@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class Relation : IQueryCommand
+public class Relation : IQueryCommand, IQueryParameter
 {
     public Relation(SelectableTable query, RelationType types)
     {
@@ -31,5 +31,10 @@ public class Relation : IQueryCommand
         var cmd = $"{RelationType.ToRelationText()} {Table.GetCommandText()}";
         if (Condition == null) return cmd;
         return $"{cmd} on {Condition.GetCommandText()}";
+    }
+
+    public IDictionary<string, object?> GetParameters()
+    {
+        return Table.GetParameters();
     }
 }

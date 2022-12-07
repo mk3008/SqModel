@@ -16,10 +16,15 @@ internal static class IDictionaryExtension
         return ImmutableDictionary<T1, T2>.Empty;
     }
 
-    public static IDictionary<T1, T2> Merge<T1, T2>(this IDictionary<T1, T2> source, IDictionary<T1, T2> dic) where T1 : notnull
+    public static IDictionary<T1, T2> Merge<T1, T2>(this IDictionary<T1, T2> source, IDictionary<T1, T2>? dic) where T1 : notnull
     {
-        dic.ForEach(x => source[x.Key] = x.Value);
-        return source;
+        if (dic == null || !dic.Any()) return source;
+        if (!source.Any()) return ImmutableDictionary<T1, T2>.Empty;
+
+        var c = new Dictionary<T1, T2>();
+        source.ForEach(x => c[x.Key] = x.Value);
+        dic.ForEach(x => c[x.Key] = x.Value);
+        return c;
     }
 
     public static void ForEach<T1, T2>(this IDictionary<T1, T2> source, Action<KeyValuePair<T1, T2>> action) where T1 : notnull
