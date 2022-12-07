@@ -1,6 +1,4 @@
-﻿using SqModel.Core.Extensions;
-using SqModel.Core.Values;
-using System.ComponentModel;
+﻿using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 

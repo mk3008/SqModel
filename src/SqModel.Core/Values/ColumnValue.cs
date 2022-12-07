@@ -1,4 +1,6 @@
-﻿namespace SqModel.Core.Values;
+﻿using SqModel.Core.Clauses;
+
+namespace SqModel.Core.Values;
 
 public class ColumnValue : ValueBase
 {

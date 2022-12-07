@@ -11,7 +11,7 @@ public class ValueListClause : IQueryable
 
     public string Command { get; init; }
 
-    public List<IValue> Values { get; set; } = new();
+    public List<ValueBase> Values { get; set; } = new();
 
     public string GetCommandText()
     {

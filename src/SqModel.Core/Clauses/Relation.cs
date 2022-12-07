@@ -1,6 +1,4 @@
-﻿using SqModel.Core.Extensions;
-
-namespace SqModel.Core.Clauses;
+﻿namespace SqModel.Core.Clauses;
 
 public class Relation : IQueryCommand, IQueryParameter
 {
@@ -10,7 +8,7 @@ public class Relation : IQueryCommand, IQueryParameter
         RelationType = types;
     }
 
-    public Relation(SelectableTable query, RelationType types, IValue condition)
+    public Relation(SelectableTable query, RelationType types, ValueBase condition)
     {
         Table = query;
         RelationType = types;
@@ -19,7 +17,7 @@ public class Relation : IQueryCommand, IQueryParameter
 
     public RelationType RelationType { get; init; }
 
-    public IValue? Condition { get; set; }
+    public ValueBase? Condition { get; set; }
 
     public SelectableTable Table { get; init; }
 

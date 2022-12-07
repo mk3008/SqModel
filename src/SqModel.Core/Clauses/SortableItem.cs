@@ -1,22 +1,17 @@
 ﻿using Cysharp.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqModel.Core.Clauses;
 
 public class SortableItem : IQueryCommand
 {
-    public SortableItem(IValue query, bool isAscending = true, NullSortType tp = NullSortType.Undefined)
+    public SortableItem(ValueBase value, bool isAscending = true, NullSortType tp = NullSortType.Undefined)
     {
-        Value = query;
+        Value = value;
         IsAscending = isAscending;
         NullSort = tp;
     }
 
-    public IValue Value { get; init; }
+    public ValueBase Value { get; init; }
 
     public bool IsAscending { get; set; } = true;
 

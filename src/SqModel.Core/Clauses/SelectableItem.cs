@@ -4,13 +4,13 @@ namespace SqModel.Core.Clauses;
 
 public class SelectableItem : IQueryable, ISelectable
 {
-    public SelectableItem(IValue query, string alias)
+    public SelectableItem(ValueBase value, string alias)
     {
-        Value = query;
+        Value = value;
         Alias = alias;
     }
 
-    public IValue Value { get; init; }
+    public ValueBase Value { get; init; }
 
     public Dictionary<string, object?>? Parameters { get; set; } = null;
 

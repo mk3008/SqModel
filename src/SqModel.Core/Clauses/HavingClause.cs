@@ -1,16 +1,15 @@
 ﻿using SqModel.Core.Extensions;
-using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
 public class HavingClause : IQueryCommand
 {
-    public HavingClause(IValue condition)
+    public HavingClause(ValueBase condition)
     {
         Condition = condition;
     }
 
-    public IValue Condition { get; init; }
+    public ValueBase Condition { get; init; }
 
     public string GetCommandText()
     {

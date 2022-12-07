@@ -4,12 +4,12 @@ namespace SqModel.Core.Clauses;
 
 public class WhereClause : IQueryCommand
 {
-    public WhereClause(IValue condition)
+    public WhereClause(ValueBase condition)
     {
         Condition = condition;
     }
 
-    public IValue Condition { get; init; }
+    public ValueBase Condition { get; init; }
 
     public string GetCommandText()
     {

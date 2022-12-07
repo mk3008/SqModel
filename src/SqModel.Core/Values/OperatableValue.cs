@@ -3,7 +3,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class OperatableValue<T> : IQueryCommand where T : IValue
+public class OperatableValue<T> : IQueryCommand where T : ValueBase
 {
     public OperatableValue(string @operator, T value)
     {

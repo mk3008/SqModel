@@ -1,13 +1,8 @@
-﻿using SqModel.Core.Clauses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SqModel.Core.Values;
 
-namespace SqModel.Core.Values;
+namespace SqModel.Core.Clauses;
 
-public abstract class ValueBase : IValue
+public abstract class ValueBase : IQueryCommand
 {
     public abstract string GetCurrentCommandText();
 
