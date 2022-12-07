@@ -143,11 +143,12 @@ internal class QueryCommandMonitor
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
 
-        if (arguments.Values != null)
+        var s = (indent + 2).ToSpaceString();
+        Output.WriteLine($"{s}Collection");
+
+        foreach (var item in arguments)
         {
-            var s = (indent + 2).ToSpaceString();
-            Output.WriteLine($"{s}Collection");
-            LogCore(arguments.Values, indent + 4);
+            LogCore(item, indent + 4);
         }
     }
 

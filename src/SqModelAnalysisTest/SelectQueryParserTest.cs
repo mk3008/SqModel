@@ -86,6 +86,7 @@ having
         Assert.NotNull(item.SelectClause);
         Assert.Equal(3, item.SelectClause!.Count);
         Assert.NotNull(item.GroupClause);
+        Assert.Equal(2, item.GroupClause!.Count());
         Assert.NotNull(item.HavingClause);
     }
 }
