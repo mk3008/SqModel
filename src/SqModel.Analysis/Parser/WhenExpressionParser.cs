@@ -32,10 +32,12 @@ public class WhenExpressionParser
 
     private static (WhenExpression exp, string breaktoken) ParseWhenExpression(TokenReader r)
     {
+        var breaktokens = new string[] { "when", "else", "end" };
         var breaktoken = string.Empty;
+
         var fn = (string t) =>
         {
-            if (t.AreEqual("when") || t.AreEqual("else") || t.AreEqual("end"))
+            if (t.AreContains(breaktokens))
             {
                 breaktoken = t;
                 return true;

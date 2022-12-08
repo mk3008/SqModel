@@ -22,28 +22,23 @@ public static class TableParser
             var (first, inner) = r.ReadUntilCloseBracket();
             if (first.AreEqual("select"))
             {
-                //TODO : subquery 
-                throw new NotSupportedException();
+                return new VirtualTable(SelectQueryParser.Parse(inner));
             }
             else if (first.AreEqual("values"))
             {
-                var vals = ValuesQueryParser.Parse(inner);
-                return new VirtualTable(vals);
+                return new VirtualTable(ValuesQueryParser.Parse(inner));
             }
         }
-        else if (r.PeekToken().AreEqual("."))
+
+        if (r.PeekToken().AreEqual("."))
         {
             //schema.table
             var schema = item;
-            r.ReadToken();
+            r.ReadToken(".");
             return new PhysicalTable(schema, r.ReadToken());
         }
-        else
-        {
-            //table
-            return new PhysicalTable(item);
-        }
 
-        throw new Exception();
+        //table
+        return new PhysicalTable(item);
     }
 }

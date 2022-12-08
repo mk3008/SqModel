@@ -7,9 +7,7 @@ public static class FunctionValueParseLogic
 {
     public static FunctionValue Parse(TokenReader r, string functionName)
     {
-        if (!r.PeekToken().AreEqual("(")) throw new SyntaxException($"near {functionName}. expect '('");
-
-        r.ReadToken(); // read open brackert
+        r.ReadToken("(");
         var (_, argstext) = r.ReadUntilCloseBracket();
         var arg = ValueCollectionParser.Parse(argstext);
 
@@ -18,7 +16,7 @@ public static class FunctionValueParseLogic
             return new FunctionValue(functionName, arg);
         }
 
-        r.ReadToken(); //read 'over' token
+        r.ReadToken("over");
         var winfn = WindowFunctionParser.Parse(r);
         return new FunctionValue(functionName, arg, winfn);
     }

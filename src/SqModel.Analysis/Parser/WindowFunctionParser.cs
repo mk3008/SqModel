@@ -7,8 +7,7 @@ public static class WindowFunctionParser
 {
     public static WindowFunction Parse(TokenReader r)
     {
-        if (!r.PeekToken().AreEqual("(")) throw new SyntaxException("near over. expect '('");
-        r.ReadToken(); // read open brackert
+        r.ReadToken("(");
         var (_, inner) = r.ReadUntilCloseBracket();
         return Parse(inner);
     }

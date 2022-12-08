@@ -22,13 +22,11 @@ public static class SelectableTableParser
             return new SelectableTable(v, v.GetDefaultName());
         }
 
-        if (r.PeekToken().AreEqual("as"))
+        r.TryReadToken("as");
+
+        if (r.PeekToken().AreContains(breaktokens))
         {
-            r.ReadToken(); // read 'as' token
-            if (r.PeekToken().AreContains(breaktokens))
-            {
-                throw new SyntaxException($"alias name is not found.");
-            }
+            throw new SyntaxException($"alias name is not found.");
         }
 
         var alias = r.ReadToken();
@@ -38,7 +36,7 @@ public static class SelectableTableParser
             return new SelectableTable(v, alias);
         }
 
-        r.ReadToken();
+        r.ReadToken("(");
         var (_, inner) = r.ReadUntilCloseBracket();
         var colAliases = ValueCollectionParser.Parse(inner);
 

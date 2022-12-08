@@ -60,13 +60,13 @@ public static class ValueParser
 
         if (item == "exists")
         {
-            if (r.TryReadToken("(") == null) throw new SyntaxException("near exists");
+            r.ReadToken("(");
             var (first, inner) = r.ReadUntilCloseBracket();
             if (first.AreEqual("select"))
             {
                 return new ExistsExpression(SelectQueryParser.Parse(inner));
             }
-            throw new SyntaxException("near exists");
+            throw new SyntaxException($"near exists({first}");
         }
 
         if (r.PeekToken().AreEqual("("))
@@ -78,7 +78,7 @@ public static class ValueParser
         {
             //table.column
             var table = item;
-            r.ReadToken();
+            r.ReadToken(".");
             return new ColumnValue(table, r.ReadToken());
         }
 

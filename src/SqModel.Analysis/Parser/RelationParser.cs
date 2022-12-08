@@ -20,9 +20,7 @@ public static class RelationParser
         var table = SelectableTableParser.Parse(r);
         if (tp == RelationType.Cross) return new Relation(table, tp);
 
-        if (!r.PeekToken().AreEqual("on")) throw new SyntaxException("not found 'on' token.");
-        r.ReadToken();
-
+        r.ReadToken("on");
         var val = ValueParser.Parse(r);
 
         return new Relation(table, tp, val);

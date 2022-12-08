@@ -43,15 +43,13 @@ public class TokenReader : LexReader
         return ReadToken();
     }
 
-    //public bool PeekTokenAreEqual(string expect)
-    //{
-    //    return PeekToken().AreEqual(expect);
-    //}
-
-    //public bool PeekTokenAreContain(IEnumerable<string> expects)
-    //{
-    //    return PeekToken().AreContains(expects);
-    //}
+    public string ReadToken(string expectToken)
+    {
+        var s = PeekToken();
+        if (string.IsNullOrEmpty(s)) throw new SyntaxException($"expect '{expectToken}', actual is empty.");
+        if (!s.AreEqual(expectToken)) throw new SyntaxException($"expect '{expectToken}', actual '{s}'.");
+        return ReadToken();
+    }
 
     public string ReadToken(bool skipComment = true)
     {

@@ -22,13 +22,12 @@ public static class SelectableItemParser
             return new SelectableItem(v, v.GetDefaultName());
         }
 
-        if (r.PeekToken().AreEqual("as"))
+        r.TryReadToken("as");
+
+
+        if (r.PeekToken().AreContains(breaktokens))
         {
-            r.ReadToken(); // read 'as' token
-            if (r.PeekToken().AreContains(breaktokens))
-            {
-                throw new SyntaxException($"alias name is not found.");
-            }
+            throw new SyntaxException($"alias name is not found.");
         }
 
         return new SelectableItem(v, r.ReadToken());
