@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core.Values;
 
-public class BetweenArgument : ValueBase
+public class BetweenExpression : ValueBase
 {
-    public BetweenArgument(ValueBase start, ValueBase end)
+    public BetweenExpression(ValueBase value, ValueBase start, ValueBase end)
     {
+        Value = value;
         Start = start;
         End = end;
     }
+
+    public ValueBase Value { get; init; }
 
     public ValueBase Start { get; init; }
 
@@ -22,7 +25,7 @@ public class BetweenArgument : ValueBase
 
     public override string GetCurrentCommandText()
     {
-        return Start.GetCommandText() + " and " + End.GetCommandText();
+        return Value.GetCommandText() + " between " + Start.GetCommandText() + " and " + End.GetCommandText();
     }
 
     public override IDictionary<string, object?> GetCurrentParameters()

@@ -230,6 +230,13 @@ public class ValueParserTest
         var text = "a.id between 1 and 2";
         var v = ValueParser.Parse(text);
         Monitor.Log(v);
+    }
 
+    [Fact]
+    public void Like()
+    {
+        var text = "a.name like 'test%'";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
     }
 }
