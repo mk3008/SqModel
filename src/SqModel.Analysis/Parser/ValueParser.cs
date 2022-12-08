@@ -20,7 +20,11 @@ public static class ValueParser
         var item = r.ReadToken();
         ValueBase? value = null;
 
-        if (item.IsNumeric() || item.StartsWith("'") || item.AreEqual("true") || item.AreEqual("false"))
+        if (item.AreEqual("not"))
+        {
+            value = new NegativeValue(Parse(r));
+        }
+        else if (item.IsNumeric() || item.StartsWith("'") || item.AreEqual("true") || item.AreEqual("false"))
         {
             value = new LiteralValue(item);
         }

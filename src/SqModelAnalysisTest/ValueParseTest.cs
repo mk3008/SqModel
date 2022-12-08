@@ -115,6 +115,26 @@ public class ValueParserTest
     }
 
     [Fact]
+    public void Not()
+    {
+        var text = "not true";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.Equal("not true", v.GetCommandText());
+    }
+
+    [Fact]
+    public void Not2()
+    {
+        var text = "not (1 + 1 = 1)";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.Equal("not (1 + 1 = 1)", v.GetCommandText());
+    }
+
+    [Fact]
     public void Function()
     {
         var text = "sum(tbl.col+    tbl.col2)";
