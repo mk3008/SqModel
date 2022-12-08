@@ -3,16 +3,14 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class SubQueryValue : ValueBase
+public abstract class QueryContainer : ValueBase
 {
-    public SubQueryValue(IQueryable query)
+    public QueryContainer(IQueryable query)
     {
         Query = query;
     }
 
     public IQueryable Query { get; init; }
-
-    public override string GetCurrentCommandText() => $"({Query.GetCommandText()})";
 
     public override IDictionary<string, object?> GetCurrentParameters()
     {

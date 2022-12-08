@@ -36,6 +36,13 @@ public class TokenReader : LexReader
         return TokenCache;
     }
 
+    public string? TryReadToken(string expectToken)
+    {
+        var s = PeekToken();
+        if (!s.AreEqual(expectToken)) return null;
+        return ReadToken();
+    }
+
     //public bool PeekTokenAreEqual(string expect)
     //{
     //    return PeekToken().AreEqual(expect);

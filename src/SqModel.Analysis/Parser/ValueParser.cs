@@ -14,68 +14,75 @@ public static class ValueParser
 
     public static ValueBase Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
         var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", ">", "<", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or" };
 
-        var item = r.ReadToken();
-        ValueBase? value = null;
-
-        if (item.AreEqual("not"))
-        {
-            value = new NegativeValue(Parse(r));
-        }
-        else if (item.IsNumeric() || item.StartsWith("'") || item.AreEqual("true") || item.AreEqual("false"))
-        {
-            value = new LiteralValue(item);
-        }
-        else if (item == "(")
-        {
-            var (first, inner) = r.ReadUntilCloseBracket();
-            if (first.AreEqual("select"))
-            {
-                //TODO : inline query
-                throw new NotSupportedException();
-            }
-            else
-            {
-                value = new BracketValue(Parse(inner));
-            }
-        }
-        else if (item == "case")
-        {
-            var text = "case " + r.ReadUntilCaseExpressionEnd();
-            value = CaseExpressionParser.Parse(text);
-        }
-        else if (r.PeekToken().AreEqual("("))
-        {
-            value = FunctionValueParseLogic.Parse(r, item);
-        }
-        else if (r.PeekToken().AreEqual("."))
-        {
-            //table.column
-            var table = item;
-            r.ReadToken();
-            value = new ColumnValue(table, r.ReadToken());
-        }
-        else
-        {
-            //omit table column
-            value = new ColumnValue(item);
-        }
-
-        if (value == null) throw new Exception();
-
-        if (r.PeekToken().AreContains(breaktokens))
-        {
-            return value;
-        }
+        ValueBase value = ParseCore(r);
 
         if (r.PeekToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
             value.AddOperatableValue(op, Parse(r));
         }
-
         return value;
+    }
+
+    private static ValueBase ParseCore(TokenReader r)
+    {
+        var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
+
+        var item = r.ReadToken();
+
+        if (item.AreEqual("not"))
+        {
+            return new NegativeValue(Parse(r));
+        }
+
+        if (item.IsNumeric() || item.StartsWith("'") || item.AreEqual("true") || item.AreEqual("false"))
+        {
+            return new LiteralValue(item);
+        }
+
+        if (item == "(")
+        {
+            var (first, inner) = r.ReadUntilCloseBracket();
+            if (first.AreEqual("select"))
+            {
+                return new InlineQuery(SelectQueryParser.Parse(inner));
+            }
+            return new BracketValue(Parse(inner));
+        }
+
+        if (item == "case")
+        {
+            var text = "case " + r.ReadUntilCaseExpressionEnd();
+            return CaseExpressionParser.Parse(text);
+        }
+
+        if (item == "exists")
+        {
+            if (r.TryReadToken("(") == null) throw new SyntaxException("near exists");
+            var (first, inner) = r.ReadUntilCloseBracket();
+            if (first.AreEqual("select"))
+            {
+                return new ExistsExpression(SelectQueryParser.Parse(inner));
+            }
+            throw new SyntaxException("near exists");
+        }
+
+        if (r.PeekToken().AreEqual("("))
+        {
+            return FunctionValueParseLogic.Parse(r, item);
+        }
+
+        if (r.PeekToken().AreEqual("."))
+        {
+            //table.column
+            var table = item;
+            r.ReadToken();
+            return new ColumnValue(table, r.ReadToken());
+        }
+
+        //omit table column
+        return new ColumnValue(item);
     }
 }

@@ -183,4 +183,24 @@ public class ValueParserTest
 
         Assert.Equal("case when tbl.col1 = 1 then 10 when tbl.col2 = 2 then 20 else 30 end", v.GetCommandText());
     }
+
+    [Fact]
+    public void InlineQuery()
+    {
+        var text = "(select a.val from table_a a where a.id = b.table_a_id)";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.IsType<InlineQuery>(v);
+    }
+
+    [Fact]
+    public void ExistsExpression()
+    {
+        var text = "exists (select * from table_a a where a.id = b.table_a_id)";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.IsType<ExistsExpression>(v);
+    }
 }
