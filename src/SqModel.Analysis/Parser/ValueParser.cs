@@ -14,19 +14,26 @@ public static class ValueParser
 
     public static ValueBase Parse(TokenReader r)
     {
-        var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", ">", "<", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or" };
+        var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", ">", "<", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or", "between" };
 
         ValueBase value = ParseCore(r);
 
         if (r.PeekToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
-            value.AddOperatableValue(op, Parse(r));
+            if (op.AreEqual("between"))
+            {
+                value.AddOperatableValue(op, BetweenArgumentParser.Parse(r));
+            }
+            else
+            {
+                value.AddOperatableValue(op, Parse(r));
+            }
         }
         return value;
     }
 
-    private static ValueBase ParseCore(TokenReader r)
+    internal static ValueBase ParseCore(TokenReader r)
     {
         var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
 

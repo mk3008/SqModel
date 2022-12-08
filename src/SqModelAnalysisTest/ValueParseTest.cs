@@ -223,4 +223,13 @@ public class ValueParserTest
 
         Assert.IsType<FunctionValue>(v);
     }
+
+    [Fact]
+    public void Between()
+    {
+        var text = "a.id between 1 and 2";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+    }
 }
