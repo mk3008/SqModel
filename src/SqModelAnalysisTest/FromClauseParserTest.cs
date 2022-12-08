@@ -1,4 +1,6 @@
 ﻿using SqModel.Analysis.Parser;
+using SqModel.Core;
+using SqModel.Core.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,5 +27,27 @@ public class FromClauseParserTest
         Monitor.Log(item);
 
         Assert.Equal(2, item.Relations?.Count);
+    }
+
+    [Fact]
+    public void SubQuery()
+    {
+        var text = "(select a.id, a.val + 1 as val from table_a as a) as a1";
+        var item = FromClauseParser.Parse(text);
+        Monitor.Log(item);
+
+        Assert.IsType<VirtualTable>(item.Root.Table);
+        Assert.IsType<SelectQuery>(((VirtualTable)item.Root.Table).Query);
+    }
+
+    [Fact]
+    public void ValuesQuery()
+    {
+        var text = "(values (1,2), (3,4)) as v(col1, col2)";
+        var item = FromClauseParser.Parse(text);
+        Monitor.Log(item);
+
+        Assert.IsType<VirtualTable>(item.Root.Table);
+        Assert.IsType<ValuesQuery>(((VirtualTable)item.Root.Table).Query);
     }
 }
