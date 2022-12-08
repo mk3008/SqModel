@@ -62,16 +62,23 @@ public static class ValueParser
         {
             r.ReadToken("(");
             var (first, inner) = r.ReadUntilCloseBracket();
+            return new ExistsExpression(SelectQueryParser.Parse(inner));
+        }
+
+        if (item == "in")
+        {
+            r.ReadToken("(");
+            var (first, inner) = r.ReadUntilCloseBracket();
             if (first.AreEqual("select"))
             {
-                return new ExistsExpression(SelectQueryParser.Parse(inner));
+                return new InExpression(SelectQueryParser.Parse(inner));
             }
-            throw new SyntaxException($"near exists({first}");
+            return FunctionValueParser.Parse("(" + inner + ")", item);
         }
 
         if (r.PeekToken().AreEqual("("))
         {
-            return FunctionValueParseLogic.Parse(r, item);
+            return FunctionValueParser.Parse(r, item);
         }
 
         if (r.PeekToken().AreEqual("."))

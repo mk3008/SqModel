@@ -1,10 +1,17 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Values;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SqModel.Analysis.Parser;
 
-public static class FunctionValueParseLogic
+public static class FunctionValueParser
 {
+    public static FunctionValue Parse(string text, string functionName)
+    {
+        using var r = new TokenReader(text);
+        return Parse(r, functionName);
+    }
+
     public static FunctionValue Parse(TokenReader r, string functionName)
     {
         r.ReadToken("(");

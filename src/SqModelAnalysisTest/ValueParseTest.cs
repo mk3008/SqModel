@@ -203,4 +203,24 @@ public class ValueParserTest
 
         Assert.IsType<ExistsExpression>(v);
     }
+
+    [Fact]
+    public void InExpression()
+    {
+        var text = "in (select a.id from table_a)";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.IsType<InExpression>(v);
+    }
+
+    [Fact]
+    public void InFunction()
+    {
+        var text = "in (1, 2, 3)";
+        var v = ValueParser.Parse(text);
+        Monitor.Log(v);
+
+        Assert.IsType<FunctionValue>(v);
+    }
 }
