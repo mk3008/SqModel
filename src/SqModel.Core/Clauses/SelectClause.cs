@@ -1,4 +1,5 @@
-﻿using SqModel.Core.Extensions;
+﻿using Cysharp.Text;
+using SqModel.Core.Extensions;
 using System.Collections;
 
 namespace SqModel.Core.Clauses;
@@ -14,6 +15,10 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParamete
         Items.AddRange(collection);
     }
 
+    public bool HasDistinctKeyword { get; set; } = false;
+
+    public ValueBase? Top { get; set; }
+
     private List<SelectableItem> Items { get; init; } = new();
 
     public string GetCommandText()
@@ -25,12 +30,19 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParamete
          *     col1 as c1,
          *     col2 as c2
          */
-        return "select".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+        var sb = ZString.CreateStringBuilder();
+        sb.Append("select");
+        if (HasDistinctKeyword) sb.Append(" distinct");
+        if (Top != null) sb.Append(" top " + Top.GetCommandText());
+
+        return sb.ToString().Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
     }
 
     public IDictionary<string, object?> GetParameters()
     {
-        return Items.Select(x => x.GetParameters()).Merge();
+        var prm = Items.Select(x => x.GetParameters()).Merge();
+        prm = prm.Merge(Top!.GetParameters());
+        return prm;
     }
 
     public SelectableItem this[int index] { get => ((IList<SelectableItem>)Items)[index]; set => ((IList<SelectableItem>)Items)[index] = value; }
