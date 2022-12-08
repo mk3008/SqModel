@@ -21,12 +21,12 @@ public static class ValueParser
         if (r.PeekToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
-            value.AddOperatableValue(op, ParseMain(r));
+            value.AddOperatableValue(op, Parse(r));
         }
         return value;
     }
 
-    internal static ValueBase ParseMain(TokenReader r)
+    private static ValueBase ParseMain(TokenReader r)
     {
         var v = ParseCore(r);
         if (r.TryReadToken("between") != null)
