@@ -8,7 +8,7 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core;
 
-public class ValuesQuery : IQueryable
+public class ValuesQuery : QueryBase, IQueryCommandable
 {
     public ValuesQuery(List<ValueCollection> rows)
     {
@@ -17,7 +17,7 @@ public class ValuesQuery : IQueryable
 
     public List<ValueCollection> Rows { get; init; } = new();
 
-    public string GetCommandText()
+    public override string GetCurrentCommandText()
     {
         /*
          * values
@@ -48,13 +48,10 @@ public class ValuesQuery : IQueryable
 
     public Dictionary<string, object?>? Parameters { get; set; }
 
-    public IDictionary<string, object?> GetParameters()
+    public override IDictionary<string, object?> GetCurrentParameters()
     {
-        return Parameters ?? EmptyParameters.Get();
-    }
-
-    public Query ToQuery()
-    {
-        return new Query(GetCommandText(), GetParameters());
+        var prm = EmptyParameters.Get();
+        prm = prm.Merge(Parameters);
+        return prm;
     }
 }

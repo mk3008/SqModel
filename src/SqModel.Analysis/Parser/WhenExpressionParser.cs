@@ -14,7 +14,7 @@ public class WhenExpressionParser
 
     public static IEnumerable<WhenExpression> Parse(TokenReader r)
     {
-        var token = r.PeekToken();
+        var token = r.ReadToken("when");
 
         while (token.AreEqual("when"))
         {

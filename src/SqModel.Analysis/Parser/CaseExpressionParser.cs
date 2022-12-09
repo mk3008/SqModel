@@ -13,7 +13,7 @@ public static class CaseExpressionParser
 
     public static CaseExpression Parse(TokenReader r)
     {
-        if (r.PeekToken().AreEqual("case")) r.ReadToken();
+        if (r.PeekRawToken().AreEqual("case")) r.ReadToken();
 
         var cndtext = r.ReadUntilToken("when");
 

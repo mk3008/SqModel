@@ -9,7 +9,7 @@ namespace SqModel.Core.Values;
 
 public class ExistsExpression : QueryContainer
 {
-    public ExistsExpression(IQueryable query) : base(query)
+    public ExistsExpression(IQueryCommandable query) : base(query)
     {
     }
 

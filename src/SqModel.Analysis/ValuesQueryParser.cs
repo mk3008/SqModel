@@ -17,7 +17,7 @@ public static class ValuesQueryParser
     {
         var fn = () =>
         {
-            if (!r.PeekToken().AreEqual(",")) return false;
+            if (!r.PeekRawToken().AreEqual(",")) return false;
             r.ReadToken(",");
             r.ReadToken("(");
             return true;

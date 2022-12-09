@@ -3,9 +3,9 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class OperatableValue<T> : IQueryCommand, IQueryParameter where T : ValueBase
+public class OperatableValue : IQueryCommand, IQueryParameter
 {
-    public OperatableValue(string @operator, T value)
+    public OperatableValue(string @operator, ValueBase value)
     {
         Operator = @operator;
         Value = value;
@@ -13,7 +13,7 @@ public class OperatableValue<T> : IQueryCommand, IQueryParameter where T : Value
 
     public string Operator { get; init; }
 
-    public T Value { get; init; }
+    public ValueBase Value { get; init; }
 
     public string GetCommandText()
     {

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SqModel.Core;
 
-public class Query
+public class QueryCommand
 {
-    public Query(string command, IDictionary<string, object?> prm)
+    public QueryCommand(string command, IDictionary<string, object?> prm)
     {
         CommandText = command;
         Parameters = prm;

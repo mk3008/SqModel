@@ -18,32 +18,33 @@ public static class SortableItemParser
         var v = ValueParser.Parse(r);
         var isasc = true;
 
-        if (r.PeekToken().AreContains(breaktokens))
+        if (r.PeekRawToken().AreContains(breaktokens))
         {
             return new SortableItem(v);
         }
 
-        if (r.PeekToken().AreEqual("asc"))
+        if (r.PeekRawToken().AreEqual("asc"))
         {
-            r.ReadToken(); // read 'asc' token
+            r.ReadToken("asc");
             isasc = true;
-
         }
-        else if (r.PeekToken().AreEqual("desc"))
+        else if (r.PeekRawToken().AreEqual("desc"))
         {
-            r.ReadToken(); // read 'desc' token
+            r.ReadToken("desc");
             isasc = false;
         }
 
-        if (r.PeekToken().AreEqual("nulls first"))
+        if (r.PeekRawToken().AreEqual("nulls"))
         {
-            r.ReadToken();
-            return new SortableItem(v, isasc, NullSortType.First);
-        }
-        else if (r.PeekToken().AreEqual("nulls last"))
-        {
-            r.ReadToken();
-            return new SortableItem(v, isasc, NullSortType.Last);
+            var t = r.ReadToken("nulls");
+            if (t.AreEqual("nulls first"))
+            {
+                return new SortableItem(v, isasc, NullSortType.First);
+            }
+            else if (t.AreEqual("nulls last"))
+            {
+                return new SortableItem(v, isasc, NullSortType.Last);
+            }
         }
         return new SortableItem(v, isasc, NullSortType.Undefined);
     }

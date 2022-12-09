@@ -13,12 +13,12 @@ public static class FromClauseParser
 
     public static FromClause Parse(TokenReader r)
     {
-        var relationtokens = new string?[] { "inner join", "left join", "left outer join", "right join", "right outer join", "cross join" };
+        var relationtokens = new string?[] { "inner", "left", "right", "cross" };
 
         var root = SelectableTableParser.Parse(r);
         var from = new FromClause(root);
 
-        if (!r.PeekToken().AreContains(relationtokens))
+        if (!r.PeekRawToken().AreContains(relationtokens))
         {
             return from;
         }
@@ -28,7 +28,7 @@ public static class FromClauseParser
         {
             from.Relations.Add(RelationParser.Parse(r));
 
-        } while (r.PeekToken().AreContains(relationtokens));
+        } while (r.PeekRawToken().AreContains(relationtokens));
 
         return from;
     }

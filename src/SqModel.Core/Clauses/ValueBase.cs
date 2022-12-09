@@ -17,12 +17,12 @@ public abstract class ValueBase : IQueryCommand, IQueryParameter
         return $"{GetCurrentCommandText()} {OperatableValue.GetCommandText()}";
     }
 
-    public OperatableValue<ValueBase>? OperatableValue { get; private set; }
+    public OperatableValue? OperatableValue { get; private set; }
 
     public ValueBase AddOperatableValue(string @operator, ValueBase value)
     {
         if (OperatableValue != null) throw new InvalidOperationException();
-        OperatableValue = new OperatableValue<ValueBase>(@operator, value);
+        OperatableValue = new OperatableValue(@operator, value);
         return value;
     }
 

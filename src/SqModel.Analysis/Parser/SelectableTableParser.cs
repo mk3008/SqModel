@@ -17,21 +17,21 @@ public static class SelectableTableParser
 
         var v = TableParser.Parse(r);
 
-        if (r.PeekToken().AreContains(breaktokens))
+        if (r.PeekRawToken().AreContains(breaktokens))
         {
             return new SelectableTable(v, v.GetDefaultName());
         }
 
         r.TryReadToken("as");
 
-        if (r.PeekToken().AreContains(breaktokens))
+        if (r.PeekRawToken().AreContains(breaktokens))
         {
             throw new SyntaxException($"alias name is not found.");
         }
 
         var alias = r.ReadToken();
 
-        if (!r.PeekToken().AreEqual("("))
+        if (!r.PeekRawToken().AreEqual("("))
         {
             return new SelectableTable(v, alias);
         }

@@ -5,7 +5,7 @@ namespace SqModel.Core.Values;
 
 public class InlineQuery : QueryContainer
 {
-    public InlineQuery(IQueryable query) : base(query)
+    public InlineQuery(IQueryCommandable query) : base(query)
     {
     }
 

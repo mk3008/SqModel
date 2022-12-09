@@ -8,7 +8,7 @@ namespace SqModel.Core.Values;
 
 public class InExpression : QueryContainer
 {
-    public InExpression(IQueryable query) : base(query)
+    public InExpression(IQueryCommandable query) : base(query)
     {
     }
 

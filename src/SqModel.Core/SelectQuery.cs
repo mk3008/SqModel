@@ -4,7 +4,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core;
 
-public class SelectQuery : IQueryable
+public class SelectQuery : QueryBase, IQueryCommandable
 {
     //public WithClause? WithClause { get; set; }
 
@@ -56,7 +56,7 @@ public class SelectQuery : IQueryable
 
     public OrderClause? OrderClause { get; set; }
 
-    public string GetCommandText()
+    public override string GetCurrentCommandText()
     {
         if (SelectClause == null) throw new InvalidProgramException();
         var sb = ZString.CreateStringBuilder();
@@ -72,7 +72,7 @@ public class SelectQuery : IQueryable
 
     public Dictionary<string, object?>? Parameters { get; set; }
 
-    public IDictionary<string, object?> GetParameters()
+    public override IDictionary<string, object?> GetCurrentParameters()
     {
         var prm = EmptyParameters.Get();
         prm = prm.Merge(Parameters);
@@ -84,11 +84,6 @@ public class SelectQuery : IQueryable
         prm = prm.Merge(OrderClause!.GetParameters());
 
         return prm;
-    }
-
-    public Query ToQuery()
-    {
-        return new Query(GetCommandText(), GetParameters());
     }
 
     //public ValueListClause OrderBy()

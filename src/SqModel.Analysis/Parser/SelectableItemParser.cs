@@ -17,7 +17,7 @@ public static class SelectableItemParser
 
         var v = ValueParser.Parse(r);
 
-        if (r.PeekToken().AreContains(breaktokens))
+        if (r.PeekRawToken().AreContains(breaktokens))
         {
             return new SelectableItem(v, v.GetDefaultName());
         }
@@ -25,7 +25,7 @@ public static class SelectableItemParser
         r.TryReadToken("as");
 
 
-        if (r.PeekToken().AreContains(breaktokens))
+        if (r.PeekRawToken().AreContains(breaktokens))
         {
             throw new SyntaxException($"alias name is not found.");
         }

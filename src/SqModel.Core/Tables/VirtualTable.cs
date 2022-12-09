@@ -10,12 +10,12 @@ namespace SqModel.Core.Tables;
 
 public class VirtualTable : TableBase
 {
-    public VirtualTable(IQueryable query)
+    public VirtualTable(IQueryCommandable query)
     {
         Query = query;
     }
 
-    public IQueryable Query { get; init; }
+    public IQueryCommandable Query { get; init; }
 
     public override string GetCommandText()
     {

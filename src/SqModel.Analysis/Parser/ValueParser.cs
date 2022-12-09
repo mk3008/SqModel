@@ -18,7 +18,7 @@ public static class ValueParser
 
         ValueBase value = ParseMain(r);
 
-        if (r.PeekToken().AreContains(operatorTokens))
+        if (r.PeekRawToken().AreContains(operatorTokens))
         {
             var op = r.ReadToken();
             value.AddOperatableValue(op, Parse(r));
@@ -90,12 +90,12 @@ public static class ValueParser
             return FunctionValueParser.Parse("(" + inner + ")", item);
         }
 
-        if (r.PeekToken().AreEqual("("))
+        if (r.PeekRawToken().AreEqual("("))
         {
             return FunctionValueParser.Parse(r, item);
         }
 
-        if (r.PeekToken().AreEqual("."))
+        if (r.PeekRawToken().AreEqual("."))
         {
             //table.column
             var table = item;

@@ -5,12 +5,12 @@ namespace SqModel.Core.Values;
 
 public abstract class QueryContainer : ValueBase
 {
-    public QueryContainer(IQueryable query)
+    public QueryContainer(IQueryCommandable query)
     {
         Query = query;
     }
 
-    public IQueryable Query { get; init; }
+    public IQueryCommandable Query { get; init; }
 
     public override IDictionary<string, object?> GetCurrentParameters()
     {

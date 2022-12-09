@@ -18,7 +18,7 @@ public static class FunctionValueParser
         var (_, argstext) = r.ReadUntilCloseBracket();
         var arg = ValueCollectionParser.Parse(argstext);
 
-        if (!r.PeekToken().AreEqual("over"))
+        if (!r.PeekRawToken().AreEqual("over"))
         {
             return new FunctionValue(functionName, arg);
         }

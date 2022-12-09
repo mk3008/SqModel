@@ -30,7 +30,7 @@ public static class TableParser
             }
         }
 
-        if (r.PeekToken().AreEqual("."))
+        if (r.PeekRawToken().AreEqual("."))
         {
             //schema.table
             var schema = item;

@@ -25,6 +25,11 @@ public static class SelectQueryParser
         sq.HavingClause = ParseHavingOrDefault(r);
         sq.OrderClause = ParseOrderOrDefault(r);
 
+        var tokens = new string[] { "union", "except", "minus", "intersect" };
+        if (!r.PeekRawToken().AreContains(tokens)) return sq;
+        var op = r.ReadToken();
+        sq.AddOperatableValue(op, Parse(r));
+
         return sq;
     }
 
@@ -42,7 +47,7 @@ public static class SelectQueryParser
 
     private static GroupClause? ParseGroupOrDefault(TokenReader r)
     {
-        if (r.TryReadToken("group by") == null) return null;
+        if (r.TryReadToken("group") == null) return null;
         return GroupClauseParser.Parse(r);
     }
 
@@ -54,7 +59,7 @@ public static class SelectQueryParser
 
     private static OrderClause? ParseOrderOrDefault(TokenReader r)
     {
-        if (r.TryReadToken("order by") == null) return null;
+        if (r.TryReadToken("order") == null) return null;
         return OrderClauseParser.Parse(r);
     }
 }

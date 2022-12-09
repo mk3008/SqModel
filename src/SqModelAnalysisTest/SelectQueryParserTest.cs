@@ -89,4 +89,27 @@ having
         Assert.Equal(2, item.GroupClause!.Count());
         Assert.NotNull(item.HavingClause);
     }
+
+    [Fact]
+    public void Union()
+    {
+        var text = @"
+select
+    a.id
+from
+    table_a as a
+union
+select
+    b.id
+from
+    table_b as b
+union all
+select
+    c.id
+from
+    table_c as c";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
 }
