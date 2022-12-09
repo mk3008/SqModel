@@ -1,8 +1,8 @@
-﻿namespace SqModel.Core.Clauses;
+﻿namespace SqModel.Core.Extensions;
 
 public static class NullSortTypeExtension
 {
-    public static string ToSortText(this NullSortType source)
+    public static string ToCommandText(this NullSortType source)
     {
         switch (source)
         {

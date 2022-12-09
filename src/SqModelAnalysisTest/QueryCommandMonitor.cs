@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit.Abstractions;
 using SqModel.Core.Clauses;
 using SqModel.Core.Tables;
+using SqModel.Core.Extensions;
 
 namespace SqModelAnalysisTest;
 internal class QueryCommandMonitor
@@ -198,7 +199,7 @@ internal class QueryCommandMonitor
 
         Output.WriteLine($"{space}Type : {arguments.GetType().Name}");
         Output.WriteLine($"{space}Command : {arguments.GetCommandText()}");
-        Output.WriteLine($"{space}Relation : {arguments.RelationType.ToRelationText()}");
+        Output.WriteLine($"{space}Relation : {arguments.RelationType.ToCommandText()}");
 
         if (arguments.Table != null)
         {

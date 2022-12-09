@@ -16,13 +16,13 @@ public static class SelectClauseParser
         var distinct = (r.TryReadToken("distinct") != null) ? true : false;
         if (r.TryReadToken("top") == null)
         {
-            return new SelectClause(ReadItems(r).ToList()) { HasDistinctKeyword = distinct };
+            return new SelectClause(ParseItems(r).ToList()) { HasDistinctKeyword = distinct };
         }
         var top = ValueParser.Parse(r);
-        return new SelectClause(ReadItems(r).ToList()) { HasDistinctKeyword = distinct, Top = top };
+        return new SelectClause(ParseItems(r).ToList()) { HasDistinctKeyword = distinct, Top = top };
     }
 
-    private static IEnumerable<SelectableItem> ReadItems(TokenReader r)
+    private static IEnumerable<SelectableItem> ParseItems(TokenReader r)
     {
         do
         {

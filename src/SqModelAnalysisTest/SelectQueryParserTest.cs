@@ -91,7 +91,7 @@ having
     }
 
     [Fact]
-    public void Union()
+    public void UnionSample()
     {
         var text = @"
 select
@@ -108,6 +108,32 @@ select
     c.id
 from
     table_c as c";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
+
+    [Fact]
+    public void WithSample()
+    {
+        var text = @"
+with
+a as (
+    select
+        a.id
+    from
+        table_a as a
+), 
+b as (
+    select
+        a.id
+    from
+        a
+)
+select
+    *
+from
+    b";
 
         var item = SelectQueryParser.Parse(text);
         Monitor.Log(item);

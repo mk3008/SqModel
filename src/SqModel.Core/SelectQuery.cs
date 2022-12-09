@@ -6,7 +6,7 @@ namespace SqModel.Core;
 
 public class SelectQuery : QueryBase, IQueryCommandable
 {
-    //public WithClause? WithClause { get; set; }
+    public WithClause? WithClause { get; set; }
 
     //public WithClause With()
     //{
@@ -59,7 +59,9 @@ public class SelectQuery : QueryBase, IQueryCommandable
     public override string GetCurrentCommandText()
     {
         if (SelectClause == null) throw new InvalidProgramException();
+
         var sb = ZString.CreateStringBuilder();
+        if (WithClause != null) sb.Append(WithClause.GetCommandText() + "\r\n");
         sb.Append(SelectClause.GetCommandText());
         if (FromClause != null) sb.Append("\r\n" + FromClause.GetCommandText());
         if (WhereClause != null) sb.Append("\r\n" + WhereClause.GetCommandText());
@@ -76,6 +78,7 @@ public class SelectQuery : QueryBase, IQueryCommandable
     {
         var prm = EmptyParameters.Get();
         prm = prm.Merge(Parameters);
+        prm = prm.Merge(WithClause!.GetParameters());
         prm = prm.Merge(SelectClause!.GetParameters());
         prm = prm.Merge(FromClause!.GetParameters());
         prm = prm.Merge(WhereClause!.GetParameters());

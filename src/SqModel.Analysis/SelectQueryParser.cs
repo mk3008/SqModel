@@ -15,9 +15,15 @@ public static class SelectQueryParser
 
     public static SelectQuery Parse(TokenReader r)
     {
+        var sq = new SelectQuery();
+
+        if (r.TryReadToken("with") != null)
+        {
+            sq.WithClause = WithClauseParser.Parse(r);
+        }
+
         r.ReadToken("select");
 
-        var sq = new SelectQuery();
         sq.SelectClause = SelectClauseParser.Parse(r);
         sq.FromClause = ParseFromOrDefault(r);
         sq.WhereClause = ParseWhereOrDefault(r);

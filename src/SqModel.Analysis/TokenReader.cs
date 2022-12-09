@@ -122,6 +122,15 @@ public class TokenReader : LexReader
             return token;
         }
 
+        if (token.AreEqual("not"))
+        {
+            if (PeekRawToken().AreEqual("materialized"))
+            {
+                return token + " " + ReadToken("materialized");
+            }
+            return token;
+        }
+
         if (!skipComment) return token;
 
         if (token == "--")
@@ -161,6 +170,7 @@ public class TokenReader : LexReader
 
     internal (string first, string inner) ReadUntilCloseBracket()
     {
+        SkipSpace();
         var sb = ZString.CreateStringBuilder();
         var fs = string.Empty;
 

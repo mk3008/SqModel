@@ -1,13 +1,11 @@
-﻿namespace SqModel.Core.Clauses;
+﻿namespace SqModel.Core.Extensions;
 
 public static class RelationTypeExtension
 {
-    public static string ToRelationText(this RelationType source)
+    public static string ToCommandText(this RelationType source)
     {
         switch (source)
         {
-            case RelationType.From:
-                return "from";
             case RelationType.Inner:
                 return "inner join";
             case RelationType.Left:

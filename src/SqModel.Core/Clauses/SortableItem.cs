@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Clauses;
 
@@ -23,7 +24,7 @@ public class SortableItem : IQueryCommand, IQueryParameter
         sb.Append(Value.GetCommandText());
         if (!IsAscending) sb.Append(" desc");
         if (NullSort == NullSortType.Undefined) return sb.ToString();
-        sb.Append(" " + NullSort.ToSortText());
+        sb.Append(" " + NullSort.ToCommandText());
         return sb.ToString();
     }
 

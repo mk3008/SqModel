@@ -24,7 +24,7 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
 
     public ValueCollection? ColumnAliases { get; init; }
 
-    private string GetAliasCommand()
+    internal string GetAliasCommand()
     {
         /*
          * alias(col1, col2, col3)
@@ -39,7 +39,7 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
         return Alias + "(" + ColumnAliases.GetCommandText() + ")";
     }
 
-    public string GetCommandText()
+    public virtual string GetCommandText()
     {
         /*
          * query as alias(col1, col2, col3) 
@@ -48,7 +48,7 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
         var query = Table.GetCommandText();
         var alias = GetAliasCommand();
         if (string.IsNullOrEmpty(alias)) return query;
-        return $"{query} as {alias}";
+        return query + " as " + alias;
     }
 
     public IDictionary<string, object?> GetParameters()

@@ -1,51 +1,32 @@
-﻿//using System.Text;
-//using SqModel.Core.Extensions;
+﻿using System.Text;
+using Cysharp.Text;
+using SqModel.Core.Extensions;
+using SqModel.Core.Values;
 
-//namespace SqModel.Core.Clauses;
+namespace SqModel.Core.Clauses;
 
-//public class CommonTable : IQueryable, ISelectable
-//{
-//    public CommonTable(TableBase query, string alias)
-//    {
-//        Query = query;
-//        Alias = alias;
-//    }
+public class CommonTable : SelectableTable
+{
+    public CommonTable(TableBase table, string alias) : base(table, alias)
+    {
+    }
 
-//    public TableBase Query { get; init; }
+    public CommonTable(TableBase table, string alias, ValueCollection columnAliases) : base(table, alias, columnAliases)
+    {
+    }
 
-//    public Dictionary<string, object?>? Parameters { get; set; } = null;
+    public MaterializedType Materialized { get; set; } = MaterializedType.Undefined;
 
-//    public List<string>? Keywords { get; set; }
+    public override string GetCommandText()
+    {
+        var query = Table.GetCommandText();
+        var alias = GetAliasCommand();
+        if (string.IsNullOrEmpty(alias)) throw new NotSupportedException("alias is empty.");
 
-//    public string Alias { get; init; }
-
-//    public List<string>? ColumnAliases { get; set; }
-
-//    public string GetCommandText()
-//    {
-//        /*
-//         * alias(columns) as keyword (
-//         *     query
-//         * )
-//         */
-//        //var query = Query.GetCommandText();
-//        //var alias = GetAliasCommand();
-//        //var keyword = Keywords == null || !Keywords.Any() ? string.Empty : Keywords.ToString(" ");
-
-//        var sb = new StringBuilder();
-//        //sb.Append($"{alias} as ");
-//        //if (string.IsNullOrEmpty(keyword))
-//        //{
-//        //    sb.Append($"{keyword} ");
-//        //}
-//        //sb.Append($"(\r\n{query.InsertIndent()}\r\n)");
-//        return sb.ToString();
-//    }
-
-//    public IDictionary<string, object?> GetParameters()
-//    {
-//        return EmptyParameters.Get();
-//        //if (Parameters == null) return Query.GetParameters();
-//        //return Parameters.Merge(Query.GetParameters());
-//    }
-//}
+        var sb = ZString.CreateStringBuilder();
+        sb.Append(alias + " as ");
+        if (Materialized != MaterializedType.Undefined) sb.Append(Materialized.ToCommandText() + " ");
+        sb.Append(Table.GetCommandText());
+        return sb.ToString();
+    }
+}

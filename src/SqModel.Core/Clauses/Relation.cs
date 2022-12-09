@@ -1,4 +1,6 @@
-﻿namespace SqModel.Core.Clauses;
+﻿using SqModel.Core.Extensions;
+
+namespace SqModel.Core.Clauses;
 
 public class Relation : IQueryCommand, IQueryParameter
 {
@@ -26,7 +28,7 @@ public class Relation : IQueryCommand, IQueryParameter
         /*
          * inner join table as t2 on t1.id = t2.id
          */
-        var cmd = $"{RelationType.ToRelationText()} {Table.GetCommandText()}";
+        var cmd = $"{RelationType.ToCommandText()} {Table.GetCommandText()}";
         if (Condition == null) return cmd;
         return $"{cmd} on {Condition.GetCommandText()}";
     }
