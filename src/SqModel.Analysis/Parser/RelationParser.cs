@@ -14,8 +14,6 @@ public static class RelationParser
 
     public static Relation Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, "inner join", "left join", "left outer join", "right join", "right outer join", "cross join", "where", "group by", "having", "order by", "union" };
-
         var tp = ParseRelationType(r);
         var table = SelectableTableParser.Parse(r);
         if (tp == RelationType.Cross) return new Relation(table, tp);
@@ -28,7 +26,7 @@ public static class RelationParser
 
     private static RelationType ParseRelationType(TokenReader r)
     {
-        var tp = r.ReadToken();
+        var tp = r.ReadToken(new string[] { "inner", "left", "right", "cross" });
 
         if (tp.AreEqual("inner join"))
         {

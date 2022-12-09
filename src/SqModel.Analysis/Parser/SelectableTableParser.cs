@@ -13,20 +13,14 @@ public static class SelectableTableParser
 
     public static SelectableTable Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, "inner join", "left join", "left outer join", "right join", "right outer join", "cross join", "where", "group by", "having", "order by", "union" };
+        var breaktokens = TokenReader.BreakTokens;
 
         var v = TableParser.Parse(r);
-
-        if (r.PeekRawToken().AreContains(breaktokens))
-        {
-            return new SelectableTable(v, v.GetDefaultName());
-        }
-
         r.TryReadToken("as");
 
         if (r.PeekRawToken().AreContains(breaktokens))
         {
-            throw new SyntaxException($"alias name is not found.");
+            return new SelectableTable(v, v.GetDefaultName());
         }
 
         var alias = r.ReadToken();

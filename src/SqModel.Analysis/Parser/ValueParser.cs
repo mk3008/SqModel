@@ -42,7 +42,7 @@ public static class ValueParser
 
     internal static ValueBase ParseCore(TokenReader r)
     {
-        var breaktokens = new string?[] { null, "as", ",", "from", "where", "group by", "having", "order by", "union" };
+        var breaktokens = TokenReader.BreakTokens;
 
         var item = r.ReadToken();
 

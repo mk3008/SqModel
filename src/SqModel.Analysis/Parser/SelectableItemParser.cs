@@ -13,21 +13,14 @@ public static class SelectableItemParser
 
     public static SelectableItem Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, ",", "from", "where", "group by", "having", "order by", "union" };
+        var breaktokens = TokenReader.BreakTokens;
 
         var v = ValueParser.Parse(r);
+        r.TryReadToken("as");
 
         if (r.PeekRawToken().AreContains(breaktokens))
         {
             return new SelectableItem(v, v.GetDefaultName());
-        }
-
-        r.TryReadToken("as");
-
-
-        if (r.PeekRawToken().AreContains(breaktokens))
-        {
-            throw new SyntaxException($"alias name is not found.");
         }
 
         return new SelectableItem(v, r.ReadToken());

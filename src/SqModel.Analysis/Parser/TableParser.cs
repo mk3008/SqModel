@@ -28,6 +28,7 @@ public static class TableParser
             {
                 return new VirtualTable(ValuesQueryParser.Parse(inner));
             }
+            throw new NotSupportedException();
         }
 
         if (r.PeekRawToken().AreEqual("."))

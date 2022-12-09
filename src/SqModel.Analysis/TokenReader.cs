@@ -16,6 +16,25 @@ public class TokenReader : LexReader
     {
     }
 
+    public static string?[] BreakTokens = new string?[]
+    {
+        null,
+        string.Empty,
+        ",",
+        "with",
+        "values",
+        "select",
+        "from",
+        "where",
+        "group",
+        "having",
+        "order",
+        "union",
+        "minus",
+        "except",
+        "intersect"
+    };
+
     private string? TokenCache { get; set; } = string.Empty;
 
     public string? PeekRawToken()

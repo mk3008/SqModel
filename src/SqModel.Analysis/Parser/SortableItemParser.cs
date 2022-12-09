@@ -13,7 +13,7 @@ public static class SortableItemParser
 
     public static SortableItem Parse(TokenReader r)
     {
-        var breaktokens = new string?[] { null, ",", "from", "where", "group by", "having", "order by", "union" };
+        var breaktokens = TokenReader.BreakTokens;
 
         var v = ValueParser.Parse(r);
         var isasc = true;
@@ -45,6 +45,7 @@ public static class SortableItemParser
             {
                 return new SortableItem(v, isasc, NullSortType.Last);
             }
+            throw new NotSupportedException();
         }
         return new SortableItem(v, isasc, NullSortType.Undefined);
     }
