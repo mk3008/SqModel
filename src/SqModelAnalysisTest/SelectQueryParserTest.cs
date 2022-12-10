@@ -138,4 +138,46 @@ from
         var item = SelectQueryParser.Parse(text);
         Monitor.Log(item);
     }
+
+    [Fact]
+    public void LimitSample()
+    {
+        var text = @"
+select
+    a.id
+from
+    table_a as a
+limit 10";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
+
+    [Fact]
+    public void LimitSample_Postgres()
+    {
+        var text = @"
+select
+    a.id
+from
+    table_a as a
+limit 10 offset 3";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
+
+    [Fact]
+    public void LimitSample_MySQL()
+    {
+        var text = @"
+select
+    a.id
+from
+    table_a as a
+limit 3, 10";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
 }

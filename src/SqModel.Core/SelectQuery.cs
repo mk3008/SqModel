@@ -56,6 +56,8 @@ public class SelectQuery : QueryBase, IQueryCommandable
 
     public OrderClause? OrderClause { get; set; }
 
+    public LimitClause? LimitClause { get; set; }
+
     public override string GetCurrentCommandText()
     {
         if (SelectClause == null) throw new InvalidProgramException();
@@ -68,6 +70,7 @@ public class SelectQuery : QueryBase, IQueryCommandable
         if (GroupClause != null) sb.Append("\r\n" + GroupClause.GetCommandText());
         if (HavingClause != null) sb.Append("\r\n" + HavingClause.GetCommandText());
         if (OrderClause != null) sb.Append("\r\n" + OrderClause.GetCommandText());
+        if (LimitClause != null) sb.Append("\r\n" + LimitClause.GetCommandText());
 
         return sb.ToString();
     }
@@ -85,6 +88,7 @@ public class SelectQuery : QueryBase, IQueryCommandable
         prm = prm.Merge(GroupClause!.GetParameters());
         prm = prm.Merge(HavingClause!.GetParameters());
         prm = prm.Merge(OrderClause!.GetParameters());
+        prm = prm.Merge(LimitClause!.GetParameters());
 
         return prm;
     }
