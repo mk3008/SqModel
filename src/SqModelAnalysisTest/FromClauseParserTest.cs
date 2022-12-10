@@ -1,5 +1,6 @@
 ﻿using SqModel.Analysis.Parser;
 using SqModel.Core;
+using SqModel.Core.Clauses;
 using SqModel.Core.Tables;
 using Xunit.Abstractions;
 
@@ -43,6 +44,6 @@ public class FromClauseParserTest
         Monitor.Log(item);
 
         Assert.IsType<VirtualTable>(item.Root.Table);
-        Assert.IsType<ValuesQuery>(((VirtualTable)item.Root.Table).Query);
+        Assert.IsType<ValuesClause>(((VirtualTable)item.Root.Table).Query);
     }
 }

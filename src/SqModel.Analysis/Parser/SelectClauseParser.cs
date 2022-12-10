@@ -13,6 +13,8 @@ public static class SelectClauseParser
 
     public static SelectClause Parse(TokenReader r)
     {
+        r.TryReadToken("select");
+
         var distinct = (r.TryReadToken("distinct") != null) ? true : false;
         if (r.TryReadToken("top") == null)
         {

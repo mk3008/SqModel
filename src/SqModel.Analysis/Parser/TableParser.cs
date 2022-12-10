@@ -26,7 +26,7 @@ public static class TableParser
             }
             else if (first.AreEqual("values"))
             {
-                return new VirtualTable(ValuesQueryParser.Parse(inner));
+                return new VirtualTable(ValuesClauseParser.Parse(inner));
             }
             throw new NotSupportedException();
         }

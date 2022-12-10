@@ -260,10 +260,10 @@ internal class QueryCommandMonitor
 
         var s = (indent + 2).ToSpaceString();
         Output.WriteLine($"{s}rows");
-        foreach (var item in arguments.Rows)
-        {
-            LogCore(item, indent + 4);
-        }
+        //foreach (var item in arguments.Rows)
+        //{
+        //    LogCore(item, indent + 4);
+        //}
     }
 
     private void LogCore(PhysicalTable arguments, int indent = 0)

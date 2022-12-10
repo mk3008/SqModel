@@ -1,7 +1,7 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Analysis.Parser;
 using SqModel.Core;
-using SqModel.Core.Values;
+using SqModel.Core.Clauses;
 
 namespace SqModel.Analysis;
 
@@ -15,24 +15,38 @@ public static class ValuesQueryParser
 
     public static ValuesQuery Parse(TokenReader r)
     {
-        var fn = () =>
+        var sq = new ValuesQuery();
+
+        if (r.TryReadToken("with") != null)
         {
-            if (!r.PeekRawToken().AreEqual(",")) return false;
-            r.ReadToken(",");
-            r.ReadToken("(");
-            return true;
-        };
+            sq.WithClause = WithClauseParser.Parse(r);
+        }
 
         r.ReadToken("values");
-        r.ReadToken("(");
 
-        var lst = new List<ValueCollection>();
-        do
+        sq.ValuesClause = ValuesClauseParser.Parse(r);
+        sq.OrderClause = ParseOrderOrDefault(r);
+
+        var tokens = new string[] { "union", "except", "minus", "intersect" };
+        if (r.PeekRawToken().AreContains(tokens))
         {
-            var (_, inner) = r.ReadUntilCloseBracket();
-            lst.Add(ValueCollectionParser.Parse(inner));
-        } while (fn());
+            var op = r.ReadToken();
+            sq.AddOperatableValue(op, Parse(r));
+        }
 
-        return new ValuesQuery(lst);
+        sq.LimitClause = ParseLimitOrDefault(r);
+        return sq;
+    }
+
+    private static OrderClause? ParseOrderOrDefault(TokenReader r)
+    {
+        if (r.TryReadToken("order") == null) return null;
+        return OrderClauseParser.Parse(r);
+    }
+
+    private static LimitClause? ParseLimitOrDefault(TokenReader r)
+    {
+        if (r.TryReadToken("limit") == null) return null;
+        return LimitClauseParser.Parse(r);
     }
 }
