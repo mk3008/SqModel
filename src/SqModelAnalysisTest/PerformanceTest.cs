@@ -29,7 +29,28 @@ public class PerformanceTest
     [Fact]
     public void Case2()
     {
-        var text = @"select a.id::text as id, '1'::int as v1, 1::text as v2, (1+1)::text as v3 from a";
+        var text = @"select
+    a.id::text as id,
+    '1'::int as v1,
+    1::text as v2,
+    (1+1)::text as v3,
+    to_char(a.col1, 'yyyy')::int as v4,
+    3.1415::numeric(8,2) as v5
+from a";
+        var item = QueryParser.Parse(text);
+        Monitor.Log(item);
+    }
+
+    [Fact]
+    public void Case3()
+    {
+        var text = @"select
+    a.val1 || a.val2 as t1,
+    case when 1=1 then '1' else '2' end || 'a' as t2,
+    a.txt1 || case when 1=1 then 1 else 2 end as t3,
+    case when true then true else false end as t4
+from
+    a";
         var item = QueryParser.Parse(text);
         Monitor.Log(item);
     }

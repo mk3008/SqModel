@@ -112,6 +112,11 @@ public static class ValueParser
     private static string? TryReadSufix(TokenReader r)
     {
         if (!r.PeekRawToken().AreEqual(":")) return null;
-        return r.ReadToken(":");
+        var sufix = r.ReadToken(":");
+        if (!r.PeekRawToken().AreEqual("(")) return sufix;
+
+        r.ReadToken("(");
+        var (_, inner) = r.ReadUntilCloseBracket();
+        return sufix + "(" + inner + ")";
     }
 }
