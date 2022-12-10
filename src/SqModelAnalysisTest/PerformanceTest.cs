@@ -30,12 +30,16 @@ public class PerformanceTest
     public void Case2()
     {
         var text = @"select
+    ' comment('')comment ' comment /* prefix /* nest */ sufix */,
     a.id::text as id,
     '1'::int as v1,
     1::text as v2,
     (1+1)::text as v3,
     to_char(a.col1, 'yyyy')::int as v4,
-    3.1415::numeric(8,2) as v5
+    3.1415::numeric(8,2) as v5,
+    1 + 1 = 2 v6,
+    1 + 1 = 2 and 2 + 2 = 4 and 3 + 3 = 6 v7,
+    1 + 1 = 2 or  2 * 2 = 2 or  3 + 3 = 3 v8
 from a";
         var item = QueryParser.Parse(text);
         Monitor.Log(item);

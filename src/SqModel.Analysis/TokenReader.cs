@@ -30,10 +30,27 @@ public class TokenReader : LexReader
 
     private string? TokenCache { get; set; } = string.Empty;
 
-    public string? PeekRawToken()
+    public string? PeekRawToken(bool skipComment = true)
     {
         if (string.IsNullOrEmpty(TokenCache))
         {
+            TokenCache = ReadRawToken(skipSpace: true);
+        }
+
+        if (!skipComment || string.IsNullOrEmpty(TokenCache)) return TokenCache;
+
+        var tokens = new string[] { "--", "/*" };
+        while (TokenCache.AreContains(tokens))
+        {
+            var t = ReadToken(skipComment: false);
+            if (t == "--")
+            {
+                ReadUntilLineEnd();
+            }
+            else
+            {
+                ReadUntilCloseBlockComment();
+            }
             TokenCache = ReadRawToken(skipSpace: true);
         }
         return TokenCache;
@@ -146,7 +163,7 @@ public class TokenReader : LexReader
         return token;
     }
 
-    public string? ReadRawToken(bool skipSpace = true)
+    private string? ReadRawToken(bool skipSpace = true)
     {
         if (!string.IsNullOrEmpty(TokenCache))
         {
