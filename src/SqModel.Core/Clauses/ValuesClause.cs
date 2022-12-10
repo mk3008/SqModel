@@ -42,8 +42,6 @@ public class ValuesClause : QueryBase, IQueryCommandable
         return sb.ToString();
     }
 
-    public Dictionary<string, object?>? Parameters { get; set; }
-
     public override IDictionary<string, object?> GetCurrentParameters()
     {
         var prm = EmptyParameters.Get();
