@@ -1,5 +1,4 @@
-﻿using SqModel.Core;
-using SqModel.Core.Clauses;
+﻿using SqModel.Core.Clauses;
 
 namespace SqModel.Analysis.Parser;
 

@@ -1,9 +1,7 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core;
 using SqModel.Core.Clauses;
-using SqModel.Core.Tables;
 using SqModel.Core.Values;
-using System.ComponentModel.Design;
 
 namespace SqModel.Analysis.Parser;
 

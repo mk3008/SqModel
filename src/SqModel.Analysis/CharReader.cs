@@ -1,10 +1,4 @@
 ﻿using Cysharp.Text;
-using SqModel.Analysis.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
@@ -60,7 +54,7 @@ public class CharReader : IDisposable
         foreach (var item in ReadChars())
         {
             sb.Append(item);
-            if (item.IsSingleQuote())
+            if (item == '\'')
             {
                 if (PeekAreEqual('\''))
                 {

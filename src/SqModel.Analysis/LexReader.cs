@@ -1,11 +1,5 @@
 ﻿using Cysharp.Text;
 using SqModel.Analysis.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SqModel.Analysis;
 
@@ -43,7 +37,7 @@ public class LexReader : CharReader
         sb.Append(fc);
 
         // ex. 'text'
-        if (fc.IsSingleQuote())
+        if (fc == '\'')
         {
             sb.Append(ReadUntilSingleQuote());
             return sb.ToString();

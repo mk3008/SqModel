@@ -1,5 +1,4 @@
-﻿using SqModel.Analysis.Extensions;
-using SqModel.Core.Values;
+﻿using SqModel.Core.Values;
 
 namespace SqModel.Analysis.Parser;
 
