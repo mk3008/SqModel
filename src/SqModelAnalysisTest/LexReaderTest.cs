@@ -1,6 +1,4 @@
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using SqModel.Analysis;
-using System.Collections.Generic;
 using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;

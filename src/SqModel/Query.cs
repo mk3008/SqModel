@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using SqModel.Extension;
 using System.Text;
-using System.Threading.Tasks;
-using SqModel.Extension;
 
 namespace SqModel;
 

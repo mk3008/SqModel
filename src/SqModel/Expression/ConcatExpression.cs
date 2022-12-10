@@ -1,11 +1,4 @@
-﻿using SqModel.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SqModel.Expression;
+﻿namespace SqModel.Expression;
 
 public class ConcatExpression : IValueClause
 {

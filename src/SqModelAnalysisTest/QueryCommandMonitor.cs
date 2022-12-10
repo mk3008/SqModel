@@ -1,15 +1,9 @@
-﻿using Microsoft.VisualStudio.TestPlatform.Utilities;
-using SqModel.Core.Values;
-using SqModel.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
+﻿using SqModel.Core;
 using SqModel.Core.Clauses;
-using SqModel.Core.Tables;
 using SqModel.Core.Extensions;
+using SqModel.Core.Tables;
+using SqModel.Core.Values;
+using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 internal class QueryCommandMonitor

@@ -1,10 +1,4 @@
-﻿using SqModel.Expression;
-using SqModel.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SqModel.Extension;
 
 namespace SqModel.Analysis;
 

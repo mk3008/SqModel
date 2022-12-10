@@ -1,9 +1,4 @@
 ﻿using SqModel.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqModel.Analysis;
 
@@ -24,7 +19,7 @@ public static class ValuesClauseParser
 
         var token = parser.CurrentToken.IsNotEmpty() ? parser.CurrentToken : q.First();
         if (token.ToLower() != StartToken) throw new InvalidProgramException();
-   
+
         var c = new ValuesClause();
         var fn = () =>
         {
