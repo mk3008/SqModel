@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Cysharp.Text;
+﻿using Cysharp.Text;
 using SqModel.Core.Extensions;
 using SqModel.Core.Values;
 

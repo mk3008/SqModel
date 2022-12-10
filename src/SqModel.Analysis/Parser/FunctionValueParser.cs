@@ -1,6 +1,5 @@
 ﻿using SqModel.Analysis.Extensions;
 using SqModel.Core.Values;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SqModel.Analysis.Parser;
 

@@ -1,6 +1,4 @@
-﻿using SqModel.Core.Extensions;
-
-namespace SqModel.Core.Clauses;
+﻿namespace SqModel.Core.Clauses;
 
 public class SelectableItem : IQueryCommand, IQueryParameter, ISelectable
 {

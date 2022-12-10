@@ -1,7 +1,5 @@
 ﻿using Cysharp.Text;
-using SqModel.Core.Clauses;
 using SqModel.Core.Extensions;
-using SqModel.Core.Values;
 
 namespace SqModel.Core;
 

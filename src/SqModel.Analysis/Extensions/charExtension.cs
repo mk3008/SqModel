@@ -1,6 +1,4 @@
-﻿using Cysharp.Text;
-
-namespace SqModel.Analysis.Extensions;
+﻿namespace SqModel.Analysis.Extensions;
 
 public static class charExtension
 {
