@@ -124,6 +124,12 @@ public class TokenReader : LexReader
             return token;
         }
 
+        if (token.AreEqual(":"))
+        {
+            //ex ::text
+            return token + ReadToken();
+        }
+
         if (!skipComment) return token;
 
         if (token == "--")

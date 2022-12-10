@@ -1,4 +1,5 @@
-﻿using SqModel.Core.Clauses;
+﻿using Cysharp.Text;
+using SqModel.Core.Clauses;
 
 namespace SqModel.Core.Values;
 
@@ -21,8 +22,16 @@ public class ColumnValue : ValueBase
 
     public override string GetCurrentCommandText()
     {
-        if (string.IsNullOrEmpty(TableAlias)) return Column;
-        return $"{TableAlias}.{Column}";
+        var sb = ZString.CreateStringBuilder();
+        if (string.IsNullOrEmpty(TableAlias))
+        {
+            sb.Append(Column);
+        }
+        else
+        {
+            sb.Append(TableAlias + "." + Column);
+        }
+        return sb.ToString();
     }
 
     public override string GetDefaultName()

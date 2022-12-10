@@ -17,6 +17,8 @@ public static class ValueParser
         var operatorTokens = new string[] { "+", "-", "*", "/", "=", "!=", ">", "<", "<>", ">=", "<=", "||", "&", "|", "^", "#", "~", "and", "or" };
 
         ValueBase value = ParseMain(r);
+        var sufix = TryReadSufix(r);
+        if (sufix != null) value.Sufix = sufix;
 
         if (r.PeekRawToken().AreContains(operatorTokens))
         {
@@ -105,5 +107,11 @@ public static class ValueParser
 
         //omit table column
         return new ColumnValue(item);
+    }
+
+    private static string? TryReadSufix(TokenReader r)
+    {
+        if (!r.PeekRawToken().AreEqual(":")) return null;
+        return r.ReadToken(":");
     }
 }

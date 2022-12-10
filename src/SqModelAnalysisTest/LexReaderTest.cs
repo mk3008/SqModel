@@ -55,9 +55,11 @@ public class LexReaderTest
         var lst = r.ReadLexs().ToList();
         LogOutput(lst);
 
-        Assert.Equal(2, lst.Count);
+        Assert.Equal(4, lst.Count);
         Assert.Equal(":val", lst[0]);
-        Assert.Equal("val::text", lst[1]);
+        Assert.Equal("val", lst[1]);
+        Assert.Equal(":", lst[2]);
+        Assert.Equal(":text", lst[3]);
     }
 
     [Fact]

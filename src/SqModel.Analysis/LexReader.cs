@@ -23,7 +23,7 @@ public class LexReader : CharReader
 
     public IEnumerable<char> MultipleSymbols => ArithmeticOperatorSymbols.Union(ComparisonOperatorSymbols);
 
-    public IEnumerable<char> AllSymbols => SingleSymbols.Union(MultipleSymbols).Union(PrefixSymbols);
+    public IEnumerable<char> AllSymbols => SingleSymbols.Union(MultipleSymbols).Union(PrefixSymbols).Union(SpaceChars);
 
     public string ReadLex(bool skipSpace = true)
     {
@@ -96,8 +96,6 @@ public class LexReader : CharReader
 
         var whileFn = (char c) =>
         {
-            if (SpaceChars.Contains(c)) return false;
-            if (c == ':') return true;
             if (AllSymbols.Contains(c)) return false;
             return true;
         };
