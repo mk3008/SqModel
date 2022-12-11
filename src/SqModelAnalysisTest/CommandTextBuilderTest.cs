@@ -45,6 +45,7 @@ public class CommandTextBuilderTest
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.ValueName, BlockType.Default, "val1"),
 
+            //bracket
             (TokenType.ValueSplitter, BlockType.Splitter, ","),
             (TokenType.Bracket, BlockType.BlockStart, "("),
             (TokenType.Value, BlockType.Default, "1"),
@@ -56,8 +57,9 @@ public class CommandTextBuilderTest
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.ValueName, BlockType.Default, "val2"),
 
+            //nested bracket
             (TokenType.ValueSplitter, BlockType.Splitter, ","),
-             (TokenType.Bracket, BlockType.BlockStart, "("),
+            (TokenType.Bracket, BlockType.BlockStart, "("),
             (TokenType.Bracket, BlockType.BlockStart, "("),
             (TokenType.Value, BlockType.Default, "1"),
             (TokenType.Operator, BlockType.Default, "+"),
@@ -71,7 +73,77 @@ public class CommandTextBuilderTest
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.ValueName, BlockType.Default, "val3"),
 
+            //function
+            (TokenType.ValueSplitter, BlockType.Splitter, ","),
+            (TokenType.Reserved, BlockType.Default, "count"),
+            (TokenType.Bracket, BlockType.Default, "("), // is not block
+            (TokenType.Value, BlockType.Default, "*"),
+            (TokenType.Bracket, BlockType.Default, ")"), // is not block
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.ValueName, BlockType.Default, "cnt"),
 
+            //case expression
+            (TokenType.ValueSplitter, BlockType.Splitter, ","),
+            (TokenType.Reserved, BlockType.Default, "case"),
+            (TokenType.Value, BlockType.Default, "a.column1"),
+            (TokenType.Control, BlockType.BlockStart, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "when"),
+            (TokenType.Value, BlockType.Default, "1"),
+            (TokenType.Reserved, BlockType.Default, "then"),
+            (TokenType.Value, BlockType.Default, "'abc'"),
+
+            (TokenType.Control, BlockType.Splitter, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "when"),
+            (TokenType.Value, BlockType.Default, "2"),
+            (TokenType.Reserved, BlockType.Default, "then"),
+            (TokenType.Value, BlockType.Default, "'def'"),
+
+            (TokenType.Control, BlockType.Splitter, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "else"),
+            (TokenType.Value, BlockType.Default, "'ghi'"),
+            (TokenType.Reserved, BlockType.BlockEnd, "end"),
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.ValueName, BlockType.Default, "case1"),
+
+            //case expression
+            (TokenType.ValueSplitter, BlockType.Splitter, ","),
+            (TokenType.Reserved, BlockType.Default, "case"),
+            (TokenType.Control, BlockType.BlockStart, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "when"),
+            (TokenType.Value, BlockType.Default, "a.column1"),
+            (TokenType.Operator, BlockType.Default, "="),
+            (TokenType.Value, BlockType.Default, "1"),
+            (TokenType.Operator, BlockType.Default, "and"),
+            (TokenType.Value, BlockType.Default, "a.column2"),
+            (TokenType.Operator, BlockType.Default, "="),
+            (TokenType.Value, BlockType.Default, "1"),
+            (TokenType.Reserved, BlockType.Default, "then"),
+            (TokenType.Value, BlockType.Default, "'abc'"),
+
+            (TokenType.Control, BlockType.Splitter, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "when"),
+            (TokenType.Value, BlockType.Default, "a.column1"),
+            (TokenType.Operator, BlockType.Default, "="),
+            (TokenType.Value, BlockType.Default, "2"),
+            (TokenType.Operator, BlockType.Default, "or"),
+            (TokenType.Value, BlockType.Default, "a.column1"),
+            (TokenType.Operator, BlockType.Default, "="),
+            (TokenType.Value, BlockType.Default, "2"),
+            (TokenType.Reserved, BlockType.Default, "then"),
+            (TokenType.Value, BlockType.Default, "'def'"),
+
+            (TokenType.Control, BlockType.Splitter, string.Empty),
+            (TokenType.Reserved, BlockType.Default, "else"),
+            (TokenType.Value, BlockType.Default, "'ghi'"),
+            (TokenType.Reserved, BlockType.BlockEnd, "end"),
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.ValueName, BlockType.Default, "case2"),
+
+
+
+
+
+            // select clause end
             (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
             (TokenType.Clause, BlockType.BlockStart, "from"),
@@ -93,6 +165,7 @@ public class CommandTextBuilderTest
 
             (TokenType.Control, BlockType.Splitter, string.Empty),
 
+            (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
             //(TokenType.TableStart, string.Empty),
             //(TokenType.Table, "table_b"),

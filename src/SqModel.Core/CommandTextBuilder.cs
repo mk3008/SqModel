@@ -29,7 +29,13 @@ public class CommandTextBuilder
 
     private bool IsNewLine { get; set; } = false;
 
-    private string ClauseName { get; set; } = string.Empty;
+    private List<string> Blocks { get; set; } = new();
+
+    private string GetCurrentBlock()
+    {
+        if (!Blocks.Any()) return string.Empty;
+        return Blocks[Blocks.Count - 1];
+    }
 
     private (TokenType type, BlockType block, string text)? PrevToken { get; set; }
 
@@ -41,7 +47,7 @@ public class CommandTextBuilder
 
         foreach (var token in tokens)
         {
-            if (token.type == TokenType.Clause) ClauseName = token.text;
+            UpdateBlocks(token);
 
             UpdateIsNewLineOnBefore(token);
             UpdateBracketLevelOnBefore(token);
@@ -69,6 +75,18 @@ public class CommandTextBuilder
         return sb.ToString();
     }
 
+    private void UpdateBlocks((TokenType type, BlockType block, string text) token)
+    {
+        if (PrevToken != null && PrevToken.Value.block == BlockType.BlockStart)
+        {
+            Blocks.Add(PrevToken.Value.text);
+        }
+        else if (token.block == BlockType.BlockEnd)
+        {
+            Blocks.RemoveAt(Blocks.Count - 1);
+        }
+    }
+
     private void AppendIndent((TokenType type, BlockType block, string text) token, ref Utf16ValueStringBuilder sb)
     {
         if (token.type == TokenType.Control) return;
@@ -79,13 +97,14 @@ public class CommandTextBuilder
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
             if (BracketLevel != 0) return;
-            if (AdjustFirstLineIndent && DoSplitBefore && ClauseName.AreEqual("select")) sb.Append("  ");
+            if (AdjustFirstLineIndent && DoSplitBefore && GetCurrentBlock().AreEqual("select")) sb.Append("  ");
             return;
         }
         else if (!IsNewLine)
         {
             if (PrevToken == null) return;
             if (PrevToken.Value.text == "(") return;
+            if (PrevToken.Value.text != "," && token.text == "(") return;
             if (token.text != "," && token.text != ")") sb.Append(" ");
             return;
         }
@@ -94,7 +113,13 @@ public class CommandTextBuilder
     private string GetText((TokenType type, BlockType block, string text) token)
     {
         if (!UseUpperCaseReservedToken) return token.text;
-        if (token.type == TokenType.Reserved || token.type == TokenType.Clause) return token.text.ToUpper();
+        switch (token.type)
+        {
+            case TokenType.Reserved:
+            case TokenType.Clause:
+            case TokenType.Operator:
+                return token.text.ToUpper();
+        }
         return token.text;
     }
 
@@ -204,6 +229,6 @@ public class CommandTextBuilder
         Indent = string.Empty;
         PrevToken = null;
         IsNewLine = false;
-        ClauseName = string.Empty;
+        Blocks.Clear();
     }
 }
