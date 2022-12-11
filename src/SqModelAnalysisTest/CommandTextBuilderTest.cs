@@ -58,31 +58,19 @@ public class TokenReaderTest
             (TokenType.ValueName, BlockType.Default, "val1"),
 
             (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.BracketStart, BlockType.BlockStart, "("),
+            (TokenType.Bracket, BlockType.BlockStart, "("),
             (TokenType.Value, BlockType.Default, "1"),
             (TokenType.Operator, BlockType.Default, "+"),
             (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.BracketStart, BlockType.BlockEnd, ")"),
+            (TokenType.Bracket, BlockType.BlockEnd, ")"),
             (TokenType.Operator, BlockType.Default, "*"),
             (TokenType.Value, BlockType.Default, "3"),
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.ValueName, BlockType.Default, "val2"),
 
-            //(TokenType.ValueStart, string.Empty),
-            //(TokenType.BracketStart, "("),
-            //(TokenType.Value, "a.value"),
-            //(TokenType.Operator, "+"),
-            //(TokenType.Value, "1"),
-            //(TokenType.BracketEnd, ")"),
-            //(TokenType.Operator, "*"),
-            //(TokenType.Value, "2"),
-            //(TokenType.Reserved, "as"),
-            //(TokenType.ValueName, "val"),
-            //(TokenType.ValueEnd, string.Empty),
+            (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
-            //(TokenType.SelectClauseEnd, string.Empty),
-
-            //(TokenType.Reserved, "from"),
+            (TokenType.Reserved, BlockType.BlockStart, "from"),
 
             //(TokenType.FromClauseStart, string.Empty),
 
@@ -139,7 +127,16 @@ public class TokenReaderTest
         };
 
         var sb = new CommandTextBuilder();
-        Output.WriteLine(sb.ToString(lst));
+        Output.WriteLine(sb.Execute(lst));
+
+        Output.WriteLine("----------");
+        sb.DoSplitBefore = true;
+        Output.WriteLine(sb.Execute(lst));
+
+        Output.WriteLine("----------");
+        sb.DoSplitBefore = true;
+        sb.DoIndentInsideBracket = true;
+        Output.WriteLine(sb.Execute(lst));
 
         //foreach (var item in lst)
         //{

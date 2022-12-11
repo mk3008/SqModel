@@ -11,7 +11,7 @@ namespace SqModel.Core;
 
 public class CommandTextBuilder
 {
-    public bool DoSplitBefore { get; set; } = true;
+    public bool DoSplitBefore { get; set; } = false;
 
     private bool DoSplitAfter => !DoSplitBefore;
 
@@ -29,13 +29,13 @@ public class CommandTextBuilder
 
     private bool IsNewLine { get; set; } = false;
 
-    private (TokenType type, BlockType block, string text)? prevToken { get; set; }
+    private (TokenType type, BlockType block, string text)? PrevToken { get; set; }
 
-    public string ToString(IEnumerable<(TokenType type, BlockType block, string text)> tokens)
+    public string Execute(IEnumerable<(TokenType type, BlockType block, string text)> tokens)
     {
         var sb = ZString.CreateStringBuilder();
         var isFirst = true;
-        prevToken = null;
+        PrevToken = null;
 
         foreach (var token in tokens)
         {
@@ -46,32 +46,46 @@ public class CommandTextBuilder
             {
                 isFirst = false;
             }
-            else if (IsNewLine)
+            else
             {
-                sb.Append("\r\n" + Indent);
-                if (token.block != BlockType.Splitter && AdjustFirstLineIndex && DoSplitBefore) sb.Append("  ");
-            }
-            else if (!IsNewLine)
-            {
-                if (prevToken == null || prevToken.Value.text != "(")
-                {
-                    if (token.text != "," && token.text != ")")
-                    {
-                        sb.Append(" ");
-                    }
-                }
+                AppendIndent(token, ref sb);
             }
 
-            sb.Append(GetText(token));
+            if (token.type != TokenType.Control)
+            {
+                sb.Append(GetText(token));
+            }
 
             UpdateBracketLevel(token);
             UpdateIsNewLineOnAfter(token);
             UpdateIndentLevelOnAfter(token);
 
-            prevToken = token;
+            PrevToken = token;
         }
 
+        Reset();
         return sb.ToString();
+    }
+
+    private void AppendIndent((TokenType type, BlockType block, string text) token, ref Utf16ValueStringBuilder sb)
+    {
+        if (token.type == TokenType.Control) return;
+
+        if (IsNewLine)
+        {
+            sb.Append("\r\n" + Indent);
+            if (IndentLevel == 0) return;
+            if (token.block == BlockType.Splitter) return;
+            if (AdjustFirstLineIndex && DoSplitBefore) sb.Append("  ");
+            return;
+        }
+        else if (!IsNewLine)
+        {
+            if (PrevToken == null) return;
+            if (PrevToken.Value.text == "(") return;
+            if (token.text != "," && token.text != ")") sb.Append(" ");
+            return;
+        }
     }
 
     private string GetText((TokenType type, BlockType block, string text) token)
@@ -141,6 +155,8 @@ public class CommandTextBuilder
             return;
         }
 
+        if (token.type == TokenType.Control) return;
+
         IsNewLine = false;
     }
 
@@ -175,5 +191,14 @@ public class CommandTextBuilder
             IndentLevel++;
             Indent = (IndentLevel * 4).ToSpaceString();
         }
+    }
+
+    private void Reset()
+    {
+        IndentLevel = 0;
+        BracketLevel = 0;
+        Indent = string.Empty;
+        PrevToken = null;
+        IsNewLine = false;
     }
 }

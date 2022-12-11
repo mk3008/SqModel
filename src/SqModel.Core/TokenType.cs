@@ -9,28 +9,16 @@ namespace SqModel.Core;
 public enum TokenType
 {
     Reserved = 0,
-    SelectClauseStart,
-    SelectClauseEnd,
-    ValueStart,
-    ValueEnd,
-    FromClauseStart,
-    FromClauseEnd,
-    RelationStart,
-    RelationEnd,
-    RelationConditionStart,
-    RelationConditionEnd,
-    TableStart,
-    TableEnd,
-    BracketStart,
-    BracketEnd,
-    AndOperator,
-    OrOperator,
+    Bracket,
+    Operator,
+    //AndOperator,
+    //OrOperator,
     ValueSplitter, // ,
     Value,
     ValueName,
     Table,
     TableName,
-    Operator
+    Control,
 }
 
 public enum BlockType
