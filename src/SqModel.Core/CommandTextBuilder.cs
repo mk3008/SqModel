@@ -77,6 +77,8 @@ public class CommandTextBuilder
             sb.Append("\r\n" + Indent);
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
+            //if (BracketLevel != 0) return;
+
             if (AdjustFirstLineIndent && DoSplitBefore && ClauseName.AreEqual("select")) sb.Append("  ");
             return;
         }
