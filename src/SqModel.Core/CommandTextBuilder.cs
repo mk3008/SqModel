@@ -29,6 +29,8 @@ public class CommandTextBuilder
 
     private bool IsNewLine { get; set; } = false;
 
+    private string ClauseName { get; set; } = string.Empty;
+
     private (TokenType type, BlockType block, string text)? PrevToken { get; set; }
 
     public string Execute(IEnumerable<(TokenType type, BlockType block, string text)> tokens)
@@ -39,6 +41,8 @@ public class CommandTextBuilder
 
         foreach (var token in tokens)
         {
+            if (token.type == TokenType.Clause) ClauseName = token.text;
+
             UpdateIsNewLineOnBefore(token);
             UpdateIndentLevelOnBefore(token);
 
@@ -51,10 +55,7 @@ public class CommandTextBuilder
                 AppendIndent(token, ref sb);
             }
 
-            if (token.type != TokenType.Control)
-            {
-                sb.Append(GetText(token));
-            }
+            if (token.type != TokenType.Control) sb.Append(GetText(token));
 
             UpdateBracketLevel(token);
             UpdateIsNewLineOnAfter(token);
@@ -76,7 +77,7 @@ public class CommandTextBuilder
             sb.Append("\r\n" + Indent);
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
-            if (AdjustFirstLineIndent && DoSplitBefore) sb.Append("  ");
+            if (AdjustFirstLineIndent && DoSplitBefore && ClauseName.AreEqual("select")) sb.Append("  ");
             return;
         }
         else if (!IsNewLine)
@@ -90,7 +91,8 @@ public class CommandTextBuilder
 
     private string GetText((TokenType type, BlockType block, string text) token)
     {
-        if (UseUpperCaseReservedToken && token.type == TokenType.Reserved) return token.text.ToUpper();
+        if (!UseUpperCaseReservedToken) return token.text;
+        if (token.type == TokenType.Reserved || token.type == TokenType.Clause) return token.text.ToUpper();
         return token.text;
     }
 
@@ -203,5 +205,6 @@ public class CommandTextBuilder
         Indent = string.Empty;
         PrevToken = null;
         IsNewLine = false;
+        ClauseName = string.Empty;
     }
 }

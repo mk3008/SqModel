@@ -31,7 +31,7 @@ public class CommandTextBuilderTest
     {
         var lst = new List<(TokenType type, BlockType block, String text)>
         {
-            (TokenType.Reserved, BlockType.BlockStart, "select"),
+            (TokenType.Clause, BlockType.BlockStart, "select"),
 
             (TokenType.Value, BlockType.Default, "a.column1"),
             (TokenType.Reserved, BlockType.Default, "as"),
@@ -70,7 +70,7 @@ public class CommandTextBuilderTest
 
             (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
-            (TokenType.Reserved, BlockType.BlockStart, "from"),
+            (TokenType.Clause, BlockType.BlockStart, "from"),
 
             (TokenType.Table, BlockType.Default, "table_a"),
             (TokenType.Reserved, BlockType.Default, "as"),
@@ -86,6 +86,9 @@ public class CommandTextBuilderTest
             (TokenType.Value, BlockType.Default, "a.table_a_id"),
             (TokenType.Operator, BlockType.Default, "="),
             (TokenType.Value, BlockType.Default, "b.table_a_id"),
+
+            (TokenType.Control, BlockType.Splitter, string.Empty),
+
 
             //(TokenType.TableStart, string.Empty),
             //(TokenType.Table, "table_b"),

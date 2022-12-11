@@ -9,6 +9,7 @@ namespace SqModel.Core;
 public enum TokenType
 {
     Reserved = 0,
+    Clause,
     Bracket,
     Operator,
     //AndOperator,
