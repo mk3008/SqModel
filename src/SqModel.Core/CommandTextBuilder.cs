@@ -25,8 +25,6 @@ public class CommandTextBuilder
 
     private int IndentLevel { get; set; } = 0;
 
-    private int BracketLevel { get; set; } = 0;
-
     private bool IsNewLine { get; set; } = false;
 
     private List<string> Blocks { get; set; } = new();
@@ -47,11 +45,7 @@ public class CommandTextBuilder
 
         foreach (var token in tokens)
         {
-            UpdateBlocks(token);
-
-            UpdateIsNewLineOnBefore(token);
-            UpdateBracketLevelOnBefore(token);
-            UpdateIndentLevelOnBefore(token);
+            UpdateStatus(token);
 
             if (isFirst)
             {
@@ -64,27 +58,11 @@ public class CommandTextBuilder
 
             if (token.type != TokenType.Control) sb.Append(GetText(token));
 
-            UpdateBracketLevelOnAfter(token);
-            UpdateIsNewLineOnAfter(token);
-            UpdateIndentLevelOnAfter(token);
-
             PrevToken = token;
         }
 
         Reset();
         return sb.ToString();
-    }
-
-    private void UpdateBlocks((TokenType type, BlockType block, string text) token)
-    {
-        if (PrevToken != null && PrevToken.Value.block == BlockType.BlockStart)
-        {
-            Blocks.Add(PrevToken.Value.text);
-        }
-        else if (token.block == BlockType.BlockEnd)
-        {
-            Blocks.RemoveAt(Blocks.Count - 1);
-        }
     }
 
     private void AppendIndent((TokenType type, BlockType block, string text) token, ref Utf16ValueStringBuilder sb)
@@ -96,7 +74,6 @@ public class CommandTextBuilder
             sb.Append("\r\n" + Indent);
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
-            if (BracketLevel != 0) return;
             if (AdjustFirstLineIndent && DoSplitBefore && GetCurrentBlock().AreEqual("select")) sb.Append("  ");
             return;
         }
@@ -123,109 +100,78 @@ public class CommandTextBuilder
         return token.text;
     }
 
-    private void UpdateIsNewLineOnBefore((TokenType type, BlockType block, string text) token)
+    private void UpdateStatus((TokenType type, BlockType block, string text) token)
     {
+        var oldIndent = Indent;
+
+        var add = (string name) =>
+        {
+            IndentLevel++;
+            Blocks.Add(name);
+            Indent = (IndentLevel * 4).ToSpaceString();
+        };
+
+        var remove = (string name) =>
+        {
+            IndentLevel--;
+            Blocks.RemoveAt(Blocks.Count - 1);
+            Indent = (IndentLevel * 4).ToSpaceString();
+        };
+
+        if (PrevToken != null && PrevToken.Value.block == BlockType.BlockStart)
+        {
+            if (PrevToken.Value.text != "(")
+            {
+                add(PrevToken.Value.text);
+            }
+            else if (PrevToken.Value.text == "(" && DoIndentInsideBracket)
+            {
+                add(PrevToken.Value.text);
+            }
+        }
         if (token.block == BlockType.BlockEnd)
         {
-            if (BracketLevel == 0 || DoIndentInsideBracket)
+            if (token.text != ")")
             {
-                IsNewLine = true;
+                remove(token.text);
             }
-            return;
+            else if (token.text == ")" && DoIndentInsideBracket)
+            {
+                remove(token.text);
+            }
         }
 
-        if (token.block == BlockType.Splitter)
+        if (oldIndent != Indent)
         {
-            if (BracketLevel == 0 || DoIndentInsideBracket)
-            {
-                if (token.text != ",")
-                {
-                    IsNewLine = true;
-                    return;
-                }
-                else if (token.text == "," && DoSplitBefore)
-                {
-                    IsNewLine = true;
-                    return;
-                }
-            }
+            IsNewLine = true;
             return;
-        }
-
-        return;
-    }
-
-    private void UpdateIsNewLineOnAfter((TokenType type, BlockType block, string text) token)
-    {
-        if (token.block == BlockType.BlockStart)
+        };
+        if (token.block == BlockType.Splitter && DoSplitBefore)
         {
-            if (BracketLevel == 0 || DoIndentInsideBracket)
+            IsNewLine = true;
+            return;
+        };
+        if (PrevToken != null)
+        {
+            var t = PrevToken.Value;
+            if ((t.block == BlockType.BlockEnd || t.block == BlockType.Splitter) && t.type == TokenType.Control)
             {
                 IsNewLine = true;
                 return;
             }
-            IsNewLine = false;
-            return;
-        }
-
-        if (token.block == BlockType.Splitter)
-        {
-            if (BracketLevel == 0 || DoIndentInsideBracket)
+            if (t.block == BlockType.Splitter && DoSplitAfter)
             {
-                if (token.text != ",")
-                {
-                    IsNewLine = true;
-                    return;
-                }
-                else if (token.text == "," && DoSplitAfter)
-                {
-                    IsNewLine = true;
-                    return;
-                }
+                IsNewLine = true;
+                return;
             }
-            IsNewLine = false;
-            return;
-        }
-
-        if (token.type == TokenType.Control) return;
-
+        };
         IsNewLine = false;
-    }
-
-    private void UpdateBracketLevelOnBefore((TokenType type, BlockType block, string text) token)
-    {
-        if (token.text == ")") BracketLevel--;
-    }
-
-    private void UpdateBracketLevelOnAfter((TokenType type, BlockType block, string text) token)
-    {
-        if (token.text == "(") BracketLevel++;
-    }
-
-    private void UpdateIndentLevelOnBefore((TokenType type, BlockType block, string text) token)
-    {
-        if (!IsNewLine) return;
-        if (token.block == BlockType.BlockEnd)
-        {
-            IndentLevel--;
-            Indent = (IndentLevel * 4).ToSpaceString();
-        }
-    }
-
-    private void UpdateIndentLevelOnAfter((TokenType type, BlockType block, string text) token)
-    {
-        if (!IsNewLine) return;
-        if (token.block == BlockType.BlockStart)
-        {
-            IndentLevel++;
-            Indent = (IndentLevel * 4).ToSpaceString();
-        }
+        return;
     }
 
     private void Reset()
     {
         IndentLevel = 0;
-        BracketLevel = 0;
         Indent = string.Empty;
         PrevToken = null;
         IsNewLine = false;
