@@ -19,7 +19,7 @@ public class CommandTextBuilder
 
     public bool AdjustFirstLineIndex { get; set; } = true;
 
-    public bool DoIndentInsideBracket { get; set; } = true;
+    public bool DoIndentInsideBracket { get; set; } = false;
 
     private string Indent { get; set; } = string.Empty;
 
@@ -29,11 +29,13 @@ public class CommandTextBuilder
 
     private bool IsNewLine { get; set; } = false;
 
+    private (TokenType type, BlockType block, string text)? prevToken { get; set; }
 
     public string ToString(IEnumerable<(TokenType type, BlockType block, string text)> tokens)
     {
         var sb = ZString.CreateStringBuilder();
         var isFirst = true;
+        prevToken = null;
 
         foreach (var token in tokens)
         {
@@ -51,7 +53,13 @@ public class CommandTextBuilder
             }
             else if (!IsNewLine)
             {
-                if (token.text != ",") sb.Append(" ");
+                if (prevToken == null || prevToken.Value.text != "(")
+                {
+                    if (token.text != "," && token.text != ")")
+                    {
+                        sb.Append(" ");
+                    }
+                }
             }
 
             sb.Append(GetText(token));
@@ -59,6 +67,8 @@ public class CommandTextBuilder
             UpdateBracketLevel(token);
             UpdateIsNewLineOnAfter(token);
             UpdateIndentLevelOnAfter(token);
+
+            prevToken = token;
         }
 
         return sb.ToString();
