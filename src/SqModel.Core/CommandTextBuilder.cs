@@ -21,6 +21,8 @@ public class CommandTextBuilder
 
     public bool DoIndentInsideBracket { get; set; } = false;
 
+    public bool DoIndentJoinCondition { get; set; } = false;
+
     private string Indent { get; set; } = string.Empty;
 
     private int IndentLevel { get; set; } = 0;
@@ -120,22 +122,35 @@ public class CommandTextBuilder
 
         if (PrevToken != null && PrevToken.Value.block == BlockType.BlockStart)
         {
-            if (PrevToken.Value.text != "(")
+            var t = PrevToken.Value;
+            var tokens = new string[] { "(", "on" };
+
+            if (!t.text.AreContains(tokens))
             {
-                add(PrevToken.Value.text);
+                add(t.text);
             }
-            else if (PrevToken.Value.text == "(" && DoIndentInsideBracket)
+            else if (t.text == "(" && DoIndentInsideBracket)
             {
-                add(PrevToken.Value.text);
+                add(t.text);
+            }
+            else if (t.text.AreEqual("on") && DoIndentJoinCondition)
+            {
+                add(t.text);
             }
         }
         if (token.block == BlockType.BlockEnd)
         {
-            if (token.text != ")")
+            var tokens = new string[] { ")", "on" };
+
+            if (!token.text.AreContains(tokens))
             {
                 remove(token.text);
             }
             else if (token.text == ")" && DoIndentInsideBracket)
+            {
+                remove(token.text);
+            }
+            else if (token.text.AreEqual("on") && DoIndentJoinCondition)
             {
                 remove(token.text);
             }

@@ -11,6 +11,11 @@ public static class StringExtension
         return string.Equals(source, text, StringComparison.CurrentCultureIgnoreCase);
     }
 
+    public static bool AreContains(this string? source, IEnumerable<string?> texts)
+    {
+        return texts.Where(x => source.AreEqual(x)).Any();
+    }
+
     public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
     {
         if (string.IsNullOrEmpty(source)) return source;

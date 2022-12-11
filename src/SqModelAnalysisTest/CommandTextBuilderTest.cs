@@ -158,10 +158,12 @@ public class CommandTextBuilderTest
             (TokenType.Table, BlockType.Default, "table_b"),
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.TableName, BlockType.Default, "b"),
+            (TokenType.Control, BlockType.BlockStart, "on"),
             (TokenType.Reserved, BlockType.Default, "on"),
             (TokenType.Value, BlockType.Default, "a.table_a_id"),
             (TokenType.Operator, BlockType.Default, "="),
             (TokenType.Value, BlockType.Default, "b.table_a_id"),
+            (TokenType.Control, BlockType.BlockEnd, "on"),
 
             (TokenType.Control, BlockType.Splitter, string.Empty),
 
@@ -210,6 +212,10 @@ public class CommandTextBuilderTest
         };
 
         var sb = new CommandTextBuilder();
+        Output.WriteLine(sb.Execute(lst));
+
+        Output.WriteLine("----------");
+        sb.DoIndentJoinCondition = true;
         Output.WriteLine(sb.Execute(lst));
 
         Output.WriteLine("----------");
