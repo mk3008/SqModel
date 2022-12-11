@@ -44,6 +44,7 @@ public class CommandTextBuilder
             if (token.type == TokenType.Clause) ClauseName = token.text;
 
             UpdateIsNewLineOnBefore(token);
+            UpdateBracketLevelOnBefore(token);
             UpdateIndentLevelOnBefore(token);
 
             if (isFirst)
@@ -57,7 +58,7 @@ public class CommandTextBuilder
 
             if (token.type != TokenType.Control) sb.Append(GetText(token));
 
-            UpdateBracketLevel(token);
+            UpdateBracketLevelOnAfter(token);
             UpdateIsNewLineOnAfter(token);
             UpdateIndentLevelOnAfter(token);
 
@@ -77,8 +78,7 @@ public class CommandTextBuilder
             sb.Append("\r\n" + Indent);
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
-            //if (BracketLevel != 0) return;
-
+            if (BracketLevel != 0) return;
             if (AdjustFirstLineIndent && DoSplitBefore && ClauseName.AreEqual("select")) sb.Append("  ");
             return;
         }
@@ -167,17 +167,14 @@ public class CommandTextBuilder
         IsNewLine = false;
     }
 
-
-    private void UpdateBracketLevel((TokenType type, BlockType block, string text) token)
+    private void UpdateBracketLevelOnBefore((TokenType type, BlockType block, string text) token)
     {
-        if (token.text == "(")
-        {
-            BracketLevel++;
-        }
-        else if (token.text == ")")
-        {
-            BracketLevel--;
-        }
+        if (token.text == ")") BracketLevel--;
+    }
+
+    private void UpdateBracketLevelOnAfter((TokenType type, BlockType block, string text) token)
+    {
+        if (token.text == "(") BracketLevel++;
     }
 
     private void UpdateIndentLevelOnBefore((TokenType type, BlockType block, string text) token)

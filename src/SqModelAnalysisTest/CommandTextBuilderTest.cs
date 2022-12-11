@@ -39,18 +39,6 @@ public class CommandTextBuilderTest
 
             (TokenType.ValueSplitter, BlockType.Splitter, ","),
 
-            (TokenType.Value, BlockType.Default, "a.column2"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "col2"),
-
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-
-            (TokenType.Value, BlockType.Default, "a.column3"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "col3"),
-
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-
             (TokenType.Value, BlockType.Default, "1"),
             (TokenType.Operator, BlockType.Default, "+"),
             (TokenType.Value, BlockType.Default, "2"),
@@ -67,6 +55,22 @@ public class CommandTextBuilderTest
             (TokenType.Value, BlockType.Default, "3"),
             (TokenType.Reserved, BlockType.Default, "as"),
             (TokenType.ValueName, BlockType.Default, "val2"),
+
+            (TokenType.ValueSplitter, BlockType.Splitter, ","),
+             (TokenType.Bracket, BlockType.BlockStart, "("),
+            (TokenType.Bracket, BlockType.BlockStart, "("),
+            (TokenType.Value, BlockType.Default, "1"),
+            (TokenType.Operator, BlockType.Default, "+"),
+            (TokenType.Value, BlockType.Default, "2"),
+            (TokenType.Bracket, BlockType.BlockEnd, ")"),
+            (TokenType.Operator, BlockType.Default, "*"),
+            (TokenType.Value, BlockType.Default, "3"),
+            (TokenType.Bracket, BlockType.BlockEnd, ")"),
+            (TokenType.Operator, BlockType.Default, "/"),
+            (TokenType.Value, BlockType.Default, "4"),
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.ValueName, BlockType.Default, "val3"),
+
 
             (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
