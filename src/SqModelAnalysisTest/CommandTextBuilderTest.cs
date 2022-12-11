@@ -9,11 +9,11 @@ using Xunit.Abstractions;
 
 namespace SqModelAnalysisTest;
 
-public class TokenReaderTest
+public class CommandTextBuilderTest
 {
     private readonly ITestOutputHelper Output;
 
-    public TokenReaderTest(ITestOutputHelper output)
+    public CommandTextBuilderTest(ITestOutputHelper output)
     {
         Output = output;
     }
@@ -72,17 +72,20 @@ public class TokenReaderTest
 
             (TokenType.Reserved, BlockType.BlockStart, "from"),
 
-            //(TokenType.FromClauseStart, string.Empty),
+            (TokenType.Table, BlockType.Default, "table_a"),
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.TableName, BlockType.Default, "a"),
 
-            //(TokenType.TableStart, string.Empty),
-            //(TokenType.Table, "table_a"),
-            //(TokenType.Reserved, "as"),
-            //(TokenType.TableName, "a"),
-            //(TokenType.TableEnd, string.Empty),
+            (TokenType.Control, BlockType.Splitter, string.Empty),
 
-            //(TokenType.RelationStart, string.Empty),
-
-            //(TokenType.Reserved, "inner join"),
+            (TokenType.Reserved, BlockType.Default, "inner join"),
+            (TokenType.Table, BlockType.Default, "table_b"),
+            (TokenType.Reserved, BlockType.Default, "as"),
+            (TokenType.TableName, BlockType.Default, "b"),
+            (TokenType.Reserved, BlockType.Default, "on"),
+            (TokenType.Value, BlockType.Default, "a.table_a_id"),
+            (TokenType.Operator, BlockType.Default, "="),
+            (TokenType.Value, BlockType.Default, "b.table_a_id"),
 
             //(TokenType.TableStart, string.Empty),
             //(TokenType.Table, "table_b"),

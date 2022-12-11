@@ -107,11 +107,17 @@ public class CommandTextBuilder
 
         if (token.block == BlockType.Splitter)
         {
-            if (DoSplitBefore)
+            if (BracketLevel == 0 || DoIndentInsideBracket)
             {
-                if (BracketLevel == 0 || DoIndentInsideBracket)
+                if (token.text != ",")
                 {
                     IsNewLine = true;
+                    return;
+                }
+                else if (token.text == "," && DoSplitBefore)
+                {
+                    IsNewLine = true;
+                    return;
                 }
             }
             return;
@@ -127,31 +133,28 @@ public class CommandTextBuilder
             if (BracketLevel == 0 || DoIndentInsideBracket)
             {
                 IsNewLine = true;
+                return;
             }
-            else
-            {
-                IsNewLine = false;
-            }
+            IsNewLine = false;
             return;
         }
 
         if (token.block == BlockType.Splitter)
         {
-            if (DoSplitAfter)
+            if (BracketLevel == 0 || DoIndentInsideBracket)
             {
-                if (BracketLevel == 0 || DoIndentInsideBracket)
+                if (token.text != ",")
                 {
                     IsNewLine = true;
+                    return;
                 }
-                else
+                else if (token.text == "," && DoSplitAfter)
                 {
-                    IsNewLine = false;
+                    IsNewLine = true;
+                    return;
                 }
             }
-            else
-            {
-                IsNewLine = false;
-            }
+            IsNewLine = false;
             return;
         }
 
