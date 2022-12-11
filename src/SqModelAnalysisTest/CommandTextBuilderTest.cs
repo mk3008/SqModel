@@ -141,6 +141,12 @@ public class CommandTextBuilderTest
         sb.DoIndentInsideBracket = true;
         Output.WriteLine(sb.Execute(lst));
 
+        Output.WriteLine("----------");
+        sb.DoSplitBefore = true;
+        sb.DoIndentInsideBracket = true;
+        sb.AdjustFirstLineIndent = false;
+        Output.WriteLine(sb.Execute(lst));
+
         //foreach (var item in lst)
         //{
         //    Output.WriteLine(Enum.GetName(item.type) + " : " + item.text);

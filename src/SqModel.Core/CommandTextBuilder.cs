@@ -17,7 +17,7 @@ public class CommandTextBuilder
 
     public bool UseUpperCaseReservedToken { get; set; } = true;
 
-    public bool AdjustFirstLineIndex { get; set; } = true;
+    public bool AdjustFirstLineIndent { get; set; } = true;
 
     public bool DoIndentInsideBracket { get; set; } = false;
 
@@ -76,7 +76,7 @@ public class CommandTextBuilder
             sb.Append("\r\n" + Indent);
             if (IndentLevel == 0) return;
             if (token.block == BlockType.Splitter) return;
-            if (AdjustFirstLineIndex && DoSplitBefore) sb.Append("  ");
+            if (AdjustFirstLineIndent && DoSplitBefore) sb.Append("  ");
             return;
         }
         else if (!IsNewLine)
