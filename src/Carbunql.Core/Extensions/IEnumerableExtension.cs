@@ -1,4 +1,6 @@
-﻿using Cysharp.Text;
+﻿using Carbunql.Core.Values;
+using Cysharp.Text;
+using System.Text;
 
 namespace Carbunql.Core.Extensions;
 
@@ -19,6 +21,7 @@ public static class IEnumerableExtension
             if (current.text == ",") return false;
             if (prev.Value.text == ".") return false;
             if (current.text == ".") return false;
+            if (current.text == "(" && prev.Value.sender.Equals(typeof(FunctionValue))) return false;
 
             return true;
         };
