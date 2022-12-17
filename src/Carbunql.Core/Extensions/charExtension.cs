@@ -1,4 +1,4 @@
-﻿namespace Carbunql.Analysis.Extensions;
+﻿namespace Carbunql.Core.Extensions;
 
 public static class charExtension
 {

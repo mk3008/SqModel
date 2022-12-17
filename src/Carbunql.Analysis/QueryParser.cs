@@ -1,6 +1,6 @@
-﻿using Carbunql.Analysis.Extensions;
-using Carbunql.Analysis.Parser;
+﻿using Carbunql.Analysis.Parser;
 using Carbunql.Core;
+using Carbunql.Core.Extensions;
 
 namespace Carbunql.Analysis;
 

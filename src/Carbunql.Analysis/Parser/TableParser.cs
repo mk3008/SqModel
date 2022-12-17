@@ -1,5 +1,5 @@
-﻿using Carbunql.Analysis.Extensions;
-using Carbunql.Core.Clauses;
+﻿using Carbunql.Core.Clauses;
+using Carbunql.Core.Extensions;
 using Carbunql.Core.Tables;
 
 namespace Carbunql.Analysis.Parser;

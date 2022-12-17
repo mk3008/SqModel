@@ -1,4 +1,5 @@
-﻿using Cysharp.Text;
+﻿using Carbunql.Core.Extensions;
+using Cysharp.Text;
 
 namespace Carbunql.Core.Extensions;
 
@@ -14,6 +15,12 @@ public static class StringExtension
     public static bool AreContains(this string? source, IEnumerable<string?> texts)
     {
         return texts.Where(x => source.AreEqual(x)).Any();
+    }
+
+    public static bool IsNumeric(this string source)
+    {
+        if (string.IsNullOrEmpty(source)) return false;
+        return source.First().IsInteger();
     }
 
     public static string InsertIndent(this string source, string separator = "\r\n", int spaceCount = 4)
