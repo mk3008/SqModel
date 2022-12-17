@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParameter
+public class SelectClause : IList<SelectableItem>, IQueryCommand
 {
     public SelectClause()
     {
@@ -21,30 +21,43 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParamete
 
     private List<SelectableItem> Items { get; init; } = new();
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (!Items.Any()) throw new IndexOutOfRangeException(nameof(Items));
+        var tp = GetType();
+        if (HasDistinctKeyword && Top != null)
+        {
+            yield return (tp, "select distinct top " + Top.GetTokens().ToString(" "), BlockType.Start, true);
+        }
+        else if (HasDistinctKeyword)
+        {
+            yield return (tp, "select distinct", BlockType.Start, true);
+        }
+        else if (Top != null)
+        {
+            yield return (tp, "select top " + Top.GetTokens().ToString(" "), BlockType.Start, true);
+        }
+        else
+        {
+            yield return (tp, "select", BlockType.Start, true);
+        }
 
-        /*
-         * select
-         *     col1 as c1,
-         *     col2 as c2
-         */
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("select");
-        if (HasDistinctKeyword) sb.Append(" distinct");
-        if (Top != null) sb.Append(" top " + Top.GetCommandText());
-
-        return sb.ToString().Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+        var isFirst = true;
+        foreach (var item in Items)
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                yield return (tp, ",", BlockType.Split, true);
+            }
+            foreach (var token in item.GetTokens()) yield return token;
+        }
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = Items.Select(x => x.GetParameters()).Merge();
-        prm = prm.Merge(Top!.GetParameters());
-        return prm;
-    }
-
+    #region implements IList<SelectableItem>
     public SelectableItem this[int index] { get => ((IList<SelectableItem>)Items)[index]; set => ((IList<SelectableItem>)Items)[index] = value; }
 
     public int Count => ((ICollection<SelectableItem>)Items).Count;
@@ -100,4 +113,5 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand, IQueryParamete
     {
         return ((IEnumerable)Items).GetEnumerator();
     }
+    #endregion
 }

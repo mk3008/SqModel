@@ -2,5 +2,5 @@
 
 public interface IQueryCommand
 {
-    string GetCommandText();
+    IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens();
 }

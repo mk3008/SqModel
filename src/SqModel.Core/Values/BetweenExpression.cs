@@ -18,15 +18,13 @@ public class BetweenExpression : ValueBase
 
     public ValueBase End { get; init; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        return Value.GetCommandText() + " between " + Start.GetCommandText() + " and " + End.GetCommandText();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = Start.GetCurrentParameters();
-        prm = prm.Merge(End.GetCurrentParameters());
-        return prm;
+        var tp = GetType();
+        foreach (var item in Value.GetCurrentTokens()) yield return item;
+        yield return (tp, "between", BlockType.Default, true);
+        foreach (var item in Start.GetCurrentTokens()) yield return item;
+        yield return (tp, "and", BlockType.Default, true);
+        foreach (var item in End.GetCurrentTokens()) yield return item;
     }
 }

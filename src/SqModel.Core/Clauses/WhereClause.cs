@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class WhereClause : IQueryCommand, IQueryParameter
+public class WhereClause : IQueryCommand
 {
     public WhereClause(ValueBase condition)
     {
@@ -11,17 +11,11 @@ public class WhereClause : IQueryCommand, IQueryParameter
 
     public ValueBase Condition { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        /*
-         * where
-         *     col1 = 1 and col2 = 2
-         */
-        return $"where\r\n" + Condition.GetCommandText().InsertIndent();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Condition.GetParameters();
+        var tp = GetType();
+        yield return (tp, "where", BlockType.Start, true);
+        foreach (var item in Condition.GetTokens()) yield return item;
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 }

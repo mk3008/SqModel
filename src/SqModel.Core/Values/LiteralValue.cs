@@ -11,10 +11,9 @@ public class LiteralValue : ValueBase
 
     public string CommandText { get; init; }
 
-    public override string GetCurrentCommandText() => CommandText;
-
-    public override IDictionary<string, object?> GetCurrentParameters()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        return EmptyParameters.Get();
+        var tp = GetType();
+        yield return (tp, CommandText, BlockType.Default, false);
     }
 }

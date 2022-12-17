@@ -4,24 +4,11 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
-public abstract class ValueBase : IQueryCommand, IQueryParameter
+public abstract class ValueBase : IQueryCommand
 {
-    public abstract string GetCurrentCommandText();
-
     public string? Sufix { get; set; }
 
-    public abstract IDictionary<string, object?> GetCurrentParameters();
-
     public virtual string GetDefaultName() => string.Empty;
-
-    public string GetCommandText()
-    {
-        var sb = ZString.CreateStringBuilder();
-        sb.Append(GetCurrentCommandText());
-        if (Sufix != null) sb.Append(Sufix);
-        if (OperatableValue != null) sb.Append(" " + OperatableValue.GetCommandText());
-        return sb.ToString();
-    }
 
     public OperatableValue? OperatableValue { get; private set; }
 
@@ -32,10 +19,17 @@ public abstract class ValueBase : IQueryCommand, IQueryParameter
         return value;
     }
 
-    public IDictionary<string, object?> GetParameters()
+    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens();
+
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        var prm = GetCurrentParameters();
-        prm = prm.Merge(OperatableValue!.GetParameters());
-        return prm;
+        var tp = GetType();
+        foreach (var item in GetCurrentTokens()) yield return item;
+
+        if (Sufix != null) yield return (tp, Sufix, BlockType.Default, true);
+        if (OperatableValue != null)
+        {
+            foreach (var item in OperatableValue.GetTokens()) yield return item;
+        }
     }
 }

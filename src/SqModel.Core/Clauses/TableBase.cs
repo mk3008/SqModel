@@ -1,10 +1,8 @@
 ﻿namespace SqModel.Core.Clauses;
 
-public abstract class TableBase : IQueryCommand, IQueryParameter
+public abstract class TableBase : IQueryCommand
 {
-    public abstract string GetCommandText();
+    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens();
 
     public virtual string GetDefaultName() => string.Empty;
-
-    public virtual IDictionary<string, object?> GetParameters() => EmptyParameters.Get();
 }

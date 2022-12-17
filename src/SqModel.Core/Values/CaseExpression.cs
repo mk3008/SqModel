@@ -19,24 +19,25 @@ public class CaseExpression : ValueBase
 
     public List<WhenExpression> WhenExpressions { get; init; } = new();
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("case");
-        if (CaseCondition != null) sb.Append(" " + CaseCondition.GetCommandText());
+        var tp = GetType();
+        yield return (tp, "case", BlockType.Start, true);
+        if (CaseCondition != null) foreach (var item in CaseCondition.GetTokens()) yield return item;
+
+        var isFirst = true;
         foreach (var item in WhenExpressions)
         {
-            sb.Append(" " + item.GetCommandText());
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                yield return (tp, string.Empty, BlockType.Split, true);
+            }
+            foreach (var token in item.GetTokens()) yield return token;
         }
-        sb.Append(" end");
-        return sb.ToString();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(CaseCondition!.GetParameters());
-        WhenExpressions.ForEach(x => prm = prm.Merge(x.GetParameters()));
-        return prm;
+        yield return (tp, "end", BlockType.End, true);
     }
 }

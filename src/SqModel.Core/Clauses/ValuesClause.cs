@@ -4,7 +4,7 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
-public class ValuesClause : QueryBase, IQueryCommandable
+public class ValuesClause : QueryBase
 {
     public ValuesClause(List<ValueCollection> rows)
     {
@@ -13,21 +13,13 @@ public class ValuesClause : QueryBase, IQueryCommandable
 
     public List<ValueCollection> Rows { get; init; } = new();
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        /*
-         * values
-         *     (v11, v12, v13),
-         *     (v21, v22, v23),
-         *     (v31, v32, v33)
-         */
-        if (!Rows.Any()) throw new IndexOutOfRangeException(nameof(Rows));
-        var indent4 = 4.ToSpaceString();
-        var isFirst = true;
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("values\r\n");
+        var tp = GetType();
+        yield return (tp, "values", BlockType.Start, true);
 
-        foreach (var item in Rows.Select(x => indent4 + "(" + x.GetCommandText() + ")"))
+        var isFirst = true;
+        foreach (var item in Rows)
         {
             if (isFirst)
             {
@@ -35,17 +27,12 @@ public class ValuesClause : QueryBase, IQueryCommandable
             }
             else
             {
-                sb.Append(",\r\n");
+                yield return (tp, ",", BlockType.Split, true);
             }
-            sb.Append(item);
+            yield return (tp, "(", BlockType.Start, true);
+            foreach (var token in item.GetTokens()) yield return token;
+            yield return (tp, ")", BlockType.End, true);
         }
-        return sb.ToString();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(Parameters);
-        return prm;
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 }

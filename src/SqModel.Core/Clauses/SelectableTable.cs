@@ -3,7 +3,7 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
-public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
+public class SelectableTable : IQueryCommand, ISelectable
 {
     public SelectableTable(TableBase table, string alias)
     {
@@ -24,37 +24,30 @@ public class SelectableTable : IQueryCommand, IQueryParameter, ISelectable
 
     public ValueCollection? ColumnAliases { get; init; }
 
-    internal string GetAliasCommand()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetAliasTokens()
     {
-        /*
-         * alias(col1, col2, col3)
-         */
-        if (string.IsNullOrEmpty(Alias)) return string.Empty;
-        if (ColumnAliases == null || !ColumnAliases.Any())
+        if (!string.IsNullOrEmpty(Alias) && Alias != Table.GetDefaultName())
         {
-            if (Alias == Table.GetDefaultName()) return string.Empty;
-            return Alias;
+            var tp = GetType();
+            yield return (tp, Alias, BlockType.Default, false);
+
+            if (ColumnAliases != null)
+            {
+                yield return (tp, "(", BlockType.Default, true);
+                foreach (var item in ColumnAliases.GetTokens()) yield return item;
+                yield return (tp, ")", BlockType.Default, true);
+            }
         }
-
-        return Alias + "(" + ColumnAliases.GetCommandText() + ")";
     }
 
-    public virtual string GetCommandText()
+    public virtual IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        /*
-         * query as alias(col1, col2, col3) 
-         */
-
-        var query = Table.GetCommandText();
-        var alias = GetAliasCommand();
-        if (string.IsNullOrEmpty(alias)) return query;
-        return query + " as " + alias;
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = Table.GetParameters();
-        prm = prm.Merge(ColumnAliases!.GetParameters());
-        return prm;
+        foreach (var item in Table.GetTokens()) yield return item;
+        if (!string.IsNullOrEmpty(Alias) && Alias != Table.GetDefaultName())
+        {
+            var tp = GetType();
+            yield return (tp, "as", BlockType.Default, true);
+            foreach (var item in GetAliasTokens()) yield return item;
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class GroupClause : IList<ValueBase>, IQueryCommand, IQueryParameter
+public class GroupClause : IList<ValueBase>, IQueryCommand
 {
     public GroupClause(IList<ValueBase> items)
     {
@@ -13,23 +13,29 @@ public class GroupClause : IList<ValueBase>, IQueryCommand, IQueryParameter
 
     private List<ValueBase> Items { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (!Items.Any()) throw new IndexOutOfRangeException(nameof(Items));
+        var tp = GetType();
+        yield return (tp, "group by", BlockType.Start, true);
 
-        /*
-         * group by
-         *     col1 as c1,
-         *     col2 as c2
-         */
-        return "group by".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+        var isFirst = true;
+        foreach (var item in Items)
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                yield return (tp, ",", BlockType.Split, true);
+            }
+            foreach (var token in item.GetTokens()) yield return token;
+        }
+
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Items.Select(x => x.GetParameters()).Merge();
-    }
-
+    #region implements IList<ValueBase>
     public ValueBase this[int index] { get => ((IList<ValueBase>)Items)[index]; set => ((IList<ValueBase>)Items)[index] = value; }
 
     public int Count => ((ICollection<ValueBase>)Items).Count;
@@ -85,4 +91,5 @@ public class GroupClause : IList<ValueBase>, IQueryCommand, IQueryParameter
     {
         return ((IEnumerable)Items).GetEnumerator();
     }
+    #endregion
 }

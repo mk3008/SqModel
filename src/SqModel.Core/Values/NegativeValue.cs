@@ -11,14 +11,10 @@ public class NegativeValue : ValueBase
 
     public ValueBase Inner { get; init; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        if (Inner == null) throw new NullReferenceException();
-        return "not " + Inner.GetCommandText();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        return Inner.GetParameters();
+        var tp = GetType();
+        yield return (tp, "not", BlockType.Default, true);
+        foreach (var item in Inner.GetTokens()) yield return item;
     }
 }

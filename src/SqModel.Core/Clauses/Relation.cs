@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Clauses;
 
-public class Relation : IQueryCommand, IQueryParameter
+public class Relation : IQueryCommand
 {
     public Relation(SelectableTable query, RelationType types)
     {
@@ -23,18 +23,16 @@ public class Relation : IQueryCommand, IQueryParameter
 
     public SelectableTable Table { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        /*
-         * inner join table as t2 on t1.id = t2.id
-         */
-        var cmd = $"{RelationType.ToCommandText()} {Table.GetCommandText()}";
-        if (Condition == null) return cmd;
-        return $"{cmd} on {Condition.GetCommandText()}";
-    }
+        var tp = GetType();
+        yield return (tp, RelationType.ToCommandText(), BlockType.Default, true);
+        foreach (var item in Table.GetTokens()) yield return item;
 
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Table.GetParameters();
+        if (Condition != null)
+        {
+            yield return (tp, "on", BlockType.Default, true);
+            foreach (var item in Condition.GetTokens()) yield return item;
+        }
     }
 }

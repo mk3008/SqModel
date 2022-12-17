@@ -31,143 +31,143 @@ public class CommandTextBuilderTest
     {
         var lst = new List<(TokenType type, BlockType block, String text)>
         {
-            (TokenType.Clause, BlockType.BlockStart, "select"),
+            //(TokenType.Clause, BlockType.BlockStart, "select"),
 
-            (TokenType.Value, BlockType.Default, "a.column1"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "col1"),
+            //(TokenType.Value, BlockType.Default, "a.column1"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "col1"),
 
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
 
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Operator, BlockType.Default, "+"),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "val1"),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Operator, BlockType.Default, "+"),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "val1"),
 
-            //bracket
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.Bracket, BlockType.BlockStart, "("),
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Operator, BlockType.Default, "+"),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Bracket, BlockType.BlockEnd, ")"),
-            (TokenType.Operator, BlockType.Default, "*"),
-            (TokenType.Value, BlockType.Default, "3"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "val2"),
+            ////bracket
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
+            //(TokenType.Bracket, BlockType.BlockStart, "("),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Operator, BlockType.Default, "+"),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Bracket, BlockType.BlockEnd, ")"),
+            //(TokenType.Operator, BlockType.Default, "*"),
+            //(TokenType.Value, BlockType.Default, "3"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "val2"),
 
-            //nested bracket
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.Bracket, BlockType.BlockStart, "("),
-            (TokenType.Bracket, BlockType.BlockStart, "("),
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Operator, BlockType.Default, "+"),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Bracket, BlockType.BlockEnd, ")"),
-            (TokenType.Operator, BlockType.Default, "*"),
-            (TokenType.Value, BlockType.Default, "3"),
-            (TokenType.Bracket, BlockType.BlockEnd, ")"),
-            (TokenType.Operator, BlockType.Default, "/"),
-            (TokenType.Value, BlockType.Default, "4"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "val3"),
+            ////nested bracket
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
+            //(TokenType.Bracket, BlockType.BlockStart, "("),
+            //(TokenType.Bracket, BlockType.BlockStart, "("),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Operator, BlockType.Default, "+"),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Bracket, BlockType.BlockEnd, ")"),
+            //(TokenType.Operator, BlockType.Default, "*"),
+            //(TokenType.Value, BlockType.Default, "3"),
+            //(TokenType.Bracket, BlockType.BlockEnd, ")"),
+            //(TokenType.Operator, BlockType.Default, "/"),
+            //(TokenType.Value, BlockType.Default, "4"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "val3"),
 
-            //function
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.Reserved, BlockType.Default, "count"),
-            (TokenType.Bracket, BlockType.Default, "("), // is not block
-            (TokenType.Value, BlockType.Default, "*"),
-            (TokenType.Bracket, BlockType.Default, ")"), // is not block
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "cnt"),
+            ////function
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
+            //(TokenType.Reserved, BlockType.Default, "count"),
+            //(TokenType.Bracket, BlockType.Default, "("), // is not block
+            //(TokenType.Value, BlockType.Default, "*"),
+            //(TokenType.Bracket, BlockType.Default, ")"), // is not block
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "cnt"),
 
-            //case expression
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.Reserved, BlockType.Default, "case"),
-            (TokenType.Value, BlockType.Default, "a.column1"),
-            (TokenType.Control, BlockType.BlockStart, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "when"),
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Reserved, BlockType.Default, "then"),
-            (TokenType.Value, BlockType.Default, "'abc'"),
+            ////case expression
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
+            //(TokenType.Reserved, BlockType.Default, "case"),
+            //(TokenType.Value, BlockType.Default, "a.column1"),
+            //(TokenType.Control, BlockType.BlockStart, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "when"),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Reserved, BlockType.Default, "then"),
+            //(TokenType.Value, BlockType.Default, "'abc'"),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "when"),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Reserved, BlockType.Default, "then"),
-            (TokenType.Value, BlockType.Default, "'def'"),
+            //(TokenType.Control, BlockType.Split, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "when"),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Reserved, BlockType.Default, "then"),
+            //(TokenType.Value, BlockType.Default, "'def'"),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "else"),
-            (TokenType.Value, BlockType.Default, "'ghi'"),
-            (TokenType.Reserved, BlockType.BlockEnd, "end"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "case1"),
+            //(TokenType.Control, BlockType.Split, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "else"),
+            //(TokenType.Value, BlockType.Default, "'ghi'"),
+            //(TokenType.Reserved, BlockType.BlockEnd, "end"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "case1"),
 
-            //case expression
-            (TokenType.ValueSplitter, BlockType.Splitter, ","),
-            (TokenType.Reserved, BlockType.Default, "case"),
-            (TokenType.Control, BlockType.BlockStart, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "when"),
-            (TokenType.Value, BlockType.Default, "a.column1"),
-            (TokenType.Operator, BlockType.Default, "="),
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Operator, BlockType.Default, "and"),
-            (TokenType.Value, BlockType.Default, "a.column2"),
-            (TokenType.Operator, BlockType.Default, "="),
-            (TokenType.Value, BlockType.Default, "1"),
-            (TokenType.Reserved, BlockType.Default, "then"),
-            (TokenType.Value, BlockType.Default, "'abc'"),
+            ////case expression
+            //(TokenType.ValueSplitter, BlockType.Split, ","),
+            //(TokenType.Reserved, BlockType.Default, "case"),
+            //(TokenType.Control, BlockType.BlockStart, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "when"),
+            //(TokenType.Value, BlockType.Default, "a.column1"),
+            //(TokenType.Operator, BlockType.Default, "="),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Operator, BlockType.Default, "and"),
+            //(TokenType.Value, BlockType.Default, "a.column2"),
+            //(TokenType.Operator, BlockType.Default, "="),
+            //(TokenType.Value, BlockType.Default, "1"),
+            //(TokenType.Reserved, BlockType.Default, "then"),
+            //(TokenType.Value, BlockType.Default, "'abc'"),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "when"),
-            (TokenType.Value, BlockType.Default, "a.column1"),
-            (TokenType.Operator, BlockType.Default, "="),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Operator, BlockType.Default, "or"),
-            (TokenType.Value, BlockType.Default, "a.column1"),
-            (TokenType.Operator, BlockType.Default, "="),
-            (TokenType.Value, BlockType.Default, "2"),
-            (TokenType.Reserved, BlockType.Default, "then"),
-            (TokenType.Value, BlockType.Default, "'def'"),
+            //(TokenType.Control, BlockType.Split, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "when"),
+            //(TokenType.Value, BlockType.Default, "a.column1"),
+            //(TokenType.Operator, BlockType.Default, "="),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Operator, BlockType.Default, "or"),
+            //(TokenType.Value, BlockType.Default, "a.column1"),
+            //(TokenType.Operator, BlockType.Default, "="),
+            //(TokenType.Value, BlockType.Default, "2"),
+            //(TokenType.Reserved, BlockType.Default, "then"),
+            //(TokenType.Value, BlockType.Default, "'def'"),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
-            (TokenType.Reserved, BlockType.Default, "else"),
-            (TokenType.Value, BlockType.Default, "'ghi'"),
-            (TokenType.Reserved, BlockType.BlockEnd, "end"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.ValueName, BlockType.Default, "case2"),
-
-
+            //(TokenType.Control, BlockType.Split, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "else"),
+            //(TokenType.Value, BlockType.Default, "'ghi'"),
+            //(TokenType.Reserved, BlockType.BlockEnd, "end"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.ValueName, BlockType.Default, "case2"),
 
 
 
-            // select clause end
-            (TokenType.Control, BlockType.BlockEnd, string.Empty),
 
-            (TokenType.Clause, BlockType.BlockStart, "from"),
 
-            (TokenType.Table, BlockType.Default, "table_a"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.TableName, BlockType.Default, "a"),
+            //// select clause end
+            //(TokenType.Control, BlockType.BlockEnd, string.Empty),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
+            //(TokenType.Clause, BlockType.BlockStart, "from"),
 
-            (TokenType.Reserved, BlockType.Default, "inner join"),
-            (TokenType.Table, BlockType.Default, "table_b"),
-            (TokenType.Reserved, BlockType.Default, "as"),
-            (TokenType.TableName, BlockType.Default, "b"),
-            (TokenType.Control, BlockType.BlockStart, "on"),
-            (TokenType.Reserved, BlockType.Default, "on"),
-            (TokenType.Value, BlockType.Default, "a.table_a_id"),
-            (TokenType.Operator, BlockType.Default, "="),
-            (TokenType.Value, BlockType.Default, "b.table_a_id"),
-            (TokenType.Control, BlockType.BlockEnd, "on"),
+            //(TokenType.Table, BlockType.Default, "table_a"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.TableName, BlockType.Default, "a"),
 
-            (TokenType.Control, BlockType.Splitter, string.Empty),
+            //(TokenType.Control, BlockType.Split, string.Empty),
 
-            (TokenType.Control, BlockType.BlockEnd, string.Empty),
+            //(TokenType.Reserved, BlockType.Default, "inner join"),
+            //(TokenType.Table, BlockType.Default, "table_b"),
+            //(TokenType.Reserved, BlockType.Default, "as"),
+            //(TokenType.TableName, BlockType.Default, "b"),
+            //(TokenType.Control, BlockType.BlockStart, "on"),
+            //(TokenType.Reserved, BlockType.Default, "on"),
+            //(TokenType.Value, BlockType.Default, "a.table_a_id"),
+            //(TokenType.Operator, BlockType.Default, "="),
+            //(TokenType.Value, BlockType.Default, "b.table_a_id"),
+            //(TokenType.Control, BlockType.BlockEnd, "on"),
+
+            //(TokenType.Control, BlockType.Split, string.Empty),
+
+            //(TokenType.Control, BlockType.BlockEnd, string.Empty),
 
             //(TokenType.TableStart, string.Empty),
             //(TokenType.Table, "table_b"),
@@ -211,27 +211,27 @@ public class CommandTextBuilderTest
             //(TokenType.FromClauseEnd, string.Empty),
         };
 
-        var sb = new CommandTextBuilder();
-        Output.WriteLine(sb.Execute(lst));
+        //var sb = new CommandTextBuilder();
+        //Output.WriteLine(sb.Execute(lst));
 
-        Output.WriteLine("----------");
-        sb.DoIndentJoinCondition = true;
-        Output.WriteLine(sb.Execute(lst));
+        //Output.WriteLine("----------");
+        //sb.DoIndentJoinCondition = true;
+        //Output.WriteLine(sb.Execute(lst));
 
-        Output.WriteLine("----------");
-        sb.DoSplitBefore = true;
-        Output.WriteLine(sb.Execute(lst));
+        //Output.WriteLine("----------");
+        //sb.DoSplitBefore = true;
+        //Output.WriteLine(sb.Execute(lst));
 
-        Output.WriteLine("----------");
-        sb.DoSplitBefore = true;
-        sb.DoIndentInsideBracket = true;
-        Output.WriteLine(sb.Execute(lst));
+        //Output.WriteLine("----------");
+        //sb.DoSplitBefore = true;
+        //sb.DoIndentInsideBracket = true;
+        //Output.WriteLine(sb.Execute(lst));
 
-        Output.WriteLine("----------");
-        sb.DoSplitBefore = true;
-        sb.DoIndentInsideBracket = true;
-        sb.AdjustFirstLineIndent = false;
-        Output.WriteLine(sb.Execute(lst));
+        //Output.WriteLine("----------");
+        //sb.DoSplitBefore = true;
+        //sb.DoIndentInsideBracket = true;
+        //sb.AdjustFirstLineIndent = false;
+        //Output.WriteLine(sb.Execute(lst));
 
         //foreach (var item in lst)
         //{

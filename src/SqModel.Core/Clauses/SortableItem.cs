@@ -3,7 +3,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Clauses;
 
-public class SortableItem : IQueryCommand, IQueryParameter
+public class SortableItem : IQueryCommand
 {
     public SortableItem(ValueBase value, bool isAscending = true, NullSortType tp = NullSortType.Undefined)
     {
@@ -18,18 +18,11 @@ public class SortableItem : IQueryCommand, IQueryParameter
 
     public NullSortType NullSort { get; set; } = NullSortType.Undefined;
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        var sb = ZString.CreateStringBuilder();
-        sb.Append(Value.GetCommandText());
-        if (!IsAscending) sb.Append(" desc");
-        if (NullSort == NullSortType.Undefined) return sb.ToString();
-        sb.Append(" " + NullSort.ToCommandText());
-        return sb.ToString();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Value.GetParameters();
+        var tp = GetType();
+        foreach (var item in Value.GetTokens()) yield return item;
+        if (!IsAscending) yield return (tp, "dest", BlockType.Default, true);
+        if (NullSort != NullSortType.Undefined) yield return (tp, NullSort.ToCommandText(), BlockType.Default, true);
     }
 }

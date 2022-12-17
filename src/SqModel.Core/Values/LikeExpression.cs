@@ -15,15 +15,11 @@ public class LikeExpression : ValueBase
 
     public ValueBase Argument { get; init; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        return Value.GetCommandText() + " like " + Argument.GetCommandText();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = Value.GetParameters();
-        prm = prm.Merge(Argument.GetParameters());
-        return prm;
+        var tp = GetType();
+        foreach (var item in Value.GetTokens()) yield return item;
+        yield return (tp, "like", BlockType.Default, true);
+        foreach (var item in Argument.GetTokens()) yield return item;
     }
 }

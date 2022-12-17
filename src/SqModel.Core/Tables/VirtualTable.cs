@@ -12,13 +12,11 @@ public class VirtualTable : TableBase
 
     public IQueryCommandable Query { get; init; }
 
-    public override string GetCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        return "(\r\n" + Query.GetCommandText().InsertIndent() + "\r\n)";
-    }
-
-    public override IDictionary<string, object?> GetParameters()
-    {
-        return Query.GetParameters();
+        var tp = GetType();
+        yield return (tp, "(", BlockType.Start, true);
+        foreach (var item in Query.GetTokens()) yield return item;
+        yield return (tp, ")", BlockType.End, true);
     }
 }

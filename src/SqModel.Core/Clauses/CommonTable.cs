@@ -16,16 +16,18 @@ public class CommonTable : SelectableTable
 
     public MaterializedType Materialized { get; set; } = MaterializedType.Undefined;
 
-    public override string GetCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        var query = Table.GetCommandText();
-        var alias = GetAliasCommand();
-        if (string.IsNullOrEmpty(alias)) throw new NotSupportedException("alias is empty.");
+        var tp = GetType();
 
-        var sb = ZString.CreateStringBuilder();
-        sb.Append(alias + " as ");
-        if (Materialized != MaterializedType.Undefined) sb.Append(Materialized.ToCommandText() + " ");
-        sb.Append(Table.GetCommandText());
-        return sb.ToString();
+        foreach (var item in GetAliasTokens()) yield return item;
+        yield return (tp, "as", BlockType.Default, true);
+
+        if (Materialized != MaterializedType.Undefined)
+        {
+            yield return (tp, Materialized.ToCommandText(), BlockType.Default, true);
+        }
+
+        foreach (var item in Table.GetTokens()) yield return item;
     }
 }

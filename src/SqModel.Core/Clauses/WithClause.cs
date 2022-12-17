@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class WithClause : IList<CommonTable>, IQueryCommand, IQueryParameter
+public class WithClause : IList<CommonTable>, IQueryCommand
 {
     public WithClause()
     {
@@ -19,14 +19,17 @@ public class WithClause : IList<CommonTable>, IQueryCommand, IQueryParameter
 
     public bool HasRecursiveKeyword { get; set; } = false;
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (!CommonTables.Any()) return string.Empty;
-
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("with");
-        if (HasRecursiveKeyword) sb.Append(" recursive");
-        sb.Append("\r\n");
+        var tp = GetType();
+        if (HasRecursiveKeyword)
+        {
+            yield return (tp, "with recursive", BlockType.Start, true);
+        }
+        else
+        {
+            yield return (tp, "with", BlockType.Start, true);
+        }
 
         var isFisrt = true;
         foreach (var item in CommonTables)
@@ -37,19 +40,14 @@ public class WithClause : IList<CommonTable>, IQueryCommand, IQueryParameter
             }
             else
             {
-                sb.Append(",\r\n");
+                yield return (tp, ",", BlockType.Split, true);
             }
-            sb.Append(item.GetCommandText());
+            foreach (var token in item.GetTokens()) yield return token;
         }
-        return sb.ToString();
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 
-    public IDictionary<string, object?> GetParameters()
-    {
-        if (!CommonTables.Any()) return EmptyParameters.Get();
-        return CommonTables.Select(x => x.GetParameters()).Merge();
-    }
-
+    #region implements IList<CommonTable>
     public CommonTable this[int index] { get => ((IList<CommonTable>)CommonTables)[index]; set => ((IList<CommonTable>)CommonTables)[index] = value; }
 
     public int Count => ((ICollection<CommonTable>)CommonTables).Count;
@@ -105,4 +103,5 @@ public class WithClause : IList<CommonTable>, IQueryCommand, IQueryParameter
     {
         return ((IEnumerable)CommonTables).GetEnumerator();
     }
+    #endregion
 }

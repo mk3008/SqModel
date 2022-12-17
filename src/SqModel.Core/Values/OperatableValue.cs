@@ -2,7 +2,7 @@
 
 namespace SqModel.Core.Values;
 
-public class OperatableValue : IQueryCommand, IQueryParameter
+public class OperatableValue : IQueryCommand
 {
     public OperatableValue(string @operator, ValueBase value)
     {
@@ -14,14 +14,13 @@ public class OperatableValue : IQueryCommand, IQueryParameter
 
     public ValueBase Value { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (string.IsNullOrEmpty(Operator)) return $"{Value.GetCommandText()}";
-        return $"{Operator} {Value.GetCommandText()}";
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Value.GetParameters();
+        var tp = GetType();
+        if (!string.IsNullOrEmpty(Operator))
+        {
+            yield return (tp, Operator, BlockType.Default, true);
+        }
+        foreach (var item in Value.GetTokens()) yield return item;
     }
 }

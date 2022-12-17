@@ -3,7 +3,7 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class WhenExpression : IQueryCommand, IQueryParameter
+public class WhenExpression : IQueryCommand
 {
     public WhenExpression(ValueBase condition, ValueBase value)
     {
@@ -20,17 +20,20 @@ public class WhenExpression : IQueryCommand, IQueryParameter
 
     public ValueBase Value { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (Condition != null) return "when " + Condition.GetCommandText() + " then " + Value.GetCommandText();
-        return "else " + Value.GetCommandText();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(Condition!.GetParameters());
-        prm = prm.Merge(Value!.GetParameters());
-        return prm;
+        var tp = GetType();
+        if (Condition != null)
+        {
+            yield return (tp, "when", BlockType.Default, true);
+            foreach (var item in Condition.GetTokens()) yield return item;
+            yield return (tp, "then", BlockType.Default, true);
+            foreach (var item in Value.GetTokens()) yield return item;
+        }
+        else
+        {
+            yield return (tp, "else", BlockType.Default, true);
+            foreach (var item in Value.GetTokens()) yield return item;
+        }
     }
 }

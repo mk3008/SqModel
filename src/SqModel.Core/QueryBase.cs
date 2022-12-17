@@ -8,9 +8,9 @@ public abstract class QueryBase : IQueryCommandable
 {
     public WithClause? WithClause { get; set; }
 
-    public OrderClause? OrderClause { get; set; }
-
     public OperatableQuery? OperatableQuery { get; private set; }
+
+    public OrderClause? OrderClause { get; set; }
 
     public LimitClause? LimitClause { get; set; }
 
@@ -21,37 +21,30 @@ public abstract class QueryBase : IQueryCommandable
         return query;
     }
 
-    public Dictionary<string, object?>? Parameters { get; set; }
-    public abstract string GetCurrentCommandText();
-
-    public abstract IDictionary<string, object?> GetCurrentParameters();
-
-    public virtual string GetCommandText()
-    {
-        var sb = ZString.CreateStringBuilder();
-        if (WithClause != null) sb.Append(WithClause.GetCommandText() + "\r\n");
-        sb.Append(GetCurrentCommandText());
-        if (OrderClause != null) sb.Append("\r\n" + OrderClause.GetCommandText());
-        if (OperatableQuery != null) sb.Append("\r\n" + OperatableQuery.GetCommandText());
-
-        if (LimitClause != null) sb.Append("\r\n" + LimitClause.GetCommandText());
-
-        return sb.ToString();
-    }
+    public IDictionary<string, object?>? Parameters { get; set; }
 
     public virtual IDictionary<string, object?> GetParameters()
     {
-        var prm = GetCurrentParameters();
+        var prm = EmptyParameters.Get();
         prm = prm.Merge(Parameters);
-        prm = prm.Merge(WithClause!.GetParameters());
-        prm = prm.Merge(OrderClause!.GetParameters());
-        prm = prm.Merge(LimitClause!.GetParameters());
         prm = prm.Merge(OperatableQuery!.GetParameters());
         return prm;
     }
 
+    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens();
+
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    {
+        if (WithClause != null) foreach (var item in WithClause.GetTokens()) yield return item;
+        foreach (var item in GetCurrentTokens()) yield return item;
+        if (OperatableQuery != null) foreach (var item in OperatableQuery.GetTokens()) yield return item;
+        if (OrderClause != null) foreach (var item in OrderClause.GetTokens()) yield return item;
+        if (LimitClause != null) foreach (var item in LimitClause.GetTokens()) yield return item;
+    }
+
     public QueryCommand ToCommand()
     {
-        return new QueryCommand(GetCommandText(), GetParameters());
+        var sql = GetTokens().ToString(" ");
+        return new QueryCommand(sql, GetParameters());
     }
 }

@@ -1,8 +1,9 @@
 ﻿using SqModel.Core.Extensions;
+using System.Collections.Concurrent;
 
 namespace SqModel.Core.Clauses;
 
-public class FromClause : IQueryCommand, IQueryParameter
+public class FromClause : IQueryCommand
 {
     public FromClause(SelectableTable root)
     {
@@ -13,26 +14,20 @@ public class FromClause : IQueryCommand, IQueryParameter
 
     public List<Relation>? Relations { get; set; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        /*
-         * from
-         *     table as t1
-         *     inner join table as t2 on t1.id = t2.id
-         *     inner join table as t3 on t1.id = t3.id
-         */
-        var indent = 4.ToSpaceString();
-        var cmd = "from\r\n    " + Root.GetCommandText();
-        if (Relations == null || !Relations.Any()) return cmd;
+        var tp = GetType();
+        yield return (tp, "from", BlockType.Start, true);
+        foreach (var item in Root.GetTokens()) yield return item;
 
-        return cmd.Join($"\r\n", Relations!.Select(x => x.GetCommandText().InsertIndent()), $"\r\n");
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = Root.GetParameters();
-        if (Relations == null) return prm;
-        prm = prm.Merge(Relations.Select(x => x.GetParameters()).Merge());
-        return prm;
+        if (Relations != null)
+        {
+            foreach (var item in Relations)
+            {
+                yield return (tp, string.Empty, BlockType.Split, true);
+                foreach (var token in item.GetTokens()) yield return token;
+            }
+        }
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 }

@@ -3,31 +3,27 @@ using SqModel.Core.Extensions;
 
 namespace SqModel.Core.Values;
 
-public class WindowFunction : IQueryCommand, IQueryParameter
+public class WindowFunction : IQueryCommand
 {
     public ValueCollection? PartitionBy { get; set; }
 
     public ValueCollection? OrderBy { get; set; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (PartitionBy == null && OrderBy == null) throw new Exception();
-
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("over(");
-        if (PartitionBy != null) sb.Append("partition by " + PartitionBy.GetCommandText());
-        if (PartitionBy != null && OrderBy != null) sb.Append(" ");
-        if (OrderBy != null) sb.Append("order by " + OrderBy.GetCommandText());
-        sb.Append(")");
-
-        return sb.ToString();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(PartitionBy!.GetParameters());
-        prm = prm.Merge(OrderBy!.GetParameters());
-        return prm;
+        var tp = GetType();
+        yield return (tp, "over", BlockType.Default, true);
+        yield return (tp, "(", BlockType.Start, true);
+        if (PartitionBy != null)
+        {
+            yield return (tp, "partition by", BlockType.Default, true);
+            foreach (var item in PartitionBy.GetTokens()) yield return item;
+        }
+        if (OrderBy != null)
+        {
+            yield return (tp, "order by", BlockType.Default, true);
+            foreach (var item in OrderBy.GetTokens()) yield return item;
+        }
+        yield return (tp, ")", BlockType.End, true);
     }
 }

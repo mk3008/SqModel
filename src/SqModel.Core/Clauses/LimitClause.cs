@@ -4,7 +4,7 @@ using SqModel.Core.Values;
 
 namespace SqModel.Core.Clauses;
 
-public class LimitClause : IQueryCommand, IQueryParameter
+public class LimitClause : IQueryCommand
 {
     public LimitClause(string text)
     {
@@ -25,22 +25,15 @@ public class LimitClause : IQueryCommand, IQueryParameter
 
     public ValueBase? Offset { get; set; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        /*
-         * having
-         *     sum(col1) = 1 and sum(col2) = 2
-         */
-        var sb = ZString.CreateStringBuilder();
-        sb.Append("limit " + Conditions.GetCommandText());
-        if (Offset != null) sb.Append(" offset " + Offset.GetCommandText());
-        return sb.ToString();
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        var prm = Conditions.GetParameters();
-        prm = prm.Merge(Offset!.GetParameters());
-        return prm;
+        var tp = GetType();
+        yield return (tp, "limit", BlockType.Default, true);
+        foreach (var item in Conditions.GetTokens()) yield return item;
+        if (Offset != null)
+        {
+            yield return (tp, "offset", BlockType.Default, true);
+            foreach (var item in Offset.GetTokens()) yield return item;
+        }
     }
 }

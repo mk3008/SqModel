@@ -1,6 +1,6 @@
 ﻿namespace SqModel.Core.Clauses;
 
-public class SelectableItem : IQueryCommand, IQueryParameter, ISelectable
+public class SelectableItem : IQueryCommand, ISelectable
 {
     public SelectableItem(ValueBase value, string alias)
     {
@@ -12,15 +12,14 @@ public class SelectableItem : IQueryCommand, IQueryParameter, ISelectable
 
     public string Alias { get; init; }
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        var query = Value.GetCommandText();
-        if (string.IsNullOrEmpty(Alias) || Alias == Value.GetDefaultName()) return query;
-        return $"{query} as {Alias}";
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        throw new NotImplementedException();
+        var tp = GetType();
+        foreach (var item in Value.GetTokens()) yield return item;
+        if (!string.IsNullOrEmpty(Alias) && Alias != Value.GetDefaultName())
+        {
+            yield return (tp, "as", BlockType.Default, true);
+            yield return (tp, Alias, BlockType.Default, false);
+        }
     }
 }

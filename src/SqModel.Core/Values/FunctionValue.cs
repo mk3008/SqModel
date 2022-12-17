@@ -31,21 +31,19 @@ public class FunctionValue : ValueBase
 
     public WindowFunction? WindowFunction { get; init; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        var sb = ZString.CreateStringBuilder();
-        sb.Append(Name + "(");
-        if (Argument != null) sb.Append(Argument.GetCommandText());
-        sb.Append(")");
-        if (WindowFunction != null) sb.Append(" " + WindowFunction.GetCommandText());
-        return sb.ToString();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(Argument?.GetParameters());
-        prm = prm.Merge(WindowFunction?.GetParameters());
-        return prm;
+        var tp = GetType();
+        yield return (tp, Name, BlockType.Default, true);
+        yield return (tp, "(", BlockType.Default, true);
+        if (Argument != null)
+        {
+            foreach (var item in Argument.GetTokens()) yield return item;
+        }
+        yield return (tp, ")", BlockType.Default, true);
+        if (WindowFunction != null)
+        {
+            foreach (var item in WindowFunction.GetTokens()) yield return item;
+        }
     }
 }

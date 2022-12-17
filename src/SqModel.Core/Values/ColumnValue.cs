@@ -20,28 +20,20 @@ public class ColumnValue : ValueBase
 
     public string Column { get; init; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
-        var sb = ZString.CreateStringBuilder();
-        if (string.IsNullOrEmpty(TableAlias))
+        var tp = GetType();
+        if (!string.IsNullOrEmpty(TableAlias))
         {
-            sb.Append(Column);
+            yield return (tp, TableAlias, BlockType.Default, false);
+            yield return (tp, ".", BlockType.Default, true);
         }
-        else
-        {
-            sb.Append(TableAlias + "." + Column);
-        }
-        return sb.ToString();
+        yield return (tp, Column, BlockType.Default, false);
     }
 
     public override string GetDefaultName()
     {
         if (OperatableValue == null) return Column;
         return string.Empty;
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        return EmptyParameters.Get();
     }
 }

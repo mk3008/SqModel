@@ -19,10 +19,15 @@ public class PhysicalTable : TableBase
 
     public string Table { get; init; }
 
-    public override string GetCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (string.IsNullOrEmpty(Schame)) return Table;
-        return $"{Schame}.{Table}";
+        var tp = GetType();
+        if (!string.IsNullOrEmpty(Schame))
+        {
+            yield return (tp, Schame, BlockType.Default, false);
+            yield return (tp, ".", BlockType.Default, true);
+        }
+        yield return (tp, Table, BlockType.Default, false);
     }
 
     public override string GetDefaultName() => Table;

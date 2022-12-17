@@ -10,9 +10,4 @@ public abstract class QueryContainer : ValueBase
     }
 
     public IQueryCommandable Query { get; init; }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        return Query.GetParameters();
-    }
 }

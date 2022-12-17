@@ -12,14 +12,16 @@ public class OperatableQuery : IQueryCommandable
 
     public QueryBase Query { get; init; }
 
-    public string GetCommandText()
-    {
-        return Operator + "\r\n" + Query.GetCommandText();
-    }
-
     public IDictionary<string, object?> GetParameters()
     {
         return Query.GetParameters();
+    }
+
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    {
+        var tp = GetType();
+        yield return (tp, Operator, BlockType.Split, true);
+        foreach (var item in Query.GetTokens()) yield return item;
     }
 
     public QueryCommand ToCommand()

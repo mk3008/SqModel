@@ -9,16 +9,9 @@ public class ValuesQuery : QueryBase, IQueryCommandable
 {
     public ValuesClause? ValuesClause { get; set; }
 
-    public override string GetCurrentCommandText()
+    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
     {
         if (ValuesClause == null) throw new InvalidProgramException();
-        return ValuesClause.GetCommandText();
-    }
-
-    public override IDictionary<string, object?> GetCurrentParameters()
-    {
-        var prm = EmptyParameters.Get();
-        prm = prm.Merge(ValuesClause!.GetParameters());
-        return prm;
+        foreach (var item in ValuesClause.GetTokens()) yield return item;
     }
 }

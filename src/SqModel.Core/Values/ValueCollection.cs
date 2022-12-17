@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SqModel.Core.Values;
 
-public class ValueCollection : IList<ValueBase>, IQueryCommand, IQueryParameter
+public class ValueCollection : IList<ValueBase>, IQueryCommand
 {
     public ValueCollection()
     {
@@ -28,14 +28,22 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand, IQueryParameter
 
     private List<ValueBase> Collection { get; init; } = new();
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        return Collection.Select(x => x.GetCommandText()).ToString(", ");
-    }
-
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Collection.Select(x => x.GetParameters()).Merge();
+        var tp = GetType();
+        var isFirst = true;
+        foreach (var item in Collection)
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                yield return (tp, ",", BlockType.Split, true);
+            }
+            foreach (var token in item.GetTokens()) yield return token;
+        }
     }
 
     public ValueBase this[int index]

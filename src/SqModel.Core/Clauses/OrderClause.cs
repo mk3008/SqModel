@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SqModel.Core.Clauses;
 
-public class OrderClause : IList<SortableItem>, IQueryCommand, IQueryParameter
+public class OrderClause : IList<SortableItem>, IQueryCommand
 {
     public OrderClause(List<SortableItem> orders)
     {
@@ -12,23 +12,28 @@ public class OrderClause : IList<SortableItem>, IQueryCommand, IQueryParameter
 
     private List<SortableItem> Items { get; init; } = new();
 
-    public string GetCommandText()
+    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
     {
-        if (!Items.Any()) throw new IndexOutOfRangeException(nameof(Items));
+        var tp = GetType();
+        yield return (tp, "order by", BlockType.Start, true);
 
-        /*
-         * order by
-         *     col1,
-         *     col2
-         */
-        return "order by".Join($"\r\n", Items.Select(x => x.GetCommandText().InsertIndent()), $",\r\n");
+        var isFirst = true;
+        foreach (var item in Items)
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                yield return (tp, ",", BlockType.Split, true);
+            }
+            foreach (var token in item.GetTokens()) yield return token;
+        }
+        yield return (tp, string.Empty, BlockType.End, true);
     }
 
-    public IDictionary<string, object?> GetParameters()
-    {
-        return Items.Select(x => x.GetParameters()).Merge();
-    }
-
+    #region implements IList<SortableItem>
     public SortableItem this[int index] { get => ((IList<SortableItem>)Items)[index]; set => ((IList<SortableItem>)Items)[index] = value; }
 
     public int Count => ((ICollection<SortableItem>)Items).Count;
@@ -84,4 +89,5 @@ public class OrderClause : IList<SortableItem>, IQueryCommand, IQueryParameter
     {
         return ((IEnumerable)Items).GetEnumerator();
     }
+    #endregion
 }

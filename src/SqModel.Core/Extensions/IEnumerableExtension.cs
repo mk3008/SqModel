@@ -2,30 +2,33 @@
 
 namespace SqModel.Core.Extensions;
 
-internal static class IEnumerableExtension
+public static class IEnumerableExtension
 {
-    public static string ToString(this IEnumerable<string> source, string separator)
+    public static string ToString(this IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> source, string separator)
     {
         var sb = ZString.CreateStringBuilder();
-        var prev = string.Empty;
+        (Type sender, string text, BlockType block, bool isReserved)? prev = null;
 
-        var fn = (string? current) =>
+        var isAppendSplitter = ((Type sender, string text, BlockType block, bool isReserved) current) =>
         {
-            if (prev == string.Empty) return false;
-            if (prev == "(") return false;
-            if (current == ")") return false;
-            if (prev == ".") return false;
-            if (current == ".") return false;
+            if (prev == null) return false;
+            //if (current.block == BlockType.Split) return true;
+
+            if (prev.Value.text == "(") return false;
+            if (current.text == ")") return false;
+            if (current.text == ",") return false;
+            if (prev.Value.text == ".") return false;
+            if (current.text == ".") return false;
 
             return true;
         };
 
         foreach (var item in source)
         {
-            if (item == null || string.IsNullOrEmpty(item)) return sb.ToString();
-            if (fn(item.ToString())) sb.Append(separator);
-            prev = item.ToString();
-            sb.Append(prev);
+            if (string.IsNullOrEmpty(item.text)) continue;
+            if (isAppendSplitter(item)) sb.Append(separator);
+            sb.Append(item.text);
+            prev = item;
         }
         return sb.ToString();
     }
