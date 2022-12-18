@@ -9,11 +9,11 @@ public class HavingClause : IQueryCommand
 
     public ValueBase Condition { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "having by", BlockType.Start, true);
-        foreach (var item in Condition.GetTokens()) yield return item;
-        yield return (tp, string.Empty, BlockType.End, true);
+        var clause = Token.Reserved(this, parent, "having");
+        yield return clause;
+
+        foreach (var item in Condition.GetTokens(clause)) yield return item;
     }
 }

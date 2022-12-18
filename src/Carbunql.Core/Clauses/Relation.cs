@@ -23,16 +23,15 @@ public class Relation : IQueryCommand
 
     public SelectableTable Table { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, RelationType.ToCommandText(), BlockType.Default, true);
-        foreach (var item in Table.GetTokens()) yield return item;
+        yield return Token.Reserved(this, parent, RelationType.ToCommandText());
+        foreach (var item in Table.GetTokens(parent)) yield return item;
 
         if (Condition != null)
         {
-            yield return (tp, "on", BlockType.Default, true);
-            foreach (var item in Condition.GetTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "on");
+            foreach (var item in Condition.GetTokens(parent)) yield return item;
         }
     }
 }

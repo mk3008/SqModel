@@ -11,20 +11,18 @@ public class FromClause : IQueryCommand
 
     public List<Relation>? Relations { get; set; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "from", BlockType.Start, true);
-        foreach (var item in Root.GetTokens()) yield return item;
+        var clause = Token.Reserved(this, parent, "from");
 
-        if (Relations != null)
+        yield return clause;
+        foreach (var item in Root.GetTokens(clause)) yield return item;
+
+        if (Relations == null) yield break;
+
+        foreach (var item in Relations)
         {
-            foreach (var item in Relations)
-            {
-                yield return (tp, string.Empty, BlockType.Split, true);
-                foreach (var token in item.GetTokens()) yield return token;
-            }
+            foreach (var token in item.GetTokens(clause)) yield return token;
         }
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 }

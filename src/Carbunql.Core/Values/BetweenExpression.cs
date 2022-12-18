@@ -17,13 +17,12 @@ public class BetweenExpression : ValueBase
 
     public ValueBase End { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        foreach (var item in Value.GetCurrentTokens()) yield return item;
-        yield return (tp, "between", BlockType.Default, true);
-        foreach (var item in Start.GetCurrentTokens()) yield return item;
-        yield return (tp, "and", BlockType.Default, true);
-        foreach (var item in End.GetCurrentTokens()) yield return item;
+        foreach (var item in Value.GetCurrentTokens(parent)) yield return item;
+        yield return Token.Reserved(this, parent, "between");
+        foreach (var item in Start.GetCurrentTokens(parent)) yield return item;
+        yield return Token.Reserved(this, parent, "and");
+        foreach (var item in End.GetCurrentTokens(parent)) yield return item;
     }
 }

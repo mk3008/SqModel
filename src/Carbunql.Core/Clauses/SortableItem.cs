@@ -17,11 +17,10 @@ public class SortableItem : IQueryCommand
 
     public NullSortType NullSort { get; set; } = NullSortType.Undefined;
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        foreach (var item in Value.GetTokens()) yield return item;
-        if (!IsAscending) yield return (tp, "dest", BlockType.Default, true);
-        if (NullSort != NullSortType.Undefined) yield return (tp, NullSort.ToCommandText(), BlockType.Default, true);
+        foreach (var item in Value.GetTokens(parent)) yield return item;
+        if (!IsAscending) yield return Token.Reserved(this, parent, "dest");
+        if (NullSort != NullSortType.Undefined) yield return Token.Reserved(this, parent, NullSort.ToCommandText());
     }
 }

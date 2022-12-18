@@ -52,6 +52,6 @@ where
     [Benchmark]
     public string CarbunqlString()
     {
-        return carbunql.GetTokens().ToString(" ");
+        return carbunql.GetTokens(null).ToString(" ");
     }
 }

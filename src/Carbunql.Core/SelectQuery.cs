@@ -14,14 +14,14 @@ public class SelectQuery : QueryBase, IQueryCommandable
 
     public HavingClause? HavingClause { get; set; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
         if (SelectClause == null) yield break;
 
-        foreach (var item in SelectClause.GetTokens()) yield return item;
-        if (FromClause != null) foreach (var item in FromClause.GetTokens()) yield return item;
-        if (WhereClause != null) foreach (var item in WhereClause.GetTokens()) yield return item;
-        if (GroupClause != null) foreach (var item in GroupClause.GetTokens()) yield return item;
-        if (HavingClause != null) foreach (var item in HavingClause.GetTokens()) yield return item;
+        foreach (var item in SelectClause.GetTokens(parent)) yield return item;
+        if (FromClause != null) foreach (var item in FromClause.GetTokens(parent)) yield return item;
+        if (WhereClause != null) foreach (var item in WhereClause.GetTokens(parent)) yield return item;
+        if (GroupClause != null) foreach (var item in GroupClause.GetTokens(parent)) yield return item;
+        if (HavingClause != null) foreach (var item in HavingClause.GetTokens(parent)) yield return item;
     }
 }

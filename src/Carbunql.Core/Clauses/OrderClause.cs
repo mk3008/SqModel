@@ -11,10 +11,10 @@ public class OrderClause : IList<SortableItem>, IQueryCommand
 
     private List<SortableItem> Items { get; init; } = new();
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "order by", BlockType.Start, true);
+        var clause = Token.Reserved(this, parent, "order by");
+        yield return clause;
 
         var isFirst = true;
         foreach (var item in Items)
@@ -25,11 +25,10 @@ public class OrderClause : IList<SortableItem>, IQueryCommand
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, clause);
             }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(clause)) yield return token;
         }
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 
     #region implements IList<SortableItem>

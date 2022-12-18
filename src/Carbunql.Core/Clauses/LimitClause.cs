@@ -23,15 +23,16 @@ public class LimitClause : IQueryCommand
 
     public ValueBase? Offset { get; set; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "limit", BlockType.Default, true);
-        foreach (var item in Conditions.GetTokens()) yield return item;
+        var clause = Token.Reserved(this, parent, "limit");
+        yield return clause;
+
+        foreach (var item in Conditions.GetTokens(clause)) yield return item;
         if (Offset != null)
         {
-            yield return (tp, "offset", BlockType.Default, true);
-            foreach (var item in Offset.GetTokens()) yield return item;
+            yield return Token.Reserved(this, clause, "offset");
+            foreach (var item in Offset.GetTokens(clause)) yield return item;
         }
     }
 }

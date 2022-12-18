@@ -11,10 +11,9 @@ public class ValuesClause : QueryBase
 
     public List<ValueCollection> Rows { get; init; } = new();
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "values", BlockType.Start, true);
+        var clause = Token.Reserved(this, parent, "values");
 
         var isFirst = true;
         foreach (var item in Rows)
@@ -25,12 +24,12 @@ public class ValuesClause : QueryBase
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, clause);
             }
-            yield return (tp, "(", BlockType.Start, true);
-            foreach (var token in item.GetTokens()) yield return token;
-            yield return (tp, ")", BlockType.End, true);
+            var bracket = Token.BracketStart(this, clause);
+            yield return bracket;
+            foreach (var token in item.GetTokens(bracket)) yield return token;
+            yield return Token.BracketEnd(this, clause);
         }
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 }

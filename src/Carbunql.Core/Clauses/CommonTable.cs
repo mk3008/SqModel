@@ -15,18 +15,16 @@ public class CommonTable : SelectableTable
 
     public MaterializedType Materialized { get; set; } = MaterializedType.Undefined;
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public override IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-
-        foreach (var item in GetAliasTokens()) yield return item;
-        yield return (tp, "as", BlockType.Default, true);
+        foreach (var item in GetAliasTokens(parent)) yield return item;
+        yield return Token.Reserved(this, parent, "as");
 
         if (Materialized != MaterializedType.Undefined)
         {
-            yield return (tp, Materialized.ToCommandText(), BlockType.Default, true);
+            yield return Token.Reserved(this, parent, Materialized.ToCommandText());
         }
 
-        foreach (var item in Table.GetTokens()) yield return item;
+        foreach (var item in Table.GetTokens(parent)) yield return item;
     }
 }

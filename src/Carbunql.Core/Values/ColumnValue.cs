@@ -19,15 +19,14 @@ public class ColumnValue : ValueBase
 
     public string Column { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
         if (!string.IsNullOrEmpty(TableAlias))
         {
-            yield return (tp, TableAlias, BlockType.Default, false);
-            yield return (tp, ".", BlockType.Default, true);
+            yield return new Token(this, parent, TableAlias);
+            yield return Token.Dot(this, parent);
         }
-        yield return (tp, Column, BlockType.Default, false);
+        yield return new Token(this, parent, Column);
     }
 
     public override string GetDefaultName()

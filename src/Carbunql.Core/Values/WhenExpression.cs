@@ -19,20 +19,19 @@ public class WhenExpression : IQueryCommand
 
     public ValueBase Value { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
         if (Condition != null)
         {
-            yield return (tp, "when", BlockType.Default, true);
-            foreach (var item in Condition.GetTokens()) yield return item;
-            yield return (tp, "then", BlockType.Default, true);
-            foreach (var item in Value.GetTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "when");
+            foreach (var item in Condition.GetTokens(parent)) yield return item;
+            yield return Token.Reserved(this, parent, "then");
+            foreach (var item in Value.GetTokens(parent)) yield return item;
         }
         else
         {
-            yield return (tp, "else", BlockType.Default, true);
-            foreach (var item in Value.GetTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "else");
+            foreach (var item in Value.GetTokens(parent)) yield return item;
         }
     }
 }

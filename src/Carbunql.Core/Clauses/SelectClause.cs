@@ -20,25 +20,27 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand
 
     private List<SelectableItem> Items { get; init; } = new();
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
         var tp = GetType();
+        Token? clause = null;
         if (HasDistinctKeyword && Top != null)
         {
-            yield return (tp, "select distinct top " + Top.GetTokens().ToString(" "), BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "select distinct top " + Top.GetTokens(parent).ToString(" "));
         }
         else if (HasDistinctKeyword)
         {
-            yield return (tp, "select distinct", BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "select distinct");
         }
         else if (Top != null)
         {
-            yield return (tp, "select top " + Top.GetTokens().ToString(" "), BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "select top " + Top.GetTokens(parent).ToString(" "));
         }
         else
         {
-            yield return (tp, "select", BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "select");
         }
+        yield return clause;
 
         var isFirst = true;
         foreach (var item in Items)
@@ -49,11 +51,10 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, clause);
             }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(clause)) yield return token;
         }
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 
     #region implements IList<SelectableItem>

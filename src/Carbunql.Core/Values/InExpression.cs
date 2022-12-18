@@ -6,12 +6,13 @@ public class InExpression : QueryContainer
     {
     }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "in", BlockType.Default, true);
-        yield return (tp, "(", BlockType.Start, true);
-        foreach (var item in Query.GetTokens()) yield return item;
-        yield return (tp, ")", BlockType.End, true);
+        yield return Token.Reserved(this, parent, "in");
+
+        var bracket = Token.BracketStart(this, parent);
+        yield return bracket;
+        foreach (var item in Query.GetTokens(bracket)) yield return item;
+        yield return Token.BracketEnd(this, parent);
     }
 }

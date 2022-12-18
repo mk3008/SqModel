@@ -6,31 +6,29 @@ namespace Carbunql.Core.Extensions;
 
 public static class IEnumerableExtension
 {
-    public static string ToString(this IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> source, string separator)
+    public static string ToString(this IEnumerable<Token> source, string separator)
     {
         var sb = ZString.CreateStringBuilder();
-        (Type sender, string text, BlockType block, bool isReserved)? prev = null;
+        Token? prev = null;
 
-        var isAppendSplitter = ((Type sender, string text, BlockType block, bool isReserved) current) =>
+        var isAppendSplitter = (Token current) =>
         {
             if (prev == null) return false;
-            //if (current.block == BlockType.Split) return true;
 
-            if (prev.Value.text == "(") return false;
-            if (current.text == ")") return false;
-            if (current.text == ",") return false;
-            if (prev.Value.text == ".") return false;
-            if (current.text == ".") return false;
-            if (current.text == "(" && prev.Value.sender.Equals(typeof(FunctionValue))) return false;
-
+            if (prev!.Text == "(") return false;
+            if (current.Text == ")") return false;
+            if (current.Text == ",") return false;
+            if (prev!.Text == ".") return false;
+            if (current.Text == ".") return false;
+            if (current.Text == "(" && prev!.IsReserved) return false;
             return true;
         };
 
         foreach (var item in source)
         {
-            if (string.IsNullOrEmpty(item.text)) continue;
+            if (string.IsNullOrEmpty(item.Text)) continue;
             if (isAppendSplitter(item)) sb.Append(separator);
-            sb.Append(item.text);
+            sb.Append(item.Text);
             prev = item;
         }
         return sb.ToString();

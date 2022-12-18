@@ -11,11 +11,11 @@ public class VirtualTable : TableBase
 
     public IQueryCommandable Query { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public override IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "(", BlockType.Start, true);
-        foreach (var item in Query.GetTokens()) yield return item;
-        yield return (tp, ")", BlockType.End, true);
+        var bracket = Token.BracketStart(this, parent);
+        yield return bracket;
+        foreach (var item in Query.GetTokens(bracket)) yield return item;
+        yield return Token.BracketEnd(this, parent);
     }
 }

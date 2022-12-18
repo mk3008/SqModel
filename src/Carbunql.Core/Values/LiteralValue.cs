@@ -11,9 +11,8 @@ public class LiteralValue : ValueBase
 
     public string CommandText { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, CommandText, BlockType.Default, false);
+        yield return new Token(this, parent, CommandText);
     }
 }

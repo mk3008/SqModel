@@ -17,25 +17,18 @@ public class CaseExpression : ValueBase
 
     public List<WhenExpression> WhenExpressions { get; init; } = new();
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "case", BlockType.Start, true);
-        if (CaseCondition != null) foreach (var item in CaseCondition.GetTokens()) yield return item;
+        var current = Token.Reserved(this, parent, "case");
 
-        var isFirst = true;
+        yield return current;
+        if (CaseCondition != null) foreach (var item in CaseCondition.GetTokens(current)) yield return item;
+
         foreach (var item in WhenExpressions)
         {
-            if (isFirst)
-            {
-                isFirst = false;
-            }
-            else
-            {
-                yield return (tp, string.Empty, BlockType.Split, true);
-            }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(current)) yield return token;
         }
-        yield return (tp, "end", BlockType.End, true);
+
+        yield return Token.Reserved(this, parent, "end");
     }
 }

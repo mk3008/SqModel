@@ -6,21 +6,22 @@ public class WindowFunction : IQueryCommand
 
     public ValueCollection? OrderBy { get; set; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "over", BlockType.Default, true);
-        yield return (tp, "(", BlockType.Start, true);
+        yield return Token.Reserved(this, parent, "over");
+
+        var bracket = Token.BracketStart(this, parent);
+        yield return bracket;
         if (PartitionBy != null)
         {
-            yield return (tp, "partition by", BlockType.Default, true);
-            foreach (var item in PartitionBy.GetTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "partition by");
+            foreach (var item in PartitionBy.GetTokens(bracket)) yield return item;
         }
         if (OrderBy != null)
         {
-            yield return (tp, "order by", BlockType.Default, true);
-            foreach (var item in OrderBy.GetTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "order by");
+            foreach (var item in OrderBy.GetTokens(bracket)) yield return item;
         }
-        yield return (tp, ")", BlockType.End, true);
+        yield return Token.BracketEnd(this, parent);
     }
 }

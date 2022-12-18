@@ -12,14 +12,13 @@ public class SelectableItem : IQueryCommand, ISelectable
 
     public string Alias { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        foreach (var item in Value.GetTokens()) yield return item;
+        foreach (var item in Value.GetTokens(parent)) yield return item;
         if (!string.IsNullOrEmpty(Alias) && Alias != Value.GetDefaultName())
         {
-            yield return (tp, "as", BlockType.Default, true);
-            yield return (tp, Alias, BlockType.Default, false);
+            yield return Token.Reserved(this, parent, "as");
+            yield return new Token(this, parent, Alias);
         }
     }
 }

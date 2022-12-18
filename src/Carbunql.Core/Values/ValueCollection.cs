@@ -9,7 +9,6 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand
     {
     }
 
-
     public ValueCollection(string text)
     {
         Collection.Add(new LiteralValue(text));
@@ -27,9 +26,8 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand
 
     private List<ValueBase> Collection { get; init; } = new();
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
         var isFirst = true;
         foreach (var item in Collection)
         {
@@ -39,12 +37,13 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, parent);
             }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(parent)) yield return token;
         }
     }
 
+    #region implements IList<ValueBase>
     public ValueBase this[int index]
     { get => ((IList<ValueBase>)Collection)[index]; set => ((IList<ValueBase>)Collection)[index] = value; }
 
@@ -101,4 +100,5 @@ public class ValueCollection : IList<ValueBase>, IQueryCommand
     {
         return ((IEnumerable)Collection).GetEnumerator();
     }
+    #endregion
 }

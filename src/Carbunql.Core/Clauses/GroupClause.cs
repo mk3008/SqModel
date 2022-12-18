@@ -12,10 +12,10 @@ public class GroupClause : IList<ValueBase>, IQueryCommand
 
     private List<ValueBase> Items { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "group by", BlockType.Start, true);
+        var clause = Token.Reserved(this, parent, "group by");
+        yield return clause;
 
         var isFirst = true;
         foreach (var item in Items)
@@ -26,12 +26,10 @@ public class GroupClause : IList<ValueBase>, IQueryCommand
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, clause);
             }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(clause)) yield return token;
         }
-
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 
     #region implements IList<ValueBase>

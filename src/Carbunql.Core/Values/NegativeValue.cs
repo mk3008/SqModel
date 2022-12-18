@@ -11,10 +11,9 @@ public class NegativeValue : ValueBase
 
     public ValueBase Inner { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, "not", BlockType.Default, true);
-        foreach (var item in Inner.GetTokens()) yield return item;
+        yield return Token.Reserved(this, parent, "not");
+        foreach (var item in Inner.GetTokens(parent)) yield return item;
     }
 }

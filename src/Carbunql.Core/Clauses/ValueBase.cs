@@ -17,17 +17,16 @@ public abstract class ValueBase : IQueryCommand
         return value;
     }
 
-    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens();
+    public abstract IEnumerable<Token> GetCurrentTokens(Token? parent);
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        foreach (var item in GetCurrentTokens()) yield return item;
+        foreach (var item in GetCurrentTokens(parent)) yield return item;
 
-        if (Sufix != null) yield return (tp, Sufix, BlockType.Default, true);
+        if (Sufix != null) yield return Token.Reserved(this, parent, Sufix);
         if (OperatableValue != null)
         {
-            foreach (var item in OperatableValue.GetTokens()) yield return item;
+            foreach (var item in OperatableValue.GetTokens(parent)) yield return item;
         }
     }
 }

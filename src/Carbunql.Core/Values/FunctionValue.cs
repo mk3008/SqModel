@@ -29,19 +29,21 @@ public class FunctionValue : ValueBase
 
     public WindowFunction? WindowFunction { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, Name, BlockType.Default, true);
-        yield return (tp, "(", BlockType.Default, true);
+        yield return Token.Reserved(this, parent, Name);
+
+        var bracket = Token.BracketStart(this, parent);
+        yield return bracket;
         if (Argument != null)
         {
-            foreach (var item in Argument.GetTokens()) yield return item;
+            foreach (var item in Argument.GetTokens(bracket)) yield return item;
         }
-        yield return (tp, ")", BlockType.Default, true);
+        yield return Token.BracketEnd(this, parent);
+
         if (WindowFunction != null)
         {
-            foreach (var item in WindowFunction.GetTokens()) yield return item;
+            foreach (var item in WindowFunction.GetTokens(parent)) yield return item;
         }
     }
 }

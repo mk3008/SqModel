@@ -30,20 +30,20 @@ public abstract class QueryBase : IQueryCommandable
         return prm;
     }
 
-    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens();
+    public abstract IEnumerable<Token> GetCurrentTokens(Token? parent);
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        if (WithClause != null) foreach (var item in WithClause.GetTokens()) yield return item;
-        foreach (var item in GetCurrentTokens()) yield return item;
-        if (OperatableQuery != null) foreach (var item in OperatableQuery.GetTokens()) yield return item;
-        if (OrderClause != null) foreach (var item in OrderClause.GetTokens()) yield return item;
-        if (LimitClause != null) foreach (var item in LimitClause.GetTokens()) yield return item;
+        if (WithClause != null) foreach (var item in WithClause.GetTokens(parent)) yield return item;
+        foreach (var item in GetCurrentTokens(parent)) yield return item;
+        if (OperatableQuery != null) foreach (var item in OperatableQuery.GetTokens(parent)) yield return item;
+        if (OrderClause != null) foreach (var item in OrderClause.GetTokens(parent)) yield return item;
+        if (LimitClause != null) foreach (var item in LimitClause.GetTokens(parent)) yield return item;
     }
 
     public QueryCommand ToCommand()
     {
-        var sql = GetTokens().ToString(" ");
+        var sql = GetTokens(null).ToString(" ");
         return new QueryCommand(sql, GetParameters());
     }
 }

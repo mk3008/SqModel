@@ -23,30 +23,30 @@ public class SelectableTable : IQueryCommand, ISelectable
 
     public ValueCollection? ColumnAliases { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetAliasTokens()
+    public IEnumerable<Token> GetAliasTokens(Token? parent)
     {
         if (!string.IsNullOrEmpty(Alias) && Alias != Table.GetDefaultName())
         {
             var tp = GetType();
-            yield return (tp, Alias, BlockType.Default, false);
+            yield return new Token(this, parent, Alias);
 
             if (ColumnAliases != null)
             {
-                yield return (tp, "(", BlockType.Default, true);
-                foreach (var item in ColumnAliases.GetTokens()) yield return item;
-                yield return (tp, ")", BlockType.Default, true);
+                var bracket = Token.BracketStart(this, parent);
+                yield return bracket;
+                foreach (var item in ColumnAliases.GetTokens(bracket)) yield return item;
+                yield return Token.BracketEnd(this, parent);
             }
         }
     }
 
-    public virtual IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public virtual IEnumerable<Token> GetTokens(Token? parent)
     {
-        foreach (var item in Table.GetTokens()) yield return item;
+        foreach (var item in Table.GetTokens(parent)) yield return item;
         if (!string.IsNullOrEmpty(Alias) && Alias != Table.GetDefaultName())
         {
-            var tp = GetType();
-            yield return (tp, "as", BlockType.Default, true);
-            foreach (var item in GetAliasTokens()) yield return item;
+            yield return Token.Reserved(this, parent, "as");
+            foreach (var item in GetAliasTokens(parent)) yield return item;
         }
     }
 }

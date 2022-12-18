@@ -17,11 +17,11 @@ public class OperatableQuery : IQueryCommandable
         return Query.GetParameters();
     }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
-        yield return (tp, Operator, BlockType.Split, true);
-        foreach (var item in Query.GetTokens()) yield return item;
+        var current = Token.Reserved(this, parent, Operator);
+        yield return current;
+        foreach (var item in Query.GetTokens(current)) yield return item;
     }
 
     public QueryCommand ToCommand()

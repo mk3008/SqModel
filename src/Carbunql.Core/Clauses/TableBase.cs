@@ -2,7 +2,7 @@
 
 public abstract class TableBase : IQueryCommand
 {
-    public abstract IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens();
+    public abstract IEnumerable<Token> GetTokens(Token? parent);
 
     public virtual string GetDefaultName() => string.Empty;
 }

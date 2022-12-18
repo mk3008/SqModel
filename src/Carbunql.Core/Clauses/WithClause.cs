@@ -17,17 +17,18 @@ public class WithClause : IList<CommonTable>, IQueryCommand
 
     public bool HasRecursiveKeyword { get; set; } = false;
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
+        Token? clause = null;
         if (HasRecursiveKeyword)
         {
-            yield return (tp, "with recursive", BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "with recursive");
         }
         else
         {
-            yield return (tp, "with", BlockType.Start, true);
+            clause = Token.Reserved(this, parent, "with");
         }
+        yield return clause;
 
         var isFisrt = true;
         foreach (var item in CommonTables)
@@ -38,11 +39,10 @@ public class WithClause : IList<CommonTable>, IQueryCommand
             }
             else
             {
-                yield return (tp, ",", BlockType.Split, true);
+                yield return Token.Comma(this, parent);
             }
-            foreach (var token in item.GetTokens()) yield return token;
+            foreach (var token in item.GetTokens(clause)) yield return token;
         }
-        yield return (tp, string.Empty, BlockType.End, true);
     }
 
     #region implements IList<CommonTable>

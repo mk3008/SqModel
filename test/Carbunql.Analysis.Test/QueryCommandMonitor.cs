@@ -14,17 +14,16 @@ internal class QueryCommandMonitor
 
     public void Log(IQueryCommand arguments)
     {
-        Output.WriteLine($"{arguments.GetTokens().ToString(" ")}");
+        Output.WriteLine($"{arguments.GetTokens(null).ToString(" ")}");
         Output.WriteLine("--------------------");
+        Token? prev = null;
         var level = 0;
         var len = 20;
         var indent = string.Empty;
-        foreach (var item in arguments.GetTokens())
+        foreach (var item in arguments.GetTokens(null))
         {
-            if (item.block == BlockType.End) level--;
-            indent = (level * 4).ToSpaceString();
-            Output.WriteLine($"{(indent + item.text).PadRight(len)} Level:{level}, Type:{item.sender.Name}, Block:{item.block}");
-            if (item.block == BlockType.Start) level++;
+            var p = (item.Parent == null) ? "[null]" : item.Parent.Text;
+            Output.WriteLine($"{(indent + item.Text).PadRight(len)}parent:{p.PadRight(6)}, isReserved:{item.IsReserved}");
         }
     }
 

@@ -11,12 +11,13 @@ public class BracketValue : ValueBase
 
     public ValueBase Inner { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        if (Inner == null) throw new NullReferenceException();
-        yield return (tp, "(", BlockType.Start, true);
-        foreach (var item in Inner.GetTokens()) yield return item;
-        yield return (tp, ")", BlockType.End, true);
+        if (Inner == null) yield break;
+
+        var bracket = Token.BracketStart(this, parent);
+        yield return bracket;
+        foreach (var item in Inner.GetTokens(bracket)) yield return item;
+        yield return Token.BracketEnd(this, parent);
     }
 }

@@ -14,11 +14,10 @@ public class LikeExpression : ValueBase
 
     public ValueBase Argument { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetCurrentTokens()
+    public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
-        var tp = GetType();
-        foreach (var item in Value.GetTokens()) yield return item;
-        yield return (tp, "like", BlockType.Default, true);
-        foreach (var item in Argument.GetTokens()) yield return item;
+        foreach (var item in Value.GetTokens(parent)) yield return item;
+        yield return Token.Reserved(this, parent, "like");
+        foreach (var item in Argument.GetTokens(parent)) yield return item;
     }
 }

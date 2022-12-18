@@ -14,13 +14,12 @@ public class OperatableValue : IQueryCommand
 
     public ValueBase Value { get; init; }
 
-    public IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
         if (!string.IsNullOrEmpty(Operator))
         {
-            yield return (tp, Operator, BlockType.Default, true);
+            yield return Token.Reserved(this, parent, Operator);
         }
-        foreach (var item in Value.GetTokens()) yield return item;
+        foreach (var item in Value.GetTokens(parent)) yield return item;
     }
 }

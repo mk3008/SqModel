@@ -19,15 +19,14 @@ public class PhysicalTable : TableBase
 
     public string Table { get; init; }
 
-    public override IEnumerable<(Type sender, string text, BlockType block, bool isReserved)> GetTokens()
+    public override IEnumerable<Token> GetTokens(Token? parent)
     {
-        var tp = GetType();
         if (!string.IsNullOrEmpty(Schame))
         {
-            yield return (tp, Schame, BlockType.Default, false);
-            yield return (tp, ".", BlockType.Default, true);
+            yield return new Token(this, parent, Schame);
+            yield return Token.Dot(this, parent);
         }
-        yield return (tp, Table, BlockType.Default, false);
+        yield return new Token(this, parent, Table);
     }
 
     public override string GetDefaultName() => Table;
