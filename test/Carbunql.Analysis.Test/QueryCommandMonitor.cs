@@ -12,18 +12,21 @@ internal class QueryCommandMonitor
         Output = output;
     }
 
-    public void Log(IQueryCommand arguments)
+    public void Log(IQueryCommand arg)
     {
-        Output.WriteLine($"{arguments.GetTokens(null).ToString(" ")}");
+        var frm = new CommandFormatter() { Logger = x => Output.WriteLine(x) };
+        var bld = new CommandTextBuilder(frm);
+        var sql = bld.Execute(arg.GetTokens(null));
+        Output.WriteLine(sql);
         Output.WriteLine("--------------------");
-        Token? prev = null;
-        var level = 0;
         var len = 20;
         var indent = string.Empty;
-        foreach (var item in arguments.GetTokens(null))
+        foreach (var item in arg.GetTokens(null))
         {
             var p = (item.Parent == null) ? "[null]" : item.Parent.Text;
-            Output.WriteLine($"{(indent + item.Text).PadRight(len)}parent:{p.PadRight(6)}, isReserved:{item.IsReserved}");
+            var s = item.Sender.GetType().Name;
+            var l = item.Parents().Count();
+            Output.WriteLine($"{(indent + item.Text).PadRight(len)} l:{l} s:{s.PadRight(15)}, p:{p.PadRight(6)}, r:{item.IsReserved}");
         }
     }
 

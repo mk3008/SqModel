@@ -49,4 +49,11 @@ public class Token
     public string Text { get; init; }
 
     public bool IsReserved { get; init; }
+
+    public IEnumerable<Token> Parents()
+    {
+        if (Parent == null) yield break;
+        yield return Parent;
+        foreach (var item in Parent.Parents()) yield return item;
+    }
 }

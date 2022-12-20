@@ -14,6 +14,7 @@ public class ValuesClause : QueryBase
     public override IEnumerable<Token> GetCurrentTokens(Token? parent)
     {
         var clause = Token.Reserved(this, parent, "values");
+        yield return clause;
 
         var isFirst = true;
         foreach (var item in Rows)

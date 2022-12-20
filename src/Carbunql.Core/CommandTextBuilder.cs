@@ -1,97 +1,104 @@
-﻿//using Cysharp.Text;
+﻿using Cysharp.Text;
+using System.Linq;
 
-//namespace Carbunql.Core;
+namespace Carbunql.Core;
 
-//public class CommandTextBuilder
-//{
-//    public CommandTextBuilder(CommandFormatter formatter)
-//    {
-//        Formatter = formatter;
-//    }
+public class CommandTextBuilder
+{
+    public CommandTextBuilder(CommandFormatter formatter)
+    {
+        Formatter = formatter;
+    }
 
-//    public CommandFormatter Formatter { get; init; }
+    public CommandTextBuilder()
+    {
+        Formatter = new CommandFormatter();
+    }
 
-//    public string Execute(IEnumerable<Token> tokens)
-//    {
-//        var sb = ZString.CreateStringBuilder();
+    public CommandFormatter Formatter { get; init; }
 
-//        Formatter.OnStart();
+    public string Execute(IEnumerable<Token> tokens)
+    {
+        var sb = ZString.CreateStringBuilder();
 
-//        foreach (var t in tokens)
-//        {
-//            if (t.block != BlockType.Start) break;
-//            WriteBlock(t, ref tokens, ref sb);
-//        }
 
-//        Formatter.OnEnd();
 
-//        return sb.ToString();
-//    }
+        Token? prev = null;
+        var isFirst = true;
 
-//    private Token WriteBlock(Token blockstart, ref IEnumerable<Token> tokens, ref Utf16ValueStringBuilder sb)
-//    {
-//        var s = blockstart;
-//        sb.Append(Formatter.OnStartBlock(s.type, s.text));
 
-//        var e = WriteItem(s, s, ref tokens, ref sb);
+        foreach (var t in tokens)
+        {
+            if (isFirst)
+            {
+                Formatter.OnStart(t);
+                isFirst = false;
+            }
 
-//        sb.Append(Formatter.OnEndBlock(s.type, s.text));
-//        return e;
-//    }
+            // || t.Sender.Equals(prev.Sender)
+            if (prev == null || t.Parents().Count() == prev.Parents().Count())
+            {
+                WriteToken(t, ref sb);
+            }
+            else if (t.Parents().Count() > prev.Parents().Count())
+            {
+                sb.Append(Formatter.OnStartBlock(t));
+                WriteToken(t, ref sb);
+            }
+            else
+            {
+                sb.Append(Formatter.OnEndBlockBeforeWriteToken(t));
+                WriteToken(t, ref sb);
+                sb.Append(Formatter.OnEndBlockAfterWriteToken(t));
+            }
+            prev = t;
+        }
 
-//    private (TokenType type, BlockType block, string text) WriteItem((TokenType type, BlockType block, string text) owner,
-//        (TokenType type, BlockType block, string text) group,
-//        ref IEnumerable<(TokenType type, BlockType block, string text)> tokens,
-//        ref Utf16ValueStringBuilder sb)
-//    {
-//        WriteStartBlockItem(group, ref sb);
+        Formatter.OnEnd();
 
-//        foreach (var t in tokens)
-//        {
-//            if (t.block == BlockType.Split)
-//            {
-//                WriteEndBlockItem(group, ref sb);
-//                return WriteItem(owner, t, ref tokens, ref sb);
-//            }
+        return sb.ToString();
+    }
 
-//            if (t.block == BlockType.End)
-//            {
-//                WriteEndBlockItem(group, ref sb);
-//                return t;
-//            }
+    //private Token? WriteBlock(Token blockstart, ref List<Token> tokens, ref Utf16ValueStringBuilder sb)
+    //{
+    //    var s = blockstart;
+    //    sb.Append(Formatter.OnStartBlock(s));
 
-//            if (t.block == BlockType.Start)
-//            {
-//                // nested block
-//                return WriteBlock(t, ref tokens, ref sb);
-//            }
+    //    Token prev = s;
+    //    WriteToken(s, ref sb);
 
-//            WriteToken(t, ref sb);
-//        }
-//        throw new InvalidOperationException();
-//    }
+    //    foreach (var t in tokens)
+    //    {
+    //        if (t.Sender.Equals(prev.Sender))
+    //        {
+    //            WriteToken(t, ref sb);
+    //        }
+    //        else if (t.Parents().Any(x => x.Equals(prev)))
+    //        {
+    //            //nest
+    //            var blockend = WriteBlock(t, ref tokens, ref sb);
+    //            WriteToken(blockend, ref sb);
+    //            sb.Append(Formatter.OnEndBlockAfterWriteToken(s));
+    //        }
+    //        else
+    //        {
+    //            //close
+    //            sb.Append(Formatter.OnEndBlockBeforeWriteToken(s));
+    //            return t;
+    //        }
+    //        prev = t;
+    //    }
 
-//    private void WriteStartBlockItem(Token token, ref Utf16ValueStringBuilder sb)
-//    {
-//        sb.Append(Formatter.OnStartItemBeforeWriteToken(token.type, token.text));
-//        WriteToken(token, ref sb);
-//        sb.Append(Formatter.OnStartItemAfterWriteToken(token.type, token.text));
-//    }
+    //    sb.Append(Formatter.OnEndBlockBeforeWriteToken(s));
+    //    return null;
+    //}
 
-//    private void WriteEndBlockItem(Token token, ref Utf16ValueStringBuilder sb)
-//    {
-//        sb.Append(Formatter.OnEndItemBeforeWriteToken(token.type, token.text));
-//        WriteToken(token, ref sb);
-//        sb.Append(Formatter.OnEndItemAfterWriteToken(token.type, token.text));
-//    }
-
-//    private void WriteToken(Token token, ref Utf16ValueStringBuilder sb)
-//    {
-//        if (!string.IsNullOrEmpty(token.text))
-//        {
-//            sb.Append(Formatter.OnBeforeWriteToken(token.type, token.block, token.text));
-//            sb.Append(Formatter.WriteToken(token.type, token.block, token.text));
-//            sb.Append(Formatter.OnAfterWriteToken(token.type, token.block, token.text));
-//        }
-//    }
-//}
+    private void WriteToken(Token? token, ref Utf16ValueStringBuilder sb)
+    {
+        if (token == null) return;
+        if (string.IsNullOrEmpty(token.Text)) return;
+        sb.Append(Formatter.OnBeforeWriteToken(token));
+        sb.Append(Formatter.WriteToken(token));
+        sb.Append(Formatter.OnAfterWriteToken(token));
+    }
+}
