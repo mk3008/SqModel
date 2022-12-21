@@ -4,6 +4,7 @@ using Carbunql.Core.Values;
 using Cysharp.Text;
 using System;
 using System.Reflection.Emit;
+using System.Text;
 
 namespace Carbunql.Core;
 
@@ -23,21 +24,26 @@ public class CommandTextBuilder
 
     private Token? PrevToken { get; set; }
 
-    public int Level { get; set; }
+    private int Level { get; set; }
 
-    public string Indent { get; set; } = string.Empty;
+    private string Indent { get; set; } = string.Empty;
 
-    public List<(Token Token, int Level)> TokenIndents { get; set; } = new();
+    private List<(Token Token, int Level)> TokenIndents { get; set; } = new();
 
-    private Utf16ValueStringBuilder sb = ZString.CreateStringBuilder();
+    public string Execute(IQueryCommand cmd)
+    {
+        return Execute(cmd.GetTokens(null));
+    }
 
     public string Execute(IEnumerable<Token> tokens)
     {
+        using var sb = ZString.CreateStringBuilder();
+
         foreach (var t in tokens)
         {
             if (PrevToken == null || t.Parents().Count() == PrevToken.Parents().Count())
             {
-                WriteToken(t);
+                foreach (var item in GetTokenTexts(t)) sb.Append(item);
                 continue;
             }
 
@@ -47,9 +53,9 @@ public class CommandTextBuilder
                 {
                     Level++;
                     TokenIndents.Add((t.Parent, Level));
-                    DoLineBreak();
+                    sb.Append(GetLineBreakText());
                 }
-                WriteToken(t);
+                foreach (var item in GetTokenTexts(t)) sb.Append(item);
                 continue;
             }
 
@@ -64,14 +70,30 @@ public class CommandTextBuilder
                 {
                     Level = 0;
                 }
-                DoLineBreak();
+                sb.Append(GetLineBreakText());
             }
-            WriteToken(t);
+            foreach (var item in GetTokenTexts(t)) sb.Append(item);
         }
         return sb.ToString();
     }
 
-    private string GetTokenText(Token token)
+    private IEnumerable<string> GetTokenTexts(Token? token)
+    {
+        if (token == null) yield break;
+        if (string.IsNullOrEmpty(token.Text)) yield break;
+
+        if (PrevToken != null && Formatter.IsLineBreakOnBeforeWriteToken(token))
+        {
+            yield return GetLineBreakText();
+        }
+        yield return GetTokenTextCore(token);
+        if (Formatter.IsLineBreakOnAfterWriteToken(token))
+        {
+            yield return GetLineBreakText();
+        }
+    }
+
+    private string GetTokenTextCore(Token token)
     {
         var isAppendSplitter = () =>
         {
@@ -100,26 +122,10 @@ public class CommandTextBuilder
         return s + token.Text;
     }
 
-    private void WriteToken(Token? token)
-    {
-        if (token == null) return;
-        if (string.IsNullOrEmpty(token.Text)) return;
-
-        if (PrevToken != null && Formatter.IsLineBreakOnBeforeWriteToken(token))
-        {
-            DoLineBreak();
-        }
-        sb.Append(GetTokenText(token));
-        if (Formatter.IsLineBreakOnAfterWriteToken(token))
-        {
-            DoLineBreak();
-        }
-    }
-
-    private void DoLineBreak()
+    private string GetLineBreakText()
     {
         PrevToken = null;
         Indent = (Level * 4).ToSpaceString();
-        sb.Append("\r\n" + Indent);
+        return "\r\n" + Indent;
     }
 }

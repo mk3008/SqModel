@@ -54,4 +54,11 @@ where
     {
         return carbunql.GetTokens(null).ToString(" ");
     }
+
+    [Benchmark]
+    public string CarbunqlFormatString()
+    {
+        var cmd = new CommandTextBuilder();
+        return cmd.Execute(carbunql);
+    }
 }
