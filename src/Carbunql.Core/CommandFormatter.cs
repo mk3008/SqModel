@@ -12,11 +12,6 @@ public class CommandFormatter
 
     public virtual void OnStart(Token Token)
     {
-        //Level = 0;
-        //RefreshIndent();
-        //PrevToken = null;
-        //TokenIndents.Add((Token, Level));
-        //OnStartBlock(Token);
         return;
     }
 
@@ -28,12 +23,6 @@ public class CommandFormatter
 
     public List<(Token Token, int Level)> TokenIndents { get; set; } = new();
 
-    //public abstract string OnEndItemBeforeWriteToken(Token token);
-
-    //public abstract string OnStartItemBeforeWriteToken(Token token);
-
-
-
     public virtual string WriteToken(Token token)
     {
         var isAppendSplitter = () =>
@@ -42,7 +31,6 @@ public class CommandFormatter
 
             if (PrevToken!.Text == "(") return false;
             if (PrevToken!.Text == ".") return false;
-            //if (PrevToken!.Text == ")" && token.IsReserved) return false;
 
             if (token.Text.StartsWith("::")) return false;
             if (token.Text == ")") return false;
@@ -98,37 +86,11 @@ public class CommandFormatter
             return "\r\n" + Indent;
         }
 
-        //if (token.Text.AreEqual("union"))
-        //{
-        //    PrevToken = null;
-        //    return "\r\n" + Indent;
-        //}
-
-
         return string.Empty;
     }
 
     public virtual string OnStartBlock(Token token)
     {
-        //if (PrevToken != null && PrevToken.Sender is OperatableQuery) return string.Empty;
-        //if (token.Sender is CommonTable) return string.Empty;
-        //if (PrevToken?.Text == "(" && PrevToken.Parent?.Sender is SelectClause) return string.Empty;
-
-        //Level++;
-
-        //if (token.Parent == null) throw new Exception();
-
-        //if (PrevToken != null)
-        //{
-        //    Logger?.Invoke("Level:" + Level + ", sender:" + token.Sender.GetType().Name + ", parent:" + token.Parent.Text + ", prev:" + PrevToken.Text + ", text:" + token.Text);
-        //}
-        //else
-        //{
-        //    Logger?.Invoke("Level:" + Level + ", sender:" + token.Sender.GetType().Name + ", parent:" + token.Parent.Text + ", " + token.Text);
-        //}
-        //TokenIndents.Add((token.Parent, Level));
-
-
         //root is not regist
         if (token.Parent == null) throw new Exception();
 
@@ -164,26 +126,6 @@ public class CommandFormatter
 
     public virtual string OnEndBlockBeforeWriteToken(Token token)
     {
-        //if (token.Text == ")" && token.Parent?.Sender is SelectClause) return string.Empty;
-
-        //if (token.Parent == null)
-        //{
-        //    if (token.Text == "," && token.Sender is WithClause) return string.Empty;
-        //    Level = 0;
-        //}
-        //else
-        //{
-        //    if (!TokenIndents.Where(x => x.Token.Equals(token.Parent)).Any())
-        //    {
-        //        return string.Empty;
-        //    }
-        //    else
-        //    {
-        //        Level = TokenIndents.Where(x => x.Token.Equals(token.Parent)).Select(x => x.Level).FirstOrDefault();
-        //    }
-        //}
-
-
         if (token.Text == "," && token.Sender is WithClause)
         {
             return string.Empty;

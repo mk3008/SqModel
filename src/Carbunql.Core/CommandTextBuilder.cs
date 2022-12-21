@@ -59,40 +59,6 @@ public class CommandTextBuilder
         return sb.ToString();
     }
 
-    //private Token? WriteBlock(Token blockstart, ref List<Token> tokens, ref Utf16ValueStringBuilder sb)
-    //{
-    //    var s = blockstart;
-    //    sb.Append(Formatter.OnStartBlock(s));
-
-    //    Token prev = s;
-    //    WriteToken(s, ref sb);
-
-    //    foreach (var t in tokens)
-    //    {
-    //        if (t.Sender.Equals(prev.Sender))
-    //        {
-    //            WriteToken(t, ref sb);
-    //        }
-    //        else if (t.Parents().Any(x => x.Equals(prev)))
-    //        {
-    //            //nest
-    //            var blockend = WriteBlock(t, ref tokens, ref sb);
-    //            WriteToken(blockend, ref sb);
-    //            sb.Append(Formatter.OnEndBlockAfterWriteToken(s));
-    //        }
-    //        else
-    //        {
-    //            //close
-    //            sb.Append(Formatter.OnEndBlockBeforeWriteToken(s));
-    //            return t;
-    //        }
-    //        prev = t;
-    //    }
-
-    //    sb.Append(Formatter.OnEndBlockBeforeWriteToken(s));
-    //    return null;
-    //}
-
     private void WriteToken(Token? token, ref Utf16ValueStringBuilder sb)
     {
         if (token == null) return;
