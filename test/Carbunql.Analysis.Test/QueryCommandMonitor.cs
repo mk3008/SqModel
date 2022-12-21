@@ -14,7 +14,7 @@ internal class QueryCommandMonitor
 
     public void Log(IQueryCommand arg)
     {
-        var frm = new CommandFormatter() { Logger = x => Output.WriteLine(x) };
+        var frm = new CommandFormatter();
         var bld = new CommandTextBuilder(frm);
         var sql = bld.Execute(arg.GetTokens(null));
         Output.WriteLine(sql);

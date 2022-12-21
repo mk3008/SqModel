@@ -29,7 +29,7 @@ from
     left join table_c c on a.table_a_id = c.table_a_id";
 
         var sq = QueryParser.Parse(sql);
-        var frm = new CommandFormatter() { Logger = x => Output.WriteLine(x) };
+        var frm = new CommandFormatter();
         var b = new CommandTextBuilder(frm);
 
         var formatsql = b.Execute(sq.GetTokens(null));
