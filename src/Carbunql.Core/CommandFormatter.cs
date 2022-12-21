@@ -98,6 +98,13 @@ public class CommandFormatter
             return "\r\n" + Indent;
         }
 
+        //if (token.Text.AreEqual("union"))
+        //{
+        //    PrevToken = null;
+        //    return "\r\n" + Indent;
+        //}
+
+
         return string.Empty;
     }
 
@@ -129,6 +136,11 @@ public class CommandFormatter
 
         if (token.Parent.Sender is FunctionValue) return string.Empty;
         if (token.Parent.Sender is WindowFunction) return string.Empty;
+
+        if (token.Parent.Sender is OperatableQuery)
+        {
+            Level--;
+        }
 
         Level++;
         Logger?.Invoke(@$"OnStartBlock Indent:{Level}, parent:{token.Parent.Text}");
