@@ -1,5 +1,4 @@
 ﻿using Cysharp.Text;
-using System.Linq;
 
 namespace Carbunql.Core;
 
@@ -21,11 +20,8 @@ public class CommandTextBuilder
     {
         var sb = ZString.CreateStringBuilder();
 
-
-
         Token? prev = null;
         var isFirst = true;
-
 
         foreach (var t in tokens)
         {
@@ -35,7 +31,6 @@ public class CommandTextBuilder
                 isFirst = false;
             }
 
-            // || t.Sender.Equals(prev.Sender)
             if (prev == null || t.Parents().Count() == prev.Parents().Count())
             {
                 WriteToken(t, ref sb);
