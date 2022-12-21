@@ -15,9 +15,9 @@ public class BracketValue : ValueBase
     {
         if (Inner == null) yield break;
 
-        var bracket = Token.BracketStart(this, parent);
+        var bracket = Token.ExpressionBracketStart(this, parent);
         yield return bracket;
         foreach (var item in Inner.GetTokens(bracket)) yield return item;
-        yield return Token.BracketEnd(this, parent);
+        yield return Token.ExpressionBracketEnd(this, parent);
     }
 }

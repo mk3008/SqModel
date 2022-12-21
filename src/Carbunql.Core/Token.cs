@@ -9,12 +9,22 @@ namespace Carbunql.Core;
 
 public class Token
 {
-    public static Token BracketStart(object sender, Token? parent)
+    public static Token ReservedBracketStart(object sender, Token? parent)
+    {
+        return new Token(sender, parent, "(", true);
+    }
+
+    public static Token ReservedBracketEnd(object sender, Token? parent)
+    {
+        return new Token(sender, parent, ")", true);
+    }
+
+    public static Token ExpressionBracketStart(object sender, Token? parent)
     {
         return new Token(sender, parent, "(", false);
     }
 
-    public static Token BracketEnd(object sender, Token? parent)
+    public static Token ExpressionBracketEnd(object sender, Token? parent)
     {
         return new Token(sender, parent, ")", false);
     }

@@ -27,10 +27,10 @@ public class ValuesClause : QueryBase
             {
                 yield return Token.Comma(this, clause);
             }
-            var bracket = Token.BracketStart(this, clause);
+            var bracket = Token.ReservedBracketStart(this, clause);
             yield return bracket;
             foreach (var token in item.GetTokens(bracket)) yield return token;
-            yield return Token.BracketEnd(this, clause);
+            yield return Token.ReservedBracketEnd(this, clause);
         }
     }
 }

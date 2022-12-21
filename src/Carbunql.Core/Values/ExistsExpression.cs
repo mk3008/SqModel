@@ -10,9 +10,9 @@ public class ExistsExpression : QueryContainer
     {
         yield return Token.Reserved(this, parent, "exists"); ;
 
-        var bracket = Token.BracketStart(this, parent);
+        var bracket = Token.ReservedBracketStart(this, parent);
         yield return bracket;
         foreach (var item in Query.GetTokens(bracket)) yield return item;
-        yield return Token.BracketEnd(this, parent);
+        yield return Token.ReservedBracketEnd(this, parent);
     }
 }

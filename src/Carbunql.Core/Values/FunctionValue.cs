@@ -33,13 +33,13 @@ public class FunctionValue : ValueBase
     {
         yield return Token.Reserved(this, parent, Name);
 
-        var bracket = Token.BracketStart(this, parent);
+        var bracket = Token.ReservedBracketStart(this, parent);
         yield return bracket;
         if (Argument != null)
         {
             foreach (var item in Argument.GetTokens(bracket)) yield return item;
         }
-        yield return Token.BracketEnd(this, parent);
+        yield return Token.ReservedBracketEnd(this, parent);
 
         if (WindowFunction != null)
         {

@@ -10,7 +10,7 @@ public class WindowFunction : IQueryCommand
     {
         yield return Token.Reserved(this, parent, "over");
 
-        var bracket = Token.BracketStart(this, parent);
+        var bracket = Token.ReservedBracketStart(this, parent);
         yield return bracket;
         if (PartitionBy != null)
         {
@@ -22,6 +22,6 @@ public class WindowFunction : IQueryCommand
             yield return Token.Reserved(this, parent, "order by");
             foreach (var item in OrderBy.GetTokens(bracket)) yield return item;
         }
-        yield return Token.BracketEnd(this, parent);
+        yield return Token.ReservedBracketEnd(this, parent);
     }
 }

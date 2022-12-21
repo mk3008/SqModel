@@ -254,4 +254,17 @@ order by
         var item = SelectQueryParser.Parse(text);
         Monitor.Log(item);
     }
+
+    [Fact]
+    public void Sample2()
+    {
+        var text = @"
+SELECT
+    q.price * (1 + q.tax_rate) - q.price AS raw_tax
+FROM
+    q";
+
+        var item = SelectQueryParser.Parse(text);
+        Monitor.Log(item);
+    }
 }

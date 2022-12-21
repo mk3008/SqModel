@@ -32,10 +32,10 @@ public class SelectableTable : IQueryCommand, ISelectable
 
             if (ColumnAliases != null)
             {
-                var bracket = Token.BracketStart(this, parent);
+                var bracket = Token.ReservedBracketStart(this, parent);
                 yield return bracket;
                 foreach (var item in ColumnAliases.GetTokens(bracket)) yield return item;
-                yield return Token.BracketEnd(this, parent);
+                yield return Token.ReservedBracketEnd(this, parent);
             }
         }
     }

@@ -59,14 +59,12 @@ public class CommandFormatter
 
         if (!token.Text.AreEqual("on") && !token.Sender.Equals(PrevToken.Sender) && token.Sender is Relation)
         {
-            PrevToken = null;
-            return "\r\n" + Indent;
+            return GetLineBreakText();
         }
 
         if (token.Text.AreEqual("else") || token.Text.AreEqual("when"))
         {
-            PrevToken = null;
-            return "\r\n" + Indent;
+            return GetLineBreakText();
         }
 
         return string.Empty;
@@ -76,14 +74,12 @@ public class CommandFormatter
     {
         if (token.Text == "," && token.Sender is SelectClause)
         {
-            PrevToken = null;
-            return "\r\n" + Indent;
+            return GetLineBreakText();
         }
 
         if (token.Text == "," && token.Parent != null && token.Parent.Text.AreEqual("values"))
         {
-            PrevToken = null;
-            return "\r\n" + Indent;
+            return GetLineBreakText();
         }
 
         return string.Empty;
@@ -94,11 +90,13 @@ public class CommandFormatter
         //root is not regist
         if (token.Parent == null) throw new Exception();
 
+        //no line breaks
         if (token.Parent.Parent != null && token.Parent.Parent.Text.AreEqual("values")) return string.Empty;
-
         if (token.Parent.Sender is FunctionValue) return string.Empty;
         if (token.Parent.Sender is WindowFunction) return string.Empty;
+        if (token.Parent.Text == "(" && token.Parent.IsReserved == false) return string.Empty;
 
+        //line breaks but no indentation
         if (token.Parent.Sender is OperatableQuery)
         {
             Level--;
@@ -108,9 +106,7 @@ public class CommandFormatter
         Logger?.Invoke(@$"OnStartBlock Indent:{Level}, parent:{token.Parent.Text}");
         TokenIndents.Add((token.Parent, Level));
 
-        RefreshIndent();
-        PrevToken = null;
-        return "\r\n" + Indent;
+        return GetLineBreakText();
     }
 
     public virtual string OnEndBlockAfterWriteToken(Token token)
@@ -144,17 +140,19 @@ public class CommandFormatter
         {
             return string.Empty;
         }
+        else if (token.Text == ")" && token.IsReserved == false)
+        {
+            return string.Empty;
+        }
         else
         {
             var q = TokenIndents.Where(x => x.Token != null && x.Token.Equals(token.Parent)).Select(x => x.Level);
             if (!q.Any()) return string.Empty;
             Level = q.First();
-            Logger?.Invoke(@$"OnEndBlock   Indent:{Level}, parent:{token.Parent.Text}");
+            Logger?.Invoke(@$"OnEndBlock   Indent:{Level}, parent:{token.Parent.Text} text:{token.Text}");
         }
 
-        RefreshIndent();
-        PrevToken = null;
-        return "\r\n" + Indent;
+        return GetLineBreakText();
     }
 
     public virtual void OnEnd()
@@ -165,5 +163,12 @@ public class CommandFormatter
     private void RefreshIndent()
     {
         Indent = (Level * 4).ToSpaceString();
+    }
+
+    private string GetLineBreakText()
+    {
+        RefreshIndent();
+        PrevToken = null;
+        return "\r\n" + Indent;
     }
 }
