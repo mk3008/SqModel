@@ -33,15 +33,8 @@ public class CommandTextBuilder
 
     public string Execute(IEnumerable<Token> tokens)
     {
-        var isFirst = true;
-
         foreach (var t in tokens)
         {
-            if (isFirst)
-            {
-                isFirst = false;
-            }
-
             if (PrevToken == null || t.Parents().Count() == PrevToken.Parents().Count())
             {
                 WriteToken(t);
