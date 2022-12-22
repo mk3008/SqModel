@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xunit.Abstractions;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class PerformanceTest
 {

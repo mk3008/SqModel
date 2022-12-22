@@ -1,7 +1,7 @@
 ﻿using Carbunql.Analysis;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class QueryParserTest
 {

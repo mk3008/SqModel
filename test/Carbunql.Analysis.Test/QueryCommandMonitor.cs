@@ -2,7 +2,7 @@
 using Carbunql.Core.Extensions;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 internal class QueryCommandMonitor
 {
     private readonly ITestOutputHelper Output;
@@ -23,7 +23,7 @@ internal class QueryCommandMonitor
         var indent = string.Empty;
         foreach (var item in arg.GetTokens(null))
         {
-            var p = (item.Parent == null) ? "[null]" : item.Parent.Text;
+            var p = item.Parent == null ? "[null]" : item.Parent.Text;
             var s = item.Sender.GetType().Name;
             var l = item.Parents().Count();
             Output.WriteLine($"{(indent + item.Text).PadRight(len)} l:{l} s:{s.PadRight(15)}, p:{p.PadRight(6)}, r:{item.IsReserved}");

@@ -2,7 +2,7 @@
 using Carbunql.Core.Values;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class ValueParserTest
 {

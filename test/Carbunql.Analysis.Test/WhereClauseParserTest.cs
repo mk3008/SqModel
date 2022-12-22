@@ -1,7 +1,7 @@
 ﻿using Carbunql.Analysis.Parser;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class WhereClauseParserTest
 {

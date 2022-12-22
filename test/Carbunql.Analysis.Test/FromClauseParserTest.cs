@@ -4,7 +4,7 @@ using Carbunql.Core.Clauses;
 using Carbunql.Core.Tables;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class FromClauseParserTest
 {

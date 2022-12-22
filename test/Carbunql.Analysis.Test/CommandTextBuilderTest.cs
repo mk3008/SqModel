@@ -3,7 +3,7 @@ using Carbunql.Core;
 using System.Runtime.Serialization;
 using Xunit.Abstractions;
 
-namespace SqModelAnalysisTest;
+namespace Carbunql.Analysis.Test;
 
 public class CommandTextBuilderTest
 {

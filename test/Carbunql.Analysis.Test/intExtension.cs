@@ -1,4 +1,4 @@
-﻿namespace SqModelAnalysisTest;
+﻿namespace Carbunql.Analysis.Test;
 
 internal static class intExtension
 {
