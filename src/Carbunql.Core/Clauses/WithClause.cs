@@ -39,7 +39,7 @@ public class WithClause : IList<CommonTable>, IQueryCommand
             }
             else
             {
-                yield return Token.Comma(this, parent);
+                yield return Token.Comma(this, clause);
             }
             foreach (var token in item.GetTokens(clause)) yield return token;
         }

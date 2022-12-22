@@ -26,11 +26,14 @@ public class CommandFormatter
     {
         if (token.Sender is OperatableQuery) return true;
 
-        if (token.Text == "," && token.Sender is WithClause) return true;
-        if (token.Text == "," && token.Sender is SelectClause) return true;
-        if (token.Text == "," && token.Sender is GroupClause) return true;
-        if (token.Text == "," && token.Sender is OrderClause) return true;
-        if (token.Text == "," && token.Parent != null && token.Parent.Text.AreEqual("values")) return true;
+        if (token.Text.Equals(","))
+        {
+            if (token.Sender is WithClause) return true;
+            if (token.Sender is SelectClause) return true;
+            if (token.Sender is GroupClause) return true;
+            if (token.Sender is OrderClause) return true;
+            if (token.Sender is ValuesClause) return true;
+        }
 
         return false;
     }
@@ -39,22 +42,24 @@ public class CommandFormatter
     {
         if (token.Sender is OperatableQuery) return false;
 
-        if (token.Parent != null && token.Parent.Text.AreEqual("values")) return false;
-        if (token.Sender is FunctionValue || token.Sender is WindowFunction) return false;
-        if (token.Text == "(" && token.IsReserved == false) return false;
+        if (token.Text.Equals("(") && token.IsReserved == false) return false;
+
+        if (token.Parent != null && token.Parent.Sender is ValuesClause) return false;
+        if (token.Sender is FunctionValue) return false;
+        if (token.Sender is WindowFunction) return false;
 
         return true;
     }
 
     public virtual bool IsDecrementIndentOnBeforeWriteToken(Token token)
     {
-        if (token.Text == "," && token.Sender is WithClause) return false;
-
         if (token.Parent == null) return true;
 
-        if (token.Parent != null && token.Parent.Text.AreEqual("values")) return false;
-        if (token.Sender is FunctionValue || token.Sender is WindowFunction) return false;
-        if (token.Text == ")" && token.IsReserved == false) return false;
+        if (token.Text.Equals(")") && token.IsReserved == false) return false;
+
+        if (token.Parent != null && token.Parent.Sender is ValuesClause) return false;
+        if (token.Sender is FunctionValue) return false;
+        if (token.Sender is WindowFunction) return false;
 
         return true;
     }
