@@ -43,7 +43,7 @@ public abstract class QueryBase : IQueryCommandable
 
     public QueryCommand ToCommand()
     {
-        var sql = GetTokens(null).ToString(" ");
+        var sql = GetTokens(null).ToText();
         return new QueryCommand(sql, GetParameters());
     }
 }

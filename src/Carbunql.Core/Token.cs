@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Carbunql.Core.Tables;
+using Carbunql.Core.Values;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -59,6 +61,27 @@ public class Token
     public string Text { get; init; }
 
     public bool IsReserved { get; init; }
+
+    public bool NeedsSpace(Token? prev = null)
+    {
+        if (prev == null) return false;
+
+        if (prev!.Text == "(") return false;
+        if (prev!.Text == ".") return false;
+
+        if (Text.StartsWith("::")) return false;
+        if (Text == ")") return false;
+        if (Text == ",") return false;
+        if (Text == ".") return false;
+        if (Text == "(")
+        {
+            if (Sender is VirtualTable) return true;
+            if (Sender is FunctionValue) return false;
+            return true;
+        }
+
+        return true;
+    }
 
     public IEnumerable<Token> Parents()
     {

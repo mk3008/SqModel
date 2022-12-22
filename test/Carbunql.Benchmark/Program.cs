@@ -52,7 +52,7 @@ where
     [Benchmark]
     public string CarbunqlString()
     {
-        return carbunql.GetTokens(null).ToString(" ");
+        return carbunql.GetTokens(null).ToText();
     }
 
     [Benchmark]

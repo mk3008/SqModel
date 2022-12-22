@@ -95,31 +95,20 @@ public class CommandTextBuilder
 
     private string GetTokenTextCore(Token token)
     {
-        var isAppendSplitter = () =>
-        {
-            if (PrevToken == null) return false;
+        using var sb = ZString.CreateStringBuilder();
 
-            if (PrevToken!.Text == "(") return false;
-            if (PrevToken!.Text == ".") return false;
-
-            if (token.Text.StartsWith("::")) return false;
-            if (token.Text == ")") return false;
-            if (token.Text == ",") return false;
-            if (token.Text == ".") return false;
-            if (token.Text == "(")
-            {
-                if (token.Sender is VirtualTable) return true;
-                if (token.Sender is FunctionValue) return false;
-                return true;
-            }
-
-            return true;
-        };
-
-        var s = isAppendSplitter() ? " " : string.Empty;
+        if (token.NeedsSpace(PrevToken)) sb.Append(' ');
         PrevToken = token;
-        if (token.IsReserved) return s + token.Text.ToUpper();
-        return s + token.Text;
+        if (token.IsReserved)
+        {
+            sb.Append(token.Text.ToUpper());
+        }
+        else
+        {
+            sb.Append(token.Text);
+        }
+
+        return sb.ToString();
     }
 
     private string GetLineBreakText()

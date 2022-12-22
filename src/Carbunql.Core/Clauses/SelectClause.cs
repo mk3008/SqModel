@@ -26,7 +26,7 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand
         Token? clause = null;
         if (HasDistinctKeyword && Top != null)
         {
-            clause = Token.Reserved(this, parent, "select distinct top " + Top.GetTokens(parent).ToString(" "));
+            clause = Token.Reserved(this, parent, "select distinct top " + Top.GetTokens(parent).ToText());
         }
         else if (HasDistinctKeyword)
         {
@@ -34,7 +34,7 @@ public class SelectClause : IList<SelectableItem>, IQueryCommand
         }
         else if (Top != null)
         {
-            clause = Token.Reserved(this, parent, "select top " + Top.GetTokens(parent).ToString(" "));
+            clause = Token.Reserved(this, parent, "select top " + Top.GetTokens(parent).ToText());
         }
         else
         {
