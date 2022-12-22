@@ -187,7 +187,7 @@ public class TokenReader : LexReader
     internal (string first, string inner) ReadUntilCloseBracket()
     {
         SkipSpace();
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         var fs = string.Empty;
 
         foreach (var word in ReadRawTokens(skipSpace: false))
@@ -216,7 +216,7 @@ public class TokenReader : LexReader
 
     private string ReadUntilCloseBlockComment()
     {
-        var inner = ZString.CreateStringBuilder();
+        using var inner = ZString.CreateStringBuilder();
 
         foreach (var word in ReadRawTokens(skipSpace: false))
         {
@@ -238,7 +238,7 @@ public class TokenReader : LexReader
 
     internal string ReadUntilCaseExpressionEnd()
     {
-        var inner = ZString.CreateStringBuilder();
+        using var inner = ZString.CreateStringBuilder();
 
         foreach (var word in ReadRawTokens(skipSpace: false))
         {
@@ -265,7 +265,7 @@ public class TokenReader : LexReader
 
     internal string ReadUntilToken(Func<string, bool> fn)
     {
-        var inner = ZString.CreateStringBuilder();
+        using var inner = ZString.CreateStringBuilder();
 
         SkipSpace();
         foreach (var word in ReadRawTokens(skipSpace: false))

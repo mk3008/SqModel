@@ -29,7 +29,7 @@ public class LexReader : CharReader
     {
         if (skipSpace) SkipSpace();
 
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
 
         var fc = ReadChars().FirstOrDefault();
         if (fc == '\0') return string.Empty;

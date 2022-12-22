@@ -50,7 +50,7 @@ public class CharReader : IDisposable
 
     public string ReadUntilSingleQuote()
     {
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         foreach (var item in ReadChars())
         {
             sb.Append(item);
@@ -71,7 +71,7 @@ public class CharReader : IDisposable
 
     public string ReadUntilLineEnd()
     {
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         foreach (var item in ReadChars())
         {
             if (item != '\n' && item != '\r')
