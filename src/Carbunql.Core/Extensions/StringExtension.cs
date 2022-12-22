@@ -36,7 +36,7 @@ public static class StringExtension
     {
         if (items == null || !items.Any()) return source;
 
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         sb.Append(source + jointext);
         sb.Append(items.ToString(splitter, startDecorate, endDecorate));
         return sb.ToString();
@@ -46,7 +46,7 @@ public static class StringExtension
     {
         if (!source.Any()) return string.Empty;
 
-        var sb = ZString.CreateStringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         var isFirst = true;
 
         if (startDecorate != null) sb.Append(startDecorate);

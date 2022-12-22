@@ -116,7 +116,7 @@ public class CommandTextBuilder
             return true;
         };
 
-        var s = isAppendSplitter() ? " " : "";
+        var s = isAppendSplitter() ? " " : string.Empty;
         PrevToken = token;
         if (token.IsReserved) return s + token.Text.ToUpper();
         return s + token.Text;
