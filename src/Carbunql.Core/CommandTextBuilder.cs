@@ -26,9 +26,11 @@ public class CommandTextBuilder
 
     private int Level { get; set; }
 
-    private string Indent { get; set; } = string.Empty;
-
-    private List<(Token Token, int Level)> TokenIndents { get; set; } = new();
+    public void Init()
+    {
+        Level = 0;
+        PrevToken = null;
+    }
 
     public string Execute(IQueryCommand cmd)
     {
@@ -37,6 +39,9 @@ public class CommandTextBuilder
 
     public string Execute(IEnumerable<Token> tokens)
     {
+        Init();
+        var IndentLevels = new List<(Token Token, int Level)>();
+
         using var sb = ZString.CreateStringBuilder();
 
         foreach (var t in tokens)
@@ -52,7 +57,7 @@ public class CommandTextBuilder
                 if (t.Parent != null && Formatter.IsIncrementIndentOnBeforeWriteToken(t.Parent))
                 {
                     Level++;
-                    TokenIndents.Add((t.Parent, Level));
+                    IndentLevels.Add((t.Parent, Level));
                     sb.Append(GetLineBreakText());
                 }
                 foreach (var item in GetTokenTexts(t)) sb.Append(item);
@@ -61,7 +66,7 @@ public class CommandTextBuilder
 
             if (Formatter.IsDecrementIndentOnBeforeWriteToken(t))
             {
-                var q = TokenIndents.Where(x => x.Token != null && x.Token.Equals(t.Parent)).Select(x => x.Level);
+                var q = IndentLevels.Where(x => x.Token != null && x.Token.Equals(t.Parent)).Select(x => x.Level);
                 if (q.Any())
                 {
                     Level = q.First();
@@ -111,10 +116,15 @@ public class CommandTextBuilder
         return sb.ToString();
     }
 
+    private Dictionary<int, string> SpacerCache = new();
+
     private string GetLineBreakText()
     {
         PrevToken = null;
-        Indent = (Level * 4).ToSpaceString();
-        return "\r\n" + Indent;
+        if (!SpacerCache.ContainsKey(Level))
+        {
+            SpacerCache[Level] = (Level * 4).ToSpaceString();
+        }
+        return "\r\n" + SpacerCache[Level];
     }
 }

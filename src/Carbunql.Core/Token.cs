@@ -66,19 +66,19 @@ public class Token
     {
         if (prev == null) return false;
 
-        if (prev!.Text == "(") return false;
-        if (prev!.Text == ".") return false;
+        if (prev!.Text.Equals("(")) return false;
+        if (prev!.Text.Equals(".")) return false;
 
-        if (Text.StartsWith("::")) return false;
-        if (Text == ")") return false;
-        if (Text == ",") return false;
-        if (Text == ".") return false;
-        if (Text == "(")
+        if (Text.Equals(")")) return false;
+        if (Text.Equals(",")) return false;
+        if (Text.Equals(".")) return false;
+        if (Text.Equals("("))
         {
             if (Sender is VirtualTable) return true;
             if (Sender is FunctionValue) return false;
             return true;
         }
+        if (Text.StartsWith("::")) return false;
 
         return true;
     }
