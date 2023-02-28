@@ -6,8 +6,14 @@
 [![SqModel](https://img.shields.io/nuget/dt/SqModel.svg)](https://www.nuget.org/packages/SqModel/) 
 
 
-A lightweight library that allows you to easily build Select queries.
-You can also parse handwritten Sql.
+~~A lightweight library that allows you to easily build Select queries.
+You can also parse handwritten Sql.~~
+
+Development of this library has ended.
+
+Please consider using the successor product.
+
+[Carbunql](https://github.com/mk3008/Carbunql)
 
 ## Demo
 You can compose your select query like this:
